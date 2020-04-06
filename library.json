@@ -1,0 +1,37 @@
+{
+  "name": "Squid Java",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/keyko-io/squid-java.git"
+  },
+  "dependencies": [
+    {
+      "name": "squid-spec",
+      "version": "0.4"
+    },
+    {
+      "name": "OEP-7",
+      "version": "0.2"
+    },
+    {
+      "name": "OEP-8",
+      "version": "0.4"
+    },
+    {
+      "name": "keeper-contracts",
+      "version": "0.12.0"
+    },
+    {
+      "name": "aquarius",
+      "version": "0.4.2"
+    },
+    {
+      "name": "brizo",
+      "version": "0.6.0"
+    },
+    {
+      "name": "events-handler",
+      "version": "0.3.0"
+    }
+  ]
+}
