@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>io.keyko</groupId>
-    <artifactId>squid</artifactId>
-    <version>0.8.0</version>
+    <groupId>io.keyko.ocean</groupId>
+    <artifactId>api</artifactId>
+    <version>0.1.0</version>
     <packaging>jar</packaging>
-    <name>Java client library for Ocean Protocol</name>
-    <url>https://github.com/keyko-io/squid-java</url>
+    <name>Java SDK for Ocean Protocol</name>
+    <url>https://github.com/keyko-io/ocean-sdk-java</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -21,7 +21,7 @@
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <final-name>squid</final-name>
+        <final-name>ocean-sdk</final-name>
 
         <web3j.version>4.1.1</web3j.version>
         <common-utils.version>0.1.6</common-utils.version>
@@ -54,9 +54,9 @@
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git://github.com/keyko-io/squid-java.git</connection>
-        <developerConnection>scm:git:ssh://keyko-io/squid-java.git</developerConnection>
-        <url>https://github.com/keyko-io/squid-java/tree/master</url>
+        <connection>scm:git:git://github.com/keyko-io/ocean-sdk-java.git</connection>
+        <developerConnection>scm:git:ssh://keyko-io/ocean-sdk-java.git</developerConnection>
+        <url>https://github.com/keyko-io/ocean-sdk-java/tree/master</url>
     </scm>
     <profiles>
         <profile>
