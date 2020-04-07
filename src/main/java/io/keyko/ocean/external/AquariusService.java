@@ -1,13 +1,8 @@
-/*
- * Copyright 2018 Ocean Protocol Foundation
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.keyko.ocean.external;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.oceanprotocol.common.helpers.HttpHelper;
-import com.oceanprotocol.common.models.HttpResponse;
+import io.keyko.common.helpers.HttpHelper;
+import io.keyko.common.models.HttpResponse;
 import io.keyko.ocean.exceptions.DDOException;
 import io.keyko.ocean.models.AbstractModel;
 import io.keyko.ocean.models.DDO;

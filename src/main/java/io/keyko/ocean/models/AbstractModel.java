@@ -1,8 +1,3 @@
-/*
- * Copyright 2018 Ocean Protocol Foundation
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.keyko.ocean.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,7 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.oceanprotocol.common.helpers.CryptoHelper;
+import io.keyko.common.helpers.CryptoHelper;
 
 import java.io.IOException;
 import java.text.DateFormat;

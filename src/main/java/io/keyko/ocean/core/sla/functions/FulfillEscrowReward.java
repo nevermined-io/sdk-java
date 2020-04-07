@@ -1,12 +1,7 @@
-/*
- * Copyright 2018 Ocean Protocol Foundation
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.keyko.ocean.core.sla.functions;
 
-import com.oceanprotocol.common.helpers.EncodingHelper;
-import com.oceanprotocol.keeper.contracts.EscrowReward;
+import io.keyko.common.helpers.EncodingHelper;
+import io.keyko.ocean.keeper.contracts.EscrowReward;
 import io.keyko.ocean.exceptions.EscrowRewardException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

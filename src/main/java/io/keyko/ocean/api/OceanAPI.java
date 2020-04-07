@@ -1,28 +1,19 @@
-/*
- * Copyright 2018 Ocean Protocol Foundation
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.keyko.ocean.api;
 
-import com.oceanprotocol.common.web3.KeeperService;
-import com.oceanprotocol.keeper.contracts.*;
+import io.keyko.common.web3.KeeperService;
+import io.keyko.ocean.keeper.contracts.*;
 import com.oceanprotocol.secretstore.core.EvmDto;
 import com.oceanprotocol.secretstore.core.SecretStoreDto;
+import com.typesafe.config.Config;
 import io.keyko.ocean.api.config.OceanConfig;
 import io.keyko.ocean.api.config.OceanConfigFactory;
 import io.keyko.ocean.api.helper.OceanInitializationHelper;
-import com.oceanprotocol.squid.api.impl.*;
-import io.keyko.ocean.api.api.impl.*;
 import io.keyko.ocean.api.impl.*;
 import io.keyko.ocean.exceptions.InitializationException;
 import io.keyko.ocean.exceptions.InvalidConfiguration;
 import io.keyko.ocean.external.AquariusService;
-import com.oceanprotocol.squid.manager.*;
-import io.keyko.ocean.api.manager.*;
 import io.keyko.ocean.manager.*;
 import io.keyko.ocean.models.Account;
-import com.typesafe.config.Config;
 import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
 import org.apache.logging.log4j.LogManager;

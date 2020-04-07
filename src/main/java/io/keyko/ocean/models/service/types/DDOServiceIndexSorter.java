@@ -1,8 +1,3 @@
-/*
- * Copyright 2018 Ocean Protocol Foundation
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.keyko.ocean.models.service.types;
 
 import io.keyko.ocean.models.service.Service;

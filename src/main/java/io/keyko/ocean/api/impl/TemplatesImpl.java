@@ -1,8 +1,3 @@
-/*
- * Copyright 2018 Ocean Protocol Foundation
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.keyko.ocean.api.impl;
 
 import io.keyko.ocean.api.TemplatesAPI;
@@ -12,6 +7,7 @@ import io.keyko.ocean.models.service.template.TemplateSEA;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
+import java.util.List;
 
 
 public class TemplatesImpl implements TemplatesAPI {
@@ -29,18 +25,19 @@ public class TemplatesImpl implements TemplatesAPI {
     }
 
     @Override
-    public TransactionReceipt propose(String templateAddress) throws EthereumException {
-        return templatesManager.proposeTemplate(templateAddress);
+    public TransactionReceipt propose(String templateId, List<String> conditionTypes, List<byte[]> actorTypeIds, String name)
+            throws EthereumException {
+        return templatesManager.proposeTemplate(templateId, conditionTypes, actorTypeIds, name);
     }
 
     @Override
-    public TransactionReceipt approve(String templateAddress) throws EthereumException {
-        return templatesManager.approveTemplate(templateAddress);
+    public TransactionReceipt approve(String templateId) throws EthereumException {
+        return templatesManager.approveTemplate(templateId.getBytes());
     }
 
     @Override
-    public TransactionReceipt revoke(String templateAddress) throws EthereumException {
-        return templatesManager.revokeTemplate(templateAddress);
+    public TransactionReceipt revoke(String templateId) throws EthereumException {
+        return templatesManager.revokeTemplate(templateId.getBytes());
     }
 
     @Override
@@ -54,8 +51,8 @@ public class TemplatesImpl implements TemplatesAPI {
     }
 
     @Override
-    public TemplateSEA getTemplate(String templateAddress) throws EthereumException {
-        return templatesManager.getTemplate(templateAddress);
+    public TemplateSEA getTemplate(String templateId) throws EthereumException {
+        return templatesManager.getTemplate(templateId.getBytes());
     }
 
 }

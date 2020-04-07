@@ -1,8 +1,3 @@
-/*
- * Copyright 2018 Ocean Protocol Foundation
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.keyko.ocean.api;
 
 
@@ -11,6 +6,7 @@ import io.keyko.ocean.models.service.template.TemplateSEA;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * Exposes the Public API related with the Service Agreements Templates Management
@@ -20,11 +16,15 @@ public interface TemplatesAPI {
     /**
      * Suggest an agreement template smart contract to include in the white listed agreement templates
      *
-     * @param templateAddress Hex str the ethereum address of the deployed template (smart contract address)
+     * @param templateId Template identifier
+     * @param conditionTypes List of condition types
+     * @param conditionTypes List of actor type ids
+     * @param name template name
      * @return TransactionReceipt tx receipt
      * @throws EthereumException EthereumException
      */
-    TransactionReceipt propose(String templateAddress) throws EthereumException;
+    TransactionReceipt propose(String templateId, List<String> conditionTypes, List<byte[]> actorTypeIds, String name)
+            throws EthereumException;
 
     /**
      * Approve (whitelist) an already proposed template. Once a template is approved

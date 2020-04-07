@@ -1,18 +1,13 @@
-/*
- * Copyright 2018 Ocean Protocol Foundation
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.keyko.ocean.core.sla.handlers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.oceanprotocol.common.helpers.CryptoHelper;
-import com.oceanprotocol.common.helpers.EncodingHelper;
-import com.oceanprotocol.keeper.contracts.AccessSecretStoreCondition;
-import com.oceanprotocol.keeper.contracts.ComputeExecutionCondition;
-import com.oceanprotocol.keeper.contracts.EscrowAccessSecretStoreTemplate;
-import com.oceanprotocol.keeper.contracts.EscrowComputeExecutionTemplate;
+import io.keyko.common.helpers.CryptoHelper;
+import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.ocean.exceptions.InitializeConditionsException;
+import io.keyko.ocean.keeper.contracts.AccessSecretStoreCondition;
+import io.keyko.ocean.keeper.contracts.ComputeExecutionCondition;
+import io.keyko.ocean.keeper.contracts.EscrowAccessSecretStoreTemplate;
+import io.keyko.ocean.keeper.contracts.EscrowComputeExecutionTemplate;
 import io.keyko.ocean.models.AbstractModel;
 import io.keyko.ocean.models.service.Condition;
 import io.reactivex.Flowable;

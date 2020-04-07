@@ -1,14 +1,9 @@
-/*
- * Copyright 2018 Ocean Protocol Foundation
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.keyko.ocean.manager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.oceanprotocol.common.helpers.UrlHelper;
-import com.oceanprotocol.common.web3.KeeperService;
-import com.oceanprotocol.keeper.contracts.*;
+import io.keyko.common.helpers.UrlHelper;
+import io.keyko.common.web3.KeeperService;
+import io.keyko.ocean.keeper.contracts.*;
 import com.oceanprotocol.secretstore.core.EvmDto;
 import com.oceanprotocol.secretstore.core.SecretStoreDto;
 import io.keyko.ocean.external.AquariusService;

@@ -1,15 +1,10 @@
-/*
- * Copyright 2018 Ocean Protocol Foundation
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.keyko.ocean.models.asset;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.oceanprotocol.common.helpers.CryptoHelper;
+import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.ocean.models.AbstractModel;
 import io.keyko.ocean.models.service.Service;
 import io.keyko.ocean.models.service.attributes.ServiceAdditionalInformation;

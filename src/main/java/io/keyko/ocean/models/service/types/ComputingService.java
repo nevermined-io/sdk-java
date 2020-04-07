@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.oceanprotocol.common.helpers.EthereumHelper;
+import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.ocean.models.service.Condition;
 import io.keyko.ocean.models.service.Service;
 import org.web3j.crypto.Hash;

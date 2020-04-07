@@ -1,7 +1,7 @@
 package io.keyko.ocean.manager;
 
-import com.oceanprotocol.common.helpers.EncodingHelper;
-import com.oceanprotocol.common.web3.KeeperService;
+import io.keyko.common.helpers.EncodingHelper;
+import io.keyko.common.web3.KeeperService;
 import io.keyko.ocean.external.AquariusService;
 import io.keyko.ocean.models.DDO;
 import io.keyko.ocean.models.DID;

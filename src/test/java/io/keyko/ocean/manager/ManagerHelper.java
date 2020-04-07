@@ -1,15 +1,10 @@
-/*
- * Copyright 2018 Ocean Protocol Foundation
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.keyko.ocean.manager;
 
-import com.oceanprotocol.keeper.contracts.*;
+import io.keyko.ocean.keeper.contracts.*;
 import com.oceanprotocol.secretstore.core.EvmDto;
 import com.oceanprotocol.secretstore.core.SecretStoreDto;
 import io.keyko.ocean.external.AquariusService;
-import com.oceanprotocol.common.web3.KeeperService;
+import io.keyko.common.web3.KeeperService;
 import com.typesafe.config.Config;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

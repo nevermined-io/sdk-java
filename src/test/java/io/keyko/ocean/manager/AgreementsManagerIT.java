@@ -1,11 +1,11 @@
 package io.keyko.ocean.manager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.oceanprotocol.keeper.contracts.*;
+import io.keyko.ocean.keeper.contracts.*;
 import io.keyko.ocean.api.OceanAPI;
 import io.keyko.ocean.api.config.OceanConfig;
 import io.keyko.ocean.external.AquariusService;
-import com.oceanprotocol.common.web3.KeeperService;
+import io.keyko.common.web3.KeeperService;
 import io.keyko.ocean.models.DDO;
 import io.keyko.ocean.models.DID;
 import io.keyko.ocean.models.asset.AssetMetadata;

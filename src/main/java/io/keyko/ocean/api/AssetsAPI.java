@@ -1,12 +1,5 @@
-/*
- * Copyright 2018 Ocean Protocol Foundation
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.keyko.ocean.api;
 
-import com.oceanprotocol.squid.exceptions.*;
-import io.keyko.ocean.api.exceptions.*;
 import io.keyko.ocean.exceptions.*;
 import io.keyko.ocean.models.DDO;
 import io.keyko.ocean.models.DID;

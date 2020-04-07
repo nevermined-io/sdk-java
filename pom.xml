@@ -23,10 +23,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <final-name>ocean-sdk</final-name>
 
-        <web3j.version>4.1.1</web3j.version>
-        <common-utils.version>0.1.6</common-utils.version>
+        <web3j.version>4.5.17</web3j.version>
+        <common-utils.version>0.1.0</common-utils.version>
 
-        <ocean.keeper.version>0.12.6</ocean.keeper.version>
+        <ocean.keeper.version>0.13.2</ocean.keeper.version>
         <ocean.secretstore.version>0.1.4</ocean.secretstore.version>
         <eddsa.version>0.3.0</eddsa.version>
         <jackson.version>2.9.8</jackson.version>
@@ -437,13 +437,13 @@
         </dependency>
         <!-- Ocean Keeper Contracts: Web3j stubs & ABI's -->
         <dependency>
-            <groupId>com.oceanprotocol</groupId>
-            <artifactId>keeper-contracts</artifactId>
+            <groupId>io.keyko.ocean.keeper</groupId>
+            <artifactId>contracts</artifactId>
             <version>${ocean.keeper.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.oceanprotocol</groupId>
+            <groupId>io.keyko</groupId>
             <artifactId>common-utils</artifactId>
             <version>${common-utils.version}</version>
         </dependency>

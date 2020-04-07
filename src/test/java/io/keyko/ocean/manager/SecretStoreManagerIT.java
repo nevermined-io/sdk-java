@@ -1,15 +1,10 @@
-/*
- * Copyright 2018 Ocean Protocol Foundation
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package io.keyko.ocean.manager;
 
 import com.oceanprotocol.secretstore.auth.ConsumerWorker;
 import com.oceanprotocol.secretstore.auth.PublisherWorker;
 import com.oceanprotocol.secretstore.core.EvmDto;
 import com.oceanprotocol.secretstore.core.SecretStoreDto;
-import com.oceanprotocol.common.helpers.StringsHelper;
+import io.keyko.common.helpers.StringsHelper;
 import io.keyko.ocean.models.DID;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
