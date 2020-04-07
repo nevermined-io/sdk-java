@@ -1,0 +1,29 @@
+name: Java Maven CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+    - name: Run tests
+      run:
+        - git clone https://github.com/oceanprotocol/barge
+        - cd barge
+        - export KEEPER_VERSION=v0.13.2
+        - export BRIZO_VERSION=v0.6.0
+        - export AQUARIUS_VERSION=v0.4.2
+        - export EVENTS_HANDLER_VERSION=v0.3.0
+        - sudo bash -x start_ocean.sh --no-commons --local-spree-node 2>&1 > start_ocean.log &
+        - cd ..
+        - sleep 60
+        - /bin/bash src/test/resources/scripts/updateConfAddresses.sh
+        - mvn clean verify -P all-test
+

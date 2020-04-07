@@ -1,8 +1,8 @@
 {
-  "name": "Squid Java",
+  "name": "Keyko Ocean Java API",
   "repository": {
     "type": "git",
-    "url": "https://github.com/keyko-io/squid-java.git"
+    "url": "https://github.com/keyko-io/ocean-api-java.git"
   },
   "dependencies": [
     {
@@ -19,7 +19,7 @@
     },
     {
       "name": "keeper-contracts",
-      "version": "0.12.0"
+      "version": "0.13.2"
     },
     {
       "name": "aquarius",

@@ -1,30 +1,34 @@
-[![banner](https://raw.githubusercontent.com/oceanprotocol/art/master/github/repo-banner%402x.png)](https://oceanprotocol.com)
+[![banner](https://raw.githubusercontent.com/keyko-io/assets/master/images/logo/small/keyko_logo@2x-100.jpg)](https://keyko.io)
 
-# squid-java
+# Keyko Java API for Ocean
 
-> 🦑 Java client library for Ocean Protocol
-> [oceanprotocol.com](https://oceanprotocol.com)
+> 🦑 Keyko Java SDK for connecting with Ocean Protocol
+> [keyko.io](https://keyko.io)
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a2285f0f3a664cf091c8e00a243898ce)](https://app.codacy.com/app/ocean-protocol/squid-java?utm_source=github.com&utm_medium=referral&utm_content=oceanprotocol/squid-java&utm_campaign=Badge_Grade_Dashboard)
-[![Build Status](https://travis-ci.com/oceanprotocol/squid-java.svg?branch=develop)](https://travis-ci.com/oceanprotocol/squid-java)
-[![Javadocs](http://javadoc.io/badge/com.oceanprotocol/squid.svg)](http://javadoc.io/doc/com.oceanprotocol/squid)
+![Java Maven CI](https://github.com/keyko-io/ocean-api-java/workflows/Java%20Maven%20CI/badge.svg)
+[![javadoc](https://javadoc.io/badge2/io.keyko.ocean/ocean-api-java/javadoc.svg)](https://javadoc.io/doc/io.keyko.ocean/ocean-api-java)
 
 ---
 
 ## Table of Contents
 
-* [Features](#features)
-* [Installation](#installation)
-* [Configuration](#configuration)
-  * [Using Squid-Java with Barge](#using-squid-java-with-barge)
-  * [Dealing with Flowables](#dealing-with-flowables)
-* [Documentation](#documentation)
-* [Testing](#testing)
-  * [Unit Tests](#unit-tests)
-  * [Integration Tests](#integration-tests)
-  * [Code Coverage](#code-coverage)
-* [New Release](#new-release)
-* [License](#license)
+   * [Keyko Java API for Ocean](#keyko-java-api-for-ocean)
+      * [Table of Contents](#table-of-contents)
+      * [Features](#features)
+      * [Installation](#installation)
+      * [Configuration](#configuration)
+         * [Using Squid-Java with Barge](#using-squid-java-with-barge)
+         * [Dealing with Flowables](#dealing-with-flowables)
+      * [Documentation](#documentation)
+      * [Testing](#testing)
+         * [Unit Tests](#unit-tests)
+         * [Integration Tests](#integration-tests)
+         * [Documentation](#documentation-1)
+         * [All the tests](#all-the-tests)
+         * [Code Coverage](#code-coverage)
+      * [New Release](#new-release)
+      * [Attribution](#attribution)
+      * [License](#license)
 
 ---
 
@@ -32,17 +36,15 @@
 
 This library enables to integrate the Ocean Protocol capabilities from JVM clients.
 
-Currently squid-java implements the last version of the [squid-spec (v0.4)](https://github.com/oceanprotocol/dev-ocean/blob/master/doc/architecture/squid.md).
-
 ## Installation
 
 Typically in Maven you can add squid-java as a dependency:
 
 ```xml
 <dependency>
-  <groupId>com.oceanprotocol</groupId>
-  <artifactId>squid-java</artifactId>
-  <version>0.7.0</version>
+  <groupId>io.keyko.ocean</groupId>
+  <artifactId>api</artifactId>
+  <version>0.1.0</version>
 </dependency>
 ```
 
@@ -137,7 +139,7 @@ Once you have initialized the API you can call the methods through their corresp
 
 If you are using [Barge](https://github.com/oceanprotocol/barge/) for playing with the Ocean Protocol stack, you can use the following command to run the components necessary to have a fully functional environment:
 
-`KEEPER_VERSION=v0.12.0 BRIZO_VERSION=v0.3.12 AQUARIUS_VERSION=v0.4.2 bash start_ocean.sh --no-pleuston --local-spree-node`
+`KEEPER_VERSION=v0.13.2 BRIZO_VERSION=v0.3.12 AQUARIUS_VERSION=v0.4.2 bash start_ocean.sh --no-pleuston --local-spree-node`
 
 After a few minutes, when Keeper has deployed the contracts, the ABI files describing the Smart Contracts can be found 
 in the `${HOME}/.ocean/keeper-contracts/artifacts/` folder. Depending on the network you are using, each ABI includes the 
@@ -177,9 +179,9 @@ More information: [RxJava](https://github.com/ReactiveX/RxJava/wiki) , [Flowable
 
 ## Documentation
 
-All the API documentation is hosted of javadoc.io:
+All the API documentation is hosted on javadoc.io:
 
-- **[https://www.javadoc.io/doc/com.oceanprotocol/squid](https://www.javadoc.io/doc/com.oceanprotocol/squid)**
+- **[https://www.javadoc.io/doc/io.keyko.ocean/api](https://www.javadoc.io/doc/io.keyko.ocean/api)**
 
 You can also generate the Javadoc locally using the following command:
 
@@ -210,7 +212,7 @@ The execution of the integration tests require to have running the complete Ocea
 After having `barge` in your environment, you can run the components needed running:
 
 ```bash
-KEEPER_VERSION=v0.9.0 bash start_ocean.sh --latest --no-pleuston --local-spree-node --force-pull
+KEEPER_VERSION=v0.13.2 bash start_ocean.sh --latest --no-pleuston --local-spree-node --force-pull
 ```
 
 If you have older versions of the docker images is recommended to delete all them to be sure you are running the last version of the stack.
@@ -250,10 +252,15 @@ The code coverage reports are generated using the JaCoCo Maven plugin. Reports a
 
 The `bumpversion.sh` script helps to bump the project version. You can execute the script using as first argument {major|minor|patch} to bump accordingly the version.
 
+## Attribution
+
+This library is based in the [Ocean Protocol](https://oceanprotocol.com) [Squid Java](https://github.com/oceanprotocol/squid-java) library.
+It keeps the same Apache v2 License and adds some improvements.
+
 ## License
 
 ```
-Copyright 2018 Ocean Protocol Foundation Ltd.
+Copyright 2020 Keyko GmbH.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.

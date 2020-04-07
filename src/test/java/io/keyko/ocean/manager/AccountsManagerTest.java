@@ -74,36 +74,4 @@ public class AccountsManagerTest {
         assertTrue(accounts.get(0).address.startsWith("0x"));
     }
 
-    @Test
-    public void getAccountBalance() throws IOException, CipherException, Exception {
-        String address= "0x123";
-        BigInteger ethBalance= BigInteger.valueOf(3);
-        BigInteger oceanBalance= BigInteger.valueOf(12);
-
-        KeeperService _keeper= mock(KeeperService.class);
-        Admin _web3j= mock(Admin.class);
-        Credentials _credentials= mock(Credentials.class);
-        OceanToken _token= mock(OceanToken.class);
-        Request<?, EthGetBalance> _request= (Request<?, EthGetBalance>) mock(Request.class);
-        EthGetBalance _response= mock(EthGetBalance.class);
-        RemoteCall _call= mock(RemoteCall.class);
-
-        when(_response.getBalance()).thenReturn(ethBalance, oceanBalance);
-        when(_request.send()).thenReturn(_response);
-        Mockito.doReturn(_request).when(_web3j).ethGetBalance(any(), any());
-
-        when(_keeper.getWeb3()).thenReturn(_web3j);
-        when(_keeper.getCredentials()).thenReturn(_credentials);
-
-        when(_call.send()).thenReturn(oceanBalance);
-        Mockito.doReturn(_call).when(_token).balanceOf(any());
-
-        AccountsManager manager= AccountsManager.getInstance(_keeper, aquarius);
-        manager.setTokenContract(_token);
-
-        Balance balance= manager.getAccountBalance(address);
-
-        assertEquals(ethBalance, balance.getEth());
-        assertEquals(oceanBalance, balance.getDrops());
-    }
 }

@@ -14,6 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
@@ -71,7 +72,7 @@ public class TemplatesApiIT {
         log.debug("Number of existing templates: " + numberTemplates.toString());
 
         log.debug("Proposing template: " + templateAddress);
-        oceanAPI.getTemplatesAPI().propose(templateAddress);
+        oceanAPI.getTemplatesAPI().propose(templateAddress, new ArrayList<>(), new ArrayList<>(), "test");
 
 
         for (int counter= 0; counter<10; counter++) {
