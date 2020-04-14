@@ -1,5 +1,6 @@
 package io.keyko.ocean.api.impl;
 
+import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.ocean.api.TemplatesAPI;
 import io.keyko.ocean.exceptions.EthereumException;
 import io.keyko.ocean.manager.TemplatesManager;
@@ -31,18 +32,24 @@ public class TemplatesImpl implements TemplatesAPI {
     }
 
     @Override
+    public TransactionReceipt propose(byte[] templateId, List<String> conditionTypes, List<byte[]> actorTypeIds, String name)
+            throws EthereumException {
+        return templatesManager.proposeTemplate(templateId, conditionTypes, actorTypeIds, name);
+    }
+
+    @Override
     public TransactionReceipt approve(String templateId) throws EthereumException {
-        return templatesManager.approveTemplate(templateId.getBytes());
+        return templatesManager.approveTemplate(CryptoHelper.keccak256(templateId));
     }
 
     @Override
     public TransactionReceipt revoke(String templateId) throws EthereumException {
-        return templatesManager.revokeTemplate(templateId.getBytes());
+        return templatesManager.revokeTemplate(CryptoHelper.keccak256(templateId));
     }
 
     @Override
-    public boolean isApproved(String templateAddress) throws EthereumException {
-        return templatesManager.isTemplateApproved(templateAddress);
+    public boolean isApproved(String templateId) throws EthereumException {
+        return templatesManager.isTemplateIdApproved(CryptoHelper.keccak256(templateId));
     }
 
     @Override
@@ -52,7 +59,16 @@ public class TemplatesImpl implements TemplatesAPI {
 
     @Override
     public TemplateSEA getTemplate(String templateId) throws EthereumException {
-        return templatesManager.getTemplate(templateId.getBytes());
+        return templatesManager.getTemplate(CryptoHelper.keccak256(templateId));
     }
 
+    @Override
+    public TransactionReceipt registerActorType(String actorType) throws EthereumException {
+        return templatesManager.registerTemplateActorType(actorType);
+    }
+
+    @Override
+    public TransactionReceipt deregisterActorType(String actorType) throws EthereumException {
+        return templatesManager.deregisterTemplateActorType(actorType);
+    }
 }

@@ -24,9 +24,9 @@
         <final-name>ocean-sdk</final-name>
 
         <web3j.version>4.5.17</web3j.version>
-        <common-utils.version>0.1.0</common-utils.version>
+        <common-utils.version>0.1.2</common-utils.version>
 
-        <ocean.keeper.version>0.13.2</ocean.keeper.version>
+        <ocean.keeper.version>0.13.2.5</ocean.keeper.version>
         <ocean.secretstore.version>0.1.4</ocean.secretstore.version>
         <eddsa.version>0.3.0</eddsa.version>
         <jackson.version>2.9.8</jackson.version>

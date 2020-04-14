@@ -5,9 +5,8 @@ import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.ocean.exceptions.InitializeConditionsException;
 import io.keyko.ocean.keeper.contracts.AccessSecretStoreCondition;
+import io.keyko.ocean.keeper.contracts.AgreementStoreManager;
 import io.keyko.ocean.keeper.contracts.ComputeExecutionCondition;
-import io.keyko.ocean.keeper.contracts.EscrowAccessSecretStoreTemplate;
-import io.keyko.ocean.keeper.contracts.EscrowComputeExecutionTemplate;
 import io.keyko.ocean.models.AbstractModel;
 import io.keyko.ocean.models.service.Condition;
 import io.reactivex.Flowable;
@@ -55,7 +54,7 @@ public abstract class ServiceAgreementHandler {
      * @param serviceAgreementId the service agreement Id
      * @return a Flowable to handle the in an asynchronous fashion
      */
-    public static Flowable<String> listenExecuteAgreement(EscrowAccessSecretStoreTemplate slaContract, String serviceAgreementId) {
+    public static Flowable<String> listenExecuteAgreement(AgreementStoreManager slaContract, String serviceAgreementId) {
         EthFilter slaFilter = new EthFilter(
                 DefaultBlockParameterName.EARLIEST,
                 DefaultBlockParameterName.LATEST,
@@ -69,33 +68,7 @@ public abstract class ServiceAgreementHandler {
         slaFilter.addOptionalTopics(slaTopic);
 
         return slaContract.agreementCreatedEventFlowable(slaFilter)
-                .map(eventResponse -> EncodingHelper.toHexString(eventResponse._agreementId));
-    }
-
-
-
-    /**
-     * Define and execute a Filter over the Service Agreement Contract to listen for an AgreementInitialized event
-     *
-     * @param slaContract        the address of the service agreement contract
-     * @param serviceAgreementId the service agreement Id
-     * @return a Flowable to handle the event in an asynchronous fashion
-     */
-    public static Flowable<String> listenExecuteAgreement(EscrowComputeExecutionTemplate slaContract, String serviceAgreementId) {
-        EthFilter slaFilter = new EthFilter(
-                DefaultBlockParameterName.EARLIEST,
-                DefaultBlockParameterName.LATEST,
-                slaContract.getContractAddress()
-        );
-
-        final Event event = slaContract.AGREEMENTCREATED_EVENT;
-        final String eventSignature = EventEncoder.encode(event);
-        String slaTopic = "0x" + serviceAgreementId;
-        slaFilter.addSingleTopic(eventSignature);
-        slaFilter.addOptionalTopics(slaTopic);
-
-        return slaContract.agreementCreatedEventFlowable(slaFilter)
-                .map(eventResponse -> EncodingHelper.toHexString(eventResponse._agreementId));
+                .map(eventResponse -> EncodingHelper.toHexString(eventResponse.agreementId));
     }
 
 

@@ -201,7 +201,6 @@ public class OceanInitializationHelper {
         return TemplateStoreManager.load(
                 oceanConfig.getTemplateStoreManagerAddress(),
                 keeper.getWeb3(),
-//                keeper.getCredentials(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider());
     }
@@ -219,7 +218,6 @@ public class OceanInitializationHelper {
         return Dispenser.load(
                 oceanConfig.getDispenserAddress(),
                 keeper.getWeb3(),
-//                keeper.getCredentials(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
         );
@@ -239,27 +237,9 @@ public class OceanInitializationHelper {
         return DIDRegistry.load(
                 oceanConfig.getDidRegistryAddress(),
                 keeper.getWeb3(),
-//                keeper.getCredentials(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
         );
-    }
-
-    /**
-     * Loads the EscrowAccessSecretStoreTemplate contract from Keeper
-     *
-     * @param keeper the keeper Service
-     * @return an instance of EscrowAccessSecretStoreTemplate contract deployed in keeper
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
-     */
-    public EscrowAccessSecretStoreTemplate loadEscrowAccessSecretStoreTemplate(KeeperService keeper) throws IOException, CipherException {
-        return EscrowAccessSecretStoreTemplate.load(
-                oceanConfig.getEscrowAccessSecretStoreTemplateAddress(),
-                keeper.getWeb3(),
-//                keeper.getCredentials(),
-                keeper.getTxManager(),
-                keeper.getContractGasProvider());
     }
 
     /**
@@ -274,7 +254,6 @@ public class OceanInitializationHelper {
         return LockRewardCondition.load(
                 oceanConfig.getLockrewardConditionsAddress(),
                 keeper.getWeb3(),
-//                keeper.getCredentials(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
         );
@@ -292,7 +271,6 @@ public class OceanInitializationHelper {
         return EscrowReward.load(
                 oceanConfig.getEscrowRewardConditionsAddress(),
                 keeper.getWeb3(),
-//                keeper.getCredentials(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
         );
@@ -310,7 +288,6 @@ public class OceanInitializationHelper {
         return AgreementStoreManager.load(
                 oceanConfig.getAgreementStoreManagerAddress(),
                 keeper.getWeb3(),
-//                keeper.getCredentials(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
         );
@@ -329,7 +306,6 @@ public class OceanInitializationHelper {
         return ConditionStoreManager.load(
                 oceanConfig.getConditionStoreManagerAddress(),
                 keeper.getWeb3(),
-//                keeper.getCredentials(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
         );
@@ -347,27 +323,9 @@ public class OceanInitializationHelper {
         return AccessSecretStoreCondition.load(
                 oceanConfig.getAccessSsConditionsAddress(),
                 keeper.getWeb3(),
-//                keeper.getCredentials(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
         );
-    }
-
-    /**
-     * Loads the EscrowComputeExecutionTemplate contract from Keeper
-     *
-     * @param keeper the keeper Service
-     * @return an instance of EscrowComputeExecutionTemplate contract deployed in keeper
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
-     */
-    public EscrowComputeExecutionTemplate loadEscrowComputeExecutionTemplate(KeeperService keeper) throws IOException, CipherException {
-        return EscrowComputeExecutionTemplate.load(
-                oceanConfig.getEscrowComputeExecutionTemplateAddress(),
-                keeper.getWeb3(),
-//                keeper.getCredentials(),
-                keeper.getTxManager(),
-                keeper.getContractGasProvider());
     }
 
     /**
@@ -382,7 +340,6 @@ public class OceanInitializationHelper {
         return ComputeExecutionCondition.load(
                 oceanConfig.getComputeExecutionConditionAddress(),
                 keeper.getWeb3(),
-//                keeper.getCredentials(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
         );

@@ -1,22 +1,22 @@
 package io.keyko.ocean.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.keyko.ocean.keeper.contracts.EscrowAccessSecretStoreTemplate;
-import io.keyko.ocean.keeper.contracts.TemplateStoreManager;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import io.keyko.common.helpers.CryptoHelper;
+import io.keyko.common.web3.KeeperService;
 import io.keyko.ocean.api.config.OceanConfig;
 import io.keyko.ocean.exceptions.DDOException;
-import io.keyko.common.web3.KeeperService;
+import io.keyko.ocean.keeper.contracts.TemplateStoreManager;
 import io.keyko.ocean.manager.ManagerHelper;
 import io.keyko.ocean.models.Balance;
 import io.keyko.ocean.models.DDO;
 import io.keyko.ocean.models.DID;
 import io.keyko.ocean.models.asset.AssetMetadata;
 import io.keyko.ocean.models.asset.OrderResult;
-import io.keyko.ocean.models.service.types.ComputingService;
 import io.keyko.ocean.models.service.ProviderConfig;
 import io.keyko.ocean.models.service.Service;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
+import io.keyko.ocean.models.service.types.ComputingService;
 import io.reactivex.Flowable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,6 +56,10 @@ public class AssetsApiIT {
 
     private static Config config;
 
+    private static String accessTemplateAddress;
+    private static String computeTemplateAddress;
+
+
     @BeforeClass
     public static void setUp() throws Exception {
 
@@ -78,6 +82,8 @@ public class AssetsApiIT {
         String consumeUrl = config.getString("brizo.url") + "/api/v1/brizo/services/consume";
         String secretStoreEndpoint = config.getString("secretstore.url");
         String providerAddress = config.getString("provider.address");
+        accessTemplateAddress = config.getString("template.EscrowAccessSecretStoreTemplate.address");
+        computeTemplateAddress = config.getString("template.EscrowComputeExecutionTemplate.address");
 
         providerConfig = new ProviderConfig(consumeUrl, metadataUrl, provenanceUrl, secretStoreEndpoint, providerAddress);
 
@@ -86,46 +92,32 @@ public class AssetsApiIT {
         assertNotNull(oceanAPI.getAssetsAPI());
         assertNotNull(oceanAPI.getMainAccount());
 
-        Properties properties = new Properties();
-        properties.put(OceanConfig.KEEPER_URL, config.getString("keeper.url"));
-        properties.put(OceanConfig.KEEPER_GAS_LIMIT, config.getString("keeper.gasLimit"));
-        properties.put(OceanConfig.KEEPER_GAS_PRICE, config.getString("keeper.gasPrice"));
-        properties.put(OceanConfig.KEEPER_TX_ATTEMPTS, config.getString("keeper.tx.attempts"));
-        properties.put(OceanConfig.KEEPER_TX_SLEEPDURATION, config.getString("keeper.tx.sleepDuration"));
-        properties.put(OceanConfig.AQUARIUS_URL, config.getString("aquarius.url"));
-        properties.put(OceanConfig.SECRETSTORE_URL, config.getString("secretstore.url"));
-        properties.put(OceanConfig.CONSUME_BASE_PATH, config.getString("consume.basePath"));
-        properties.put(OceanConfig.MAIN_ACCOUNT_ADDRESS, config.getString("account.parity.address2"));
-        properties.put(OceanConfig.MAIN_ACCOUNT_PASSWORD, config.getString("account.parity.password2"));
-        properties.put(OceanConfig.MAIN_ACCOUNT_CREDENTIALS_FILE, config.getString("account.parity.file2"));
-        properties.put(OceanConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
-        properties.put(OceanConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
-        properties.put(OceanConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
-        properties.put(OceanConfig.LOCKREWARD_CONDITIONS_ADDRESS, config.getString("contract.LockRewardCondition.address"));
-        properties.put(OceanConfig.ESCROWREWARD_CONDITIONS_ADDRESS, config.getString("contract.EscrowReward.address"));
-        properties.put(OceanConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
-        properties.put(OceanConfig.ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.AccessSecretStoreCondition.address"));
-        properties.put(OceanConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
-        properties.put(OceanConfig.TOKEN_ADDRESS, config.getString("contract.OceanToken.address"));
-        properties.put(OceanConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
-        properties.put(OceanConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
-
-        properties.put(OceanConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.ComputeExecutionCondition.address"));
-        properties.put(OceanConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.EscrowComputeExecutionTemplate.address"));
-
-        oceanAPIConsumer = OceanAPI.getInstance(properties);
-
         keeper = ManagerHelper.getKeeper(config, ManagerHelper.VmClient.parity, "");
-        EscrowAccessSecretStoreTemplate escrowAccessSecretStoreTemplate = ManagerHelper.loadEscrowAccessSecretStoreTemplate(keeper, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
-        TemplateStoreManager templateManager = ManagerHelper.loadTemplateStoreManager(keeper, config.getString("contract.TemplateStoreManager.address"));
+        oceanAPIConsumer = OceanAPI.getInstance(
+                ManagerHelper.getDefaultProperties(config, "2"));
 
-        oceanAPIConsumer.getTokensAPI().request(BigInteger.TEN);
+//        TemplateStoreManager templateManager = ManagerHelper.loadTemplateStoreManager(keeper, config.getString("contract.TemplateStoreManager.address"));
+        TemplateStoreManager templateStoreManager= ManagerHelper.deployTemplateStoreManager(keeper);
+        templateStoreManager.initialize(keeper.getAddress()).send();
+
+        String owner= templateStoreManager.owner().send();
+
+        oceanAPI.setTemplateStoreManagerContract(templateStoreManager);
+
+        ManagerHelper.prepareEscrowTemplate(
+                oceanAPI,
+                accessTemplateAddress,
+                config.getString("contract.EscrowReward.address"),
+                owner,
+                "EscrowAccessSecretStoreTemplate");
+
+
+
         Balance balance = oceanAPIConsumer.getAccountsAPI().balance(oceanAPIConsumer.getMainAccount());
-
         log.debug("Account " + oceanAPIConsumer.getMainAccount().address + " balance is: " + balance.toString());
 
-        boolean isTemplateApproved = templateManager.isTemplateApproved(escrowAccessSecretStoreTemplate.getContractAddress()).send();
-        log.debug("Is escrowAccessSecretStoreTemplate approved? " + isTemplateApproved);
+        oceanAPIConsumer.getTokensAPI().request(BigInteger.TEN);
+
     }
 
     @Test
@@ -180,7 +172,6 @@ public class AssetsApiIT {
 
     @Test
     public void order() throws Exception {
-
 
         log.info("PROVIDER ADDRESS: " + config.getString("provider.address"));
 

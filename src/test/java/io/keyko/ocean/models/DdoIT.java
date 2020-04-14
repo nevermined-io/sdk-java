@@ -7,6 +7,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
@@ -48,8 +49,8 @@ public class DdoIT {
 
         OEP7_DATASET_EXAMPLE_CONTENT = IOUtils.toString(new URI(OEP7_DATASET_EXAMPLE_URL), "utf-8");
         OEP7_ALGORITHM_EXAMPLE_CONTENT = IOUtils.toString(new URI(OEP7_ALGORITHM_EXAMPLE_URL), "utf-8");
-        OEP7_WORKFLOW_EXAMPLE_CONTENT = IOUtils.toString(new URI(OEP7_WORKFLOW_EXAMPLE_URL), "utf-8");
-        OEP7_SERVICE_EXAMPLE_CONTENT = IOUtils.toString(new URI(OEP7_SERVICE_EXAMPLE_URL), "utf-8");
+//        OEP7_WORKFLOW_EXAMPLE_CONTENT = IOUtils.toString(new URI(OEP7_WORKFLOW_EXAMPLE_URL), "utf-8");
+//        OEP7_SERVICE_EXAMPLE_CONTENT = IOUtils.toString(new URI(OEP7_SERVICE_EXAMPLE_URL), "utf-8");
 
         credentials = WalletUtils.loadCredentials(
                 config.getString("account.main.password"),
@@ -63,8 +64,8 @@ public class DdoIT {
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, OEP12_COMPUTING_EXAMPLE_CONTENT);
         SortedMap<String, String> checksums = ddo.generateChecksums();
         assertEquals(2, checksums.size());
-        assertEquals("5eae9f7640383f27c3bfb1ec14b76a2660c9e4f7d24a8c978f07cb34cb465968", checksums.get("0"));
-        assertEquals("dc905c7f8d7adef28ae671ae2b54532af2ee70bc96fc1018743adfc31f4621be", checksums.get("2"));
+        assertEquals("574b45e304c190c293855548f19b02ad0c826aee4b76fb3b3c25b27d8317efd7", checksums.get("0"));
+        assertEquals("603317133c7949ea3ba57255dcdb2a44b3427aea6af3dd358a19a0c9ce4193d3", checksums.get("2"));
 
         DID did = DID.builder(ddo.toJson(ddo.proof.checksum));
         log.debug("Did generated from checksums: " + did.did);
@@ -81,7 +82,7 @@ public class DdoIT {
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, OEP12_WORKFLOW_EXAMPLE_CONTENT);
         SortedMap<String, String> checksums = ddo.generateChecksums();
         assertEquals(1, checksums.size());
-        assertEquals("c2b420addae81a9eb3e0c727e6de60a89904a37f6f221260a1e60d63a1814f0a", checksums.get("0"));
+        assertEquals("f548c344c09c91883a85207f8eaadde4b448d03fb89208ee7137a73b3894a682", checksums.get("0"));
 
         DID did = DID.builder(ddo.toJson(ddo.proof.checksum));
         log.debug("Did generated from checksums: " + did.did);
@@ -112,8 +113,8 @@ public class DdoIT {
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, OEP7_DATASET_EXAMPLE_CONTENT);
         SortedMap<String, String> checksums = ddo.generateChecksums();
         assertEquals(2, checksums.size());
-        assertEquals("33a47aa39545c5417d78d1850ed58d55fc10e81c0ba7d624a5926b778a994c46", checksums.get("0"));
-        assertEquals("f12b645393c7640da2cbb172ba27206d9a0c610890f118b1c4bc98c506703e27", checksums.get("1"));
+        assertEquals("9ca5f006901cced5d5b02fd3691b12b619d6a083bb3fca39b8c90bd60f194cf9", checksums.get("0"));
+        assertEquals("4294cb191438237940fe389fee1dcb5a0806432ac92622d50375a01d3406fa62", checksums.get("1"));
 
         DID did = DID.builder(ddo.toJson(ddo.proof.checksum));
         log.debug("Did generated from checksums: " + did.did);
@@ -129,7 +130,7 @@ public class DdoIT {
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, OEP7_ALGORITHM_EXAMPLE_CONTENT);
         SortedMap<String, String> checksums = ddo.generateChecksums();
         assertEquals(1, checksums.size());
-        assertEquals("eef1f12599a70e9e9e155c010fa99703eb1a8ebf779dcfcb1f1df7da942015c1", checksums.get("0"));
+        assertEquals("cac1a3df1d0dbbda8ced1f166ea46287536f15edb89705da11714cbeb588e43f", checksums.get("0"));
 
         DID did = DID.builder(ddo.toJson(ddo.proof.checksum));
         log.debug("Did generated from checksums: " + did.did);
@@ -138,6 +139,8 @@ public class DdoIT {
 
     }
 
+    // Test ignored because workflows were removed of OEP
+    @Ignore
     @Test
     public void testOEP7WorkflowMetadata() throws Exception {
 
@@ -154,6 +157,8 @@ public class DdoIT {
 
     }
 
+    // Test ignored because services were removed of OEP
+    @Ignore
     @Test
     public void testOEP7ServiceMetadata() throws Exception {
 

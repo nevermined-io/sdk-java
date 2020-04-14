@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.ocean.exceptions.OceanRuntimeException;
@@ -66,7 +67,6 @@ public class Service extends AbstractModel implements FromJsonToModel {
     public static final int DEFAULT_ACCESS_INDEX = 3;
     @JsonIgnore
     public static final int DEFAULT_COMPUTING_INDEX = 4;
-
 
     @JsonProperty
     public int index;
@@ -154,6 +154,25 @@ public class Service extends AbstractModel implements FromJsonToModel {
         this.attributes = new Attributes();
         this.attributes.main = new ServiceMain();
         this.attributes.additionalInformation = new ServiceAdditionalInformation();
+    }
+
+//    public String getType() {
+//        return getTypeByContract(
+//                this.attributes.serviceAgreementTemplate.contractName)
+//                .name();
+//    }
+
+    public String getTemplateId()   {
+        try {
+//            return this.attributes.serviceAgreementTemplate.contractName;
+            return this.templateId;
+        } catch (Exception e)   {
+            return "";
+        }
+    }
+
+    public byte[] fetchTemplateIdEncoded()   {
+        return CryptoHelper.keccak256(getTemplateId());
     }
 
     public List<BigInteger> retrieveTimeOuts() {

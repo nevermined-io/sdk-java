@@ -112,7 +112,6 @@ properties.put(OceanConfig.DID_REGISTRY_ADDRESS,"0x4A0f7F763B1A7937aED21D63b2A78
 properties.put(OceanConfig.AGREEMENT_STORE_MANAGER_ADDRESS, "0x62f84700b1A0ea6Bfb505aDC3c0286B7944D247C");
 properties.put(OceanConfig.LOCKREWARD_CONDITIONS_ADDRESS, "0xE30FC30c678437e0e8F78C52dE9db8E2752781a0");
 properties.put(OceanConfig.ESCROWREWARD_CONDITIONS_ADDRESS, "0xeD4Ef53376C6f103d2d7029D7E702e082767C6ff");
-properties.put(OceanConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS, "0xfA16d26e9F4fffC6e40963B281a0bB08C31ed40C");
 properties.put(OceanConfig.ACCESS_SS_CONDITIONS_ADDRESS, "0x45DE141F8Efc355F1451a102FB6225F1EDd2921d");
 properties.put(OceanConfig.TEMPLATE_STORE_MANAGER_ADDRESS, "0x9768c8ae44f1dc81cAA98F48792aA5730cAd2F73");
 properties.put(OceanConfig.TOKEN_ADDRESS, "0x9861Da395d7da984D5E8C712c2EDE44b41F777Ad");
@@ -212,7 +211,7 @@ The execution of the integration tests require to have running the complete Ocea
 After having `barge` in your environment, you can run the components needed running:
 
 ```bash
-KEEPER_VERSION=v0.13.2 bash start_ocean.sh --latest --no-pleuston --local-spree-node --force-pull
+KEEPER_VERSION=v0.13.2 bash start_ocean.sh --latest --no-commons --force-pull
 ```
 
 If you have older versions of the docker images is recommended to delete all them to be sure you are running the last version of the stack.
@@ -273,4 +272,4 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
+```

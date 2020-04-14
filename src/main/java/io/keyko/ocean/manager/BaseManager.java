@@ -21,6 +21,7 @@ import org.web3j.abi.EventEncoder;
 import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.datatypes.Event;
 import org.web3j.abi.datatypes.Type;
+import org.web3j.crypto.Hash;
 import org.web3j.crypto.Keys;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.request.EthFilter;
@@ -52,7 +53,6 @@ public abstract class BaseManager {
     protected OceanToken tokenContract;
     protected Dispenser dispenser;
     protected DIDRegistry didRegistry;
-    protected EscrowAccessSecretStoreTemplate escrowAccessSecretStoreTemplate;
     protected LockRewardCondition lockRewardCondition;
     protected EscrowReward escrowReward;
     protected AccessSecretStoreCondition accessSecretStoreCondition;
@@ -60,7 +60,6 @@ public abstract class BaseManager {
     protected AgreementStoreManager agreementStoreManager;
     protected ConditionStoreManager conditionStoreManager;
     protected ComputeExecutionCondition computeExecutionCondition;
-    protected EscrowComputeExecutionTemplate escrowComputeExecutionTemplate;
     protected ContractAddresses contractAddresses = new ContractAddresses();
     protected Config config = ConfigFactory.load();
 
@@ -361,18 +360,6 @@ public abstract class BaseManager {
 
 
     /**
-     * It sets the EscrowAccessSecretStoreTemplate stub instance
-     *
-     * @param contract EscrowAccessSecretStoreTemplate instance
-     * @return BaseManager instance
-     */
-    public BaseManager setEscrowAccessSecretStoreTemplate(EscrowAccessSecretStoreTemplate contract) {
-        this.escrowAccessSecretStoreTemplate = contract;
-        return this;
-    }
-
-
-    /**
      * It sets the DIDRegistry stub instance
      *
      * @param contract DIDRegistry instance
@@ -467,26 +454,6 @@ public abstract class BaseManager {
     }
 
     /**
-     * It gets the EscrowComputeExecutionTemplate stub instance
-     *
-     * @return EscrowComputeExecutionTemplate instance
-     */
-    public EscrowComputeExecutionTemplate getEscrowComputeExecutionTemplate() {
-        return escrowComputeExecutionTemplate;
-    }
-
-    /**
-     * It sets the EscrowComputeExecutionTemplate instance
-     *
-     * @param escrowComputeExecutionTemplate EscrowComputeExecutionTemplate instance
-     * @return BaseManager instance
-     */
-    public BaseManager setEscrowComputeExecutionTemplate(EscrowComputeExecutionTemplate escrowComputeExecutionTemplate) {
-        this.escrowComputeExecutionTemplate = escrowComputeExecutionTemplate;
-        return this;
-    }
-
-    /**
      * It gets the AccessSecretStoreCondition stub instance
      *
      * @return AccessSecretStoreCondition instance
@@ -524,6 +491,11 @@ public abstract class BaseManager {
     public BaseManager setProviderAddress(String providerAddress) {
         this.providerAddress = providerAddress;
         return this;
+    }
+
+    public byte[] getTemplateIdByName(String contractName) {
+        return Hash.sha3(contractName.getBytes());
+
     }
 
     @Override

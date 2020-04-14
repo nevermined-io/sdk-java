@@ -26,13 +26,11 @@ public class OceanConfig {
     public static final String CONDITION_STORE_MANAGER_ADDRESS = "contract.ConditionStoreManager.address";
     public static final String LOCKREWARD_CONDITIONS_ADDRESS = "contract.LockRewardCondition.address";
     public static final String ESCROWREWARD_CONDITIONS_ADDRESS = "contract.EscrowReward.address";
-    public static final String ESCROW_ACCESS_SS_CONDITIONS_ADDRESS = "contract.EscrowAccessSecretStoreTemplate.address";
     public static final String TEMPLATE_STORE_MANAGER_ADDRESS = "contract.TemplateStoreManager.address";
     public static final String ACCESS_SS_CONDITIONS_ADDRESS = "contract.AccessSecretStoreCondition.address";
     public static final String TOKEN_ADDRESS = "contract.OceanToken.address";
     public static final String DISPENSER_ADDRESS = "contract.Dispenser.address";
     public static final String COMPUTE_EXECUTION_CONDITION_ADDRESS = "contract.ComputeExecutionCondition.address";
-    public static final String ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS = "contract.EscrowComputeExecutionTemplate.address";
     public static final String CONSUME_BASE_PATH = "consume.basePath";
 
     private String keeperUrl;
@@ -50,14 +48,12 @@ public class OceanConfig {
     private String agreementStoreManagerAddress;
     private String conditionStoreManagerAddress;
     private String escrowRewardAddress;
-    private String escrowAccessSecretStoreTemplateAddress;
     private String lockRewardAddress;
     private String accessSsConditionsAddress;
     private String tokenAddress;
     private String templateStoreManagerAddress;
     private String dispenserAddress;
     private String computeExecutionConditionAddress;
-    private String escrowComputeExecutionTemplateAddress;
     private String consumeBasePath;
 
     /**
@@ -125,12 +121,6 @@ public class OceanConfig {
                     + OceanConfig.ESCROWREWARD_CONDITIONS_ADDRESS);
         }
 
-        if (oceanConfig.getEscrowAccessSecretStoreTemplateAddress() == null || oceanConfig.getEscrowAccessSecretStoreTemplateAddress().isEmpty()) {
-            validation.setValid(false);
-            validation.addErrorMessage("The Address of EscrowAccessSecretStoreTemplate Contract must be set with the property "
-                    + OceanConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS);
-        }
-
         if (oceanConfig.getLockrewardConditionsAddress() == null || oceanConfig.getLockrewardConditionsAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of LockReward Contract must be set with the property "
@@ -153,12 +143,6 @@ public class OceanConfig {
             validation.setValid(false);
             validation.addErrorMessage("The Address of ComputeExecutionCondition Contract must be set with the property "
                     + OceanConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS);
-        }
-
-        if (oceanConfig.getEscrowComputeExecutionTemplateAddress()== null || oceanConfig.getEscrowComputeExecutionTemplateAddress().isEmpty()) {
-            validation.setValid(false);
-            validation.addErrorMessage("The Address of EscrowComputeExecutionTemplate Contract must be set with the property "
-                    + OceanConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS);
         }
 
         if (oceanConfig.getMainAccountAddress() == null || oceanConfig.getMainAccountAddress().isEmpty()) {
@@ -369,14 +353,6 @@ public class OceanConfig {
         return this;
     }
 
-    public String getEscrowAccessSecretStoreTemplateAddress() {
-        return escrowAccessSecretStoreTemplateAddress;
-    }
-
-    public void setEscrowAccessSecretStoreTemplateAddress(String escrowAccessSecretStoreTemplateAddress) {
-        this.escrowAccessSecretStoreTemplateAddress = escrowAccessSecretStoreTemplateAddress;
-    }
-
     public String getProviderAddress() {
         return providerAddress;
     }
@@ -391,13 +367,5 @@ public class OceanConfig {
 
     public void setComputeExecutionConditionAddress(String computeExecutionConditionAddress) {
         this.computeExecutionConditionAddress = computeExecutionConditionAddress;
-    }
-
-    public String getEscrowComputeExecutionTemplateAddress() {
-        return escrowComputeExecutionTemplateAddress;
-    }
-
-    public void setEscrowComputeExecutionTemplateAddress(String escrowComputeExecutionTemplate) {
-        this.escrowComputeExecutionTemplateAddress = escrowComputeExecutionTemplate;
     }
 }

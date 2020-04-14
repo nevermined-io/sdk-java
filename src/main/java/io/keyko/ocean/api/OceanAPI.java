@@ -49,7 +49,6 @@ public class OceanAPI {
     private OceanToken tokenContract;
     private Dispenser dispenser;
     private DIDRegistry didRegistryContract;
-    private EscrowAccessSecretStoreTemplate escrowAccessSecretStoreTemplate;
     private LockRewardCondition lockRewardCondition;
     private AccessSecretStoreCondition accessSecretStoreCondition;
     private EscrowReward escrowReward;
@@ -58,7 +57,6 @@ public class OceanAPI {
     private ConditionStoreManager conditionStoreManager;
 
     private ComputeExecutionCondition computeExecutionCondition;
-    private EscrowComputeExecutionTemplate escrowComputeExecutionTemplate;
 
     private AccountsAPI accountsAPI;
     private AgreementsAPI agreementsAPI;
@@ -70,7 +68,7 @@ public class OceanAPI {
 
     private Account mainAccount;
 
-    private static OceanAPI oceanAPI = null;
+//    private static OceanAPI oceanAPI = null;
 
 
     /**
@@ -150,99 +148,91 @@ public class OceanAPI {
             throw new InvalidConfiguration(msg);
         }
 
-        oceanAPI = new OceanAPI(oceanConfig);
+        OceanAPI api = new OceanAPI(oceanConfig);
 
-        oceanAPI.mainAccount = new Account(Keys.toChecksumAddress(oceanConfig.getMainAccountAddress()), oceanConfig.getMainAccountPassword());
+        api.mainAccount = new Account(Keys.toChecksumAddress(oceanConfig.getMainAccountAddress()), oceanConfig.getMainAccountPassword());
 
         OceanInitializationHelper oceanInitializationHelper = new OceanInitializationHelper(oceanConfig);
 
         try {
-            oceanAPI.oceanConfig = oceanConfig;
-            oceanAPI.aquariusService = oceanInitializationHelper.getAquarius();
-            oceanAPI.keeperService = oceanInitializationHelper.getKeeper();
-            oceanAPI.secretStoreDto = oceanInitializationHelper.getSecretStoreDto();
-            oceanAPI.evmDto = oceanInitializationHelper.getEvmDto();
-            oceanAPI.secretStoreManager = oceanInitializationHelper.getSecretStoreManager(oceanAPI.secretStoreDto, oceanAPI.evmDto);
+            api.oceanConfig = oceanConfig;
+            api.aquariusService = oceanInitializationHelper.getAquarius();
+            api.keeperService = oceanInitializationHelper.getKeeper();
+            api.secretStoreDto = oceanInitializationHelper.getSecretStoreDto();
+            api.evmDto = oceanInitializationHelper.getEvmDto();
+            api.secretStoreManager = oceanInitializationHelper.getSecretStoreManager(api.secretStoreDto, api.evmDto);
 
-            oceanAPI.didRegistryContract = oceanInitializationHelper.loadDIDRegistryContract(oceanAPI.keeperService);
-            oceanAPI.escrowAccessSecretStoreTemplate = oceanInitializationHelper.loadEscrowAccessSecretStoreTemplate(oceanAPI.keeperService);
-            oceanAPI.lockRewardCondition = oceanInitializationHelper.loadLockRewardCondition(oceanAPI.keeperService);
-            oceanAPI.accessSecretStoreCondition = oceanInitializationHelper.loadAccessSecretStoreCondition(oceanAPI.keeperService);
-            oceanAPI.escrowReward = oceanInitializationHelper.loadEscrowReward(oceanAPI.keeperService);
-            oceanAPI.dispenser = oceanInitializationHelper.loadDispenserContract(oceanAPI.keeperService);
-            oceanAPI.tokenContract = oceanInitializationHelper.loadOceanTokenContract(oceanAPI.keeperService);
-            oceanAPI.templateStoreManagerContract = oceanInitializationHelper.loadTemplateStoreManagerContract(oceanAPI.keeperService);
-            oceanAPI.agreementStoreManagerContract = oceanInitializationHelper.loadAgreementStoreManager(oceanAPI.keeperService);
-            oceanAPI.conditionStoreManager = oceanInitializationHelper.loadConditionStoreManager(oceanAPI.keeperService);
-            oceanAPI.computeExecutionCondition = oceanInitializationHelper.loadComputeExecutionCondition(oceanAPI.keeperService);
-            oceanAPI.escrowComputeExecutionTemplate = oceanInitializationHelper.loadEscrowComputeExecutionTemplate(oceanAPI.keeperService);
+            api.didRegistryContract = oceanInitializationHelper.loadDIDRegistryContract(api.keeperService);
+            api.lockRewardCondition = oceanInitializationHelper.loadLockRewardCondition(api.keeperService);
+            api.accessSecretStoreCondition = oceanInitializationHelper.loadAccessSecretStoreCondition(api.keeperService);
+            api.escrowReward = oceanInitializationHelper.loadEscrowReward(api.keeperService);
+            api.dispenser = oceanInitializationHelper.loadDispenserContract(api.keeperService);
+            api.tokenContract = oceanInitializationHelper.loadOceanTokenContract(api.keeperService);
+            api.templateStoreManagerContract = oceanInitializationHelper.loadTemplateStoreManagerContract(api.keeperService);
+            api.agreementStoreManagerContract = oceanInitializationHelper.loadAgreementStoreManager(api.keeperService);
+            api.conditionStoreManager = oceanInitializationHelper.loadConditionStoreManager(api.keeperService);
+            api.computeExecutionCondition = oceanInitializationHelper.loadComputeExecutionCondition(api.keeperService);
 
-            oceanAPI.agreementsManager = oceanInitializationHelper.getAgreementsManager(oceanAPI.keeperService, oceanAPI.aquariusService);
-            oceanAPI.agreementsManager
-                    .setConditionStoreManagerContract(oceanAPI.conditionStoreManager)
-                    .setEscrowAccessSecretStoreTemplate(oceanAPI.escrowAccessSecretStoreTemplate)
-                    .setAgreementStoreManagerContract(oceanAPI.agreementStoreManagerContract)
-                    .setLockRewardCondition(oceanAPI.lockRewardCondition)
-                    .setAccessSecretStoreCondition(oceanAPI.accessSecretStoreCondition)
-                    .setEscrowReward(oceanAPI.escrowReward)
-                    .setComputeExecutionCondition(oceanAPI.computeExecutionCondition)
-                    .setEscrowComputeExecutionTemplate(oceanAPI.escrowComputeExecutionTemplate);
+            api.agreementsManager = oceanInitializationHelper.getAgreementsManager(api.keeperService, api.aquariusService);
+            api.agreementsManager
+                    .setConditionStoreManagerContract(api.conditionStoreManager)
+                    .setAgreementStoreManagerContract(api.agreementStoreManagerContract)
+                    .setLockRewardCondition(api.lockRewardCondition)
+                    .setAccessSecretStoreCondition(api.accessSecretStoreCondition)
+                    .setEscrowReward(api.escrowReward)
+                    .setComputeExecutionCondition(api.computeExecutionCondition);
 
-            oceanAPI.templatesManager = oceanInitializationHelper.getTemplatesManager(oceanAPI.keeperService, oceanAPI.aquariusService);
-            oceanAPI.templatesManager.setMainAccount(oceanAPI.mainAccount);
-            oceanAPI.templatesManager.setTemplateStoreManagerContract(oceanAPI.templateStoreManagerContract);
+            api.templatesManager = oceanInitializationHelper.getTemplatesManager(api.keeperService, api.aquariusService);
+            api.templatesManager.setMainAccount(api.mainAccount);
+            api.templatesManager.setTemplateStoreManagerContract(api.templateStoreManagerContract);
 
-            oceanAPI.oceanManager = oceanInitializationHelper.getOceanManager(oceanAPI.keeperService, oceanAPI.aquariusService);
-            oceanAPI.oceanManager
-                    .setAgreementManager(oceanAPI.agreementsManager)
-                    .setTemplatesManager(oceanAPI.templatesManager)
-                    .setSecretStoreManager(oceanAPI.secretStoreManager)
-                    .setDidRegistryContract(oceanAPI.didRegistryContract)
-                    .setEscrowAccessSecretStoreTemplate(oceanAPI.escrowAccessSecretStoreTemplate)
-                    .setLockRewardCondition(oceanAPI.lockRewardCondition)
-                    .setEscrowReward(oceanAPI.escrowReward)
-                    .setAccessSecretStoreCondition(oceanAPI.accessSecretStoreCondition)
-                    .setTokenContract(oceanAPI.tokenContract)
-                    .setTemplateStoreManagerContract(oceanAPI.templateStoreManagerContract)
-                    .setAgreementStoreManagerContract(oceanAPI.agreementStoreManagerContract)
-                    .setConditionStoreManagerContract(oceanAPI.conditionStoreManager)
-                    .setComputeExecutionCondition(oceanAPI.computeExecutionCondition)
-                    .setEscrowComputeExecutionTemplate(oceanAPI.escrowComputeExecutionTemplate)
-                    .setMainAccount(oceanAPI.mainAccount)
-                    .setEvmDto(oceanAPI.evmDto);
+            api.oceanManager = oceanInitializationHelper.getOceanManager(api.keeperService, api.aquariusService);
+            api.oceanManager
+                    .setAgreementManager(api.agreementsManager)
+                    .setTemplatesManager(api.templatesManager)
+                    .setSecretStoreManager(api.secretStoreManager)
+                    .setDidRegistryContract(api.didRegistryContract)
+                    .setLockRewardCondition(api.lockRewardCondition)
+                    .setEscrowReward(api.escrowReward)
+                    .setAccessSecretStoreCondition(api.accessSecretStoreCondition)
+                    .setTokenContract(api.tokenContract)
+                    .setTemplateStoreManagerContract(api.templateStoreManagerContract)
+                    .setAgreementStoreManagerContract(api.agreementStoreManagerContract)
+                    .setConditionStoreManagerContract(api.conditionStoreManager)
+                    .setComputeExecutionCondition(api.computeExecutionCondition)
+                    .setMainAccount(api.mainAccount)
+                    .setEvmDto(api.evmDto);
 
-            oceanAPI.accountsManager = oceanInitializationHelper.getAccountsManager(oceanAPI.keeperService, oceanAPI.aquariusService);
-            oceanAPI.accountsManager
-                    .setTokenContract(oceanAPI.tokenContract)
-                    .setDispenserContract(oceanAPI.dispenser)
-                    .setMainAccount(oceanAPI.mainAccount);
+            api.accountsManager = oceanInitializationHelper.getAccountsManager(api.keeperService, api.aquariusService);
+            api.accountsManager
+                    .setTokenContract(api.tokenContract)
+                    .setDispenserContract(api.dispenser)
+                    .setMainAccount(api.mainAccount);
 
-            oceanAPI.conditionsManager = oceanInitializationHelper.getConditionsManager(oceanAPI.keeperService, oceanAPI.aquariusService);
-            oceanAPI.conditionsManager
-                    .setTokenContract(oceanAPI.tokenContract)
-                    .setConditionStoreManagerContract(oceanAPI.conditionStoreManager)
-                    .setEscrowAccessSecretStoreTemplate(oceanAPI.escrowAccessSecretStoreTemplate)
-                    .setAgreementStoreManagerContract(oceanAPI.agreementStoreManagerContract)
-                    .setLockRewardCondition(oceanAPI.lockRewardCondition)
-                    .setAccessSecretStoreCondition(oceanAPI.accessSecretStoreCondition)
-                    .setEscrowReward(oceanAPI.escrowReward)
-                    .setComputeExecutionCondition(oceanAPI.computeExecutionCondition)
-                    .setEscrowComputeExecutionTemplate(oceanAPI.escrowComputeExecutionTemplate);
+            api.conditionsManager = oceanInitializationHelper.getConditionsManager(api.keeperService, api.aquariusService);
+            api.conditionsManager
+                    .setTokenContract(api.tokenContract)
+                    .setConditionStoreManagerContract(api.conditionStoreManager)
+                    .setAgreementStoreManagerContract(api.agreementStoreManagerContract)
+                    .setLockRewardCondition(api.lockRewardCondition)
+                    .setAccessSecretStoreCondition(api.accessSecretStoreCondition)
+                    .setEscrowReward(api.escrowReward)
+                    .setComputeExecutionCondition(api.computeExecutionCondition);
 
-            oceanAPI.assetsManager = oceanInitializationHelper.getAssetsManager(oceanAPI.keeperService, oceanAPI.aquariusService);
-            oceanAPI.assetsManager
-                    .setMainAccount(oceanAPI.mainAccount)
-                    .setDidRegistryContract(oceanAPI.didRegistryContract);
+            api.assetsManager = oceanInitializationHelper.getAssetsManager(api.keeperService, api.aquariusService);
+            api.assetsManager
+                    .setMainAccount(api.mainAccount)
+                    .setDidRegistryContract(api.didRegistryContract);
 
-            oceanAPI.accountsAPI = new AccountsImpl(oceanAPI.accountsManager);
-            oceanAPI.agreementsAPI = new AgreementsImpl(oceanAPI.agreementsManager, oceanAPI.oceanManager);
-            oceanAPI.conditionsAPI = new ConditionsImpl(oceanAPI.conditionsManager);
-            oceanAPI.tokensAPI = new TokensImpl(oceanAPI.accountsManager);
-            oceanAPI.secretStoreAPI = new SecretStoreImpl(oceanAPI.secretStoreManager);
-            oceanAPI.assetsAPI = new AssetsImpl(oceanAPI.oceanManager, oceanAPI.assetsManager, oceanAPI.agreementsManager);
-            oceanAPI.templatesAPI = new TemplatesImpl(oceanAPI.templatesManager);
+            api.accountsAPI = new AccountsImpl(api.accountsManager);
+            api.agreementsAPI = new AgreementsImpl(api.agreementsManager, api.oceanManager);
+            api.conditionsAPI = new ConditionsImpl(api.conditionsManager);
+            api.tokensAPI = new TokensImpl(api.accountsManager);
+            api.secretStoreAPI = new SecretStoreImpl(api.secretStoreManager);
+            api.assetsAPI = new AssetsImpl(api.oceanManager, api.assetsManager, api.agreementsManager);
+            api.templatesAPI = new TemplatesImpl(api.templatesManager);
 
-            return oceanAPI;
+            return api;
         } catch (Exception e) {
             String msg = "Error Initializing Ocean API";
             log.error(msg + ": " + e.getMessage());
@@ -343,7 +333,7 @@ public class OceanAPI {
      * @param contract TemplateStoreManager
      */
     public void setTemplateStoreManagerContract(TemplateStoreManager contract) {
-        oceanAPI.templatesManager.setTemplateStoreManagerContract(
+        templatesManager.setTemplateStoreManagerContract(
                 contract);
 
     }

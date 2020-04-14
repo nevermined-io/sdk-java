@@ -1,11 +1,14 @@
 package io.keyko.ocean.manager;
 
+import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.ocean.exceptions.EthereumException;
 import io.keyko.ocean.external.AquariusService;
+import io.keyko.ocean.keeper.contracts.EscrowReward;
 import io.keyko.ocean.models.service.template.TemplateSEA;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.web3j.crypto.Hash;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple4;
 import org.web3j.tuples.generated.Tuple6;
@@ -41,12 +44,32 @@ public class TemplatesManager extends BaseManager {
     /**
      * Suggest an agreement template smart contract to include in the white listed agreement templates
      *
+     * @param templateAddress Hex str the ethereum address of the deployed template (smart contract address)
+     * @return TransactionReceipt tx receipt
+     * @throws EthereumException EVM error
+     */
+    public TransactionReceipt proposeTemplate(
+            String templateAddress, List<String> conditionTypes, List<byte[]> actorTypeIds, String name) throws EthereumException {
+        try {
+            log.debug("TemplateStoreManager - Propose - Owner: " + templateStoreManager.owner().send());
+
+            return templateStoreManager.proposeTemplate(templateAddress, conditionTypes, actorTypeIds, name).send();
+        } catch (Exception ex) {
+            String msg = "Error proposing template " + templateAddress;
+            log.error(msg + ": " + ex.getMessage());
+            throw new EthereumException(msg, ex);
+        }
+    }
+
+    /**
+     * Suggest an agreement template smart contract to include in the white listed agreement templates
+     *
      * @param templateId Hex str the ethereum address of the deployed template (smart contract address)
      * @return TransactionReceipt tx receipt
      * @throws EthereumException EVM error
      */
     public TransactionReceipt proposeTemplate(
-            String templateId, List<String> conditionTypes, List<byte[]> actorTypeIds, String name) throws EthereumException {
+            byte[] templateId, List<String> conditionTypes, List<byte[]> actorTypeIds, String name) throws EthereumException {
         try {
             log.debug("TemplateStoreManager - Propose - Owner: " + templateStoreManager.owner().send());
             return templateStoreManager.proposeTemplate(templateId, conditionTypes, actorTypeIds, name).send();
@@ -93,17 +116,53 @@ public class TemplatesManager extends BaseManager {
     }
 
     /**
+     * Register a template actor type
+     *
+     * @param actorType Actor type ("provider", "owner", "consumer", ..)
+     * @return TransactionReceipt tx receipt
+     * @throws EthereumException EVM error
+     */
+    public TransactionReceipt registerTemplateActorType(String actorType) throws EthereumException {
+        try {
+            return templateStoreManager.registerTemplateActorType(actorType).send();
+        } catch (Exception ex) {
+            String msg = "Error registering actor type " + actorType;
+            log.error(msg + ": " + ex.getMessage());
+            throw new EthereumException(msg, ex);
+        }
+    }
+
+    /**
+     * De-Register a template actor type
+     *
+     * @param actorType Actor type ("provider", "owner", "consumer", ..)
+     * @return TransactionReceipt tx receipt
+     * @throws EthereumException EVM error
+     */
+    public TransactionReceipt deregisterTemplateActorType(String actorType) throws EthereumException {
+        try {
+            return templateStoreManager.deregisterTemplateActorType(
+                    CryptoHelper.keccak256(actorType)
+            ).send();
+        } catch (Exception ex) {
+            String msg = "Error registering actor type " + actorType;
+            log.error(msg + ": " + ex.getMessage());
+            throw new EthereumException(msg, ex);
+        }
+    }
+
+    /**
      * Returns true or false depending if the template was approved
      *
-     * @param templateAddress Hex str the ethereum address of the deployed template (smart contract address)
+     * @param templateID Hex str the ethereum address of the deployed template (smart contract address)
      * @return boolean is approved
      * @throws EthereumException EVM error
      */
-    public boolean isTemplateApproved(String templateAddress) throws EthereumException {
+    public boolean isTemplateIdApproved(byte[] templateID) throws EthereumException {
         try {
-            return templateStoreManager.isTemplateApproved(templateAddress).send();
+            return templateStoreManager.isTemplateIdApproved(templateID).send();
         } catch (Exception ex) {
-            String msg = "Error checking if template " + templateAddress + " is approved";
+            String msg = "Error checking if template " + templateID + " is approved";
             log.error(msg + ": " + ex.getMessage());
             throw new EthereumException(msg, ex);
         }

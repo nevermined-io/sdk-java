@@ -1,5 +1,6 @@
 package io.keyko.ocean.manager;
 
+import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.common.web3.KeeperService;
@@ -140,7 +141,8 @@ public class OceanManager extends BaseManager {
 
         Map<String, Object> configuration = new HashMap<>();
         configuration.put("providerConfig", providerConfig);
-        configuration.put("accessServiceTemplateId", escrowAccessSecretStoreTemplate.getContractAddress());
+        configuration.put("accessServiceTemplateId", config.getString("template.EscrowAccessSecretStoreTemplate.id"));
+//        configuration.put("accessServiceTemplateId", getTemplateIdByName("AgreementStoreManager"));
         configuration.put("accessSecretStoreConditionAddress", accessSecretStoreCondition.getContractAddress());
         configuration.put("price", price);
         configuration.put("creator", creatorAddress);
@@ -155,7 +157,7 @@ public class OceanManager extends BaseManager {
         Map<String, Object> configuration = new HashMap<>();
         configuration.put("providerConfig", providerConfig);
         configuration.put("computingProvider", computingProvider);
-        configuration.put("computingServiceTemplateId", escrowComputeExecutionTemplate.getContractAddress());
+        configuration.put("computingServiceTemplateId", config.getString("template.EscrowComputeExecutionTemplate.id"));
         configuration.put("execComputeConditionAddress", computeExecutionCondition.getContractAddress());
         configuration.put("price", price);
         configuration.put("creator", creatorAddress);
@@ -299,7 +301,7 @@ public class OceanManager extends BaseManager {
 
             Service theService = ddo.getService(service.index);
             theService.attributes.serviceAgreementTemplate.conditions = conditions;
-            theService.attributes.main.timeout = theService.calculateServiceTimeout();
+//            theService.attributes.main.timeout = theService.calculateServiceTimeout();
 
             // Registering DID
             registerDID(ddo.getDid(), metadataEndpoint, ddo.getDid().getHash(), providerConfig.getProviderAddresses());
@@ -444,7 +446,9 @@ public class OceanManager extends BaseManager {
 
         Boolean isTemplateApproved;
         try {
-            isTemplateApproved = templatesManager.isTemplateApproved(service.templateId);
+            // service.attributes.serviceAgreementTemplate.contractName
+            isTemplateApproved = templatesManager.isTemplateIdApproved(
+                    CryptoHelper.keccak256(service.templateId));
         } catch (EthereumException e) {
             String msg = "Error creating Service Agreement: " + serviceAgreementId + ". Error verifying template " + service.templateId;
             log.error(msg + ": " + e.getMessage());
@@ -490,9 +494,9 @@ public class OceanManager extends BaseManager {
         Flowable<String> executeAgreementFlowable = null;
 
         if (service.type.equals(Service.ServiceTypes.access.name()))
-            executeAgreementFlowable = ServiceAgreementHandler.listenExecuteAgreement(escrowAccessSecretStoreTemplate, serviceAgreementId);
+            executeAgreementFlowable = ServiceAgreementHandler.listenExecuteAgreement(agreementStoreManager, serviceAgreementId);
         else if  (service.type.equals(Service.ServiceTypes.compute.name()))
-            executeAgreementFlowable = ServiceAgreementHandler.listenExecuteAgreement(escrowComputeExecutionTemplate, serviceAgreementId);
+            executeAgreementFlowable = ServiceAgreementHandler.listenExecuteAgreement(agreementStoreManager, serviceAgreementId);
         else
             throw new ServiceAgreementException(serviceAgreementId, "Service type not supported");
 

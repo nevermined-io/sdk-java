@@ -13,8 +13,10 @@ import org.web3j.crypto.Keys;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.exceptions.TransactionException;
 import org.web3j.tuples.generated.Tuple2;
+import org.web3j.tuples.generated.Tuple6;
 
 import java.math.BigInteger;
+import java.util.List;
 
 public class ConditionsManager extends BaseManager {
 
@@ -116,20 +118,24 @@ public class ConditionsManager extends BaseManager {
         DDO ddo = resolveDID(agreement.did);
         Service service  = ddo.getServiceByTemplate(agreement.templateId);
 
-        Tuple2<String, String> agreementData = null;
+        Tuple6<byte[], String, byte[], List<byte[]>, String, BigInteger> agreementData = null;
         TransactionReceipt txReceipt;
 
         if (service.type.equals(Service.ServiceTypes.access.name())) {
-            agreementData = escrowAccessSecretStoreTemplate.getAgreementData(EncodingHelper.hexStringToBytes(agreementId)).send();
+//            final Tuple6<byte[], String, byte[], List<byte[]>, String, BigInteger> send =
+            agreementData = agreementStoreManager.getAgreement(EncodingHelper.hexStringToBytes(agreementId)).send();
+
+//            agreementData = agreementStoreManager.getAgreementData(EncodingHelper.hexStringToBytes(agreementId)).send();
         } else if (service.type.equals(Service.ServiceTypes.compute.name())) {
-            agreementData = escrowComputeExecutionTemplate.getAgreementData(EncodingHelper.hexStringToBytes(agreementId)).send();
+            agreementData = agreementStoreManager.getAgreement(EncodingHelper.hexStringToBytes(agreementId)).send();
         }
+
 
         try {
              txReceipt = escrowReward.fulfill(EncodingHelper.hexStringToBytes(agreementId),
                     amount,
                     agreementData.getValue2(),
-                    agreementData.getValue1(),
+                     agreement.didOwner,
                     agreement.conditions.get(1),
                     agreement.conditions.get(0)).send();
 

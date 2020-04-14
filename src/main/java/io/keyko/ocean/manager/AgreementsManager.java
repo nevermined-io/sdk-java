@@ -26,6 +26,7 @@ import org.web3j.utils.Numeric;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -65,13 +66,15 @@ public class AgreementsManager extends BaseManager {
                                          String accessConsumer, Service service) throws Exception {
 
         log.debug("Creating agreement with id: " + agreementId);
-        TransactionReceipt txReceipt = escrowAccessSecretStoreTemplate.createAgreement(
+        TransactionReceipt txReceipt = agreementStoreManager.createAgreement(
                 EncodingHelper.hexStringToBytes("0x" + agreementId),
                 EncodingHelper.hexStringToBytes("0x" + ddo.getDid().getHash()),
+                service.fetchTemplateIdEncoded(),
                 conditionIds,
-                service.retrieveTimeOuts(),
                 service.retrieveTimeLocks(),
-                accessConsumer).send();
+                service.retrieveTimeOuts(),
+                Arrays.asList(accessConsumer)
+        ).send();
         return txReceipt.isStatusOK();
     }
 
@@ -90,13 +93,15 @@ public class AgreementsManager extends BaseManager {
                                          String accessConsumer, Service service) throws Exception {
 
         log.debug("Creating agreement with id: " + agreementId);
-        TransactionReceipt txReceipt = escrowComputeExecutionTemplate.createAgreement(
+        TransactionReceipt txReceipt = agreementStoreManager.createAgreement(
                 EncodingHelper.hexStringToBytes("0x" + agreementId),
                 EncodingHelper.hexStringToBytes("0x" + ddo.getDid().getHash()),
+                service.fetchTemplateIdEncoded(),
                 conditionIds,
                 service.retrieveTimeOuts(),
                 service.retrieveTimeLocks(),
-                accessConsumer).send();
+                Arrays.asList(accessConsumer)
+        ).send();
         return txReceipt.isStatusOK();
     }
 

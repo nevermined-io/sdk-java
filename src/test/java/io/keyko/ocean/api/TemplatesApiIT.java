@@ -1,5 +1,6 @@
 package io.keyko.ocean.api;
 
+import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.ocean.keeper.contracts.TemplateStoreManager;
 import io.keyko.ocean.exceptions.EthereumException;
 import io.keyko.common.web3.KeeperService;
@@ -12,9 +13,11 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.web3j.utils.Numeric;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -26,7 +29,7 @@ public class TemplatesApiIT {
     private static OceanAPI oceanAPI;
     private static Config config;
     private static TemplateStoreManager templateStoreManager;
-
+    private static String owner;
     private static long timeout= 2000l;
 
     @BeforeClass
@@ -39,22 +42,13 @@ public class TemplatesApiIT {
         assertNotNull(oceanAPI.getTemplatesAPI());
         assertNotNull(oceanAPI.getMainAccount());
 
-        keeper = ManagerHelper.getKeeper(
-                config.getString("keeper.url"),
-                oceanAPI.getMainAccount().getAddress(),
-                oceanAPI.getMainAccount().getPassword(),
-                config.getString("account.main.credentialsFile"),
-                BigInteger.valueOf(config.getLong("keeper.gasLimit")),
-                BigInteger.valueOf(config.getLong("keeper.gasPrice")),
-                config.getInt("keeper.tx.attempts"),
-                config.getLong("keeper.tx.sleepDuration")
-                );
+        keeper = ManagerHelper.getKeeper(config, ManagerHelper.VmClient.parity, "");
 
         templateStoreManager= ManagerHelper.deployTemplateStoreManager(keeper);
         templateStoreManager.initialize(keeper.getAddress()).send();
 
         oceanAPI.setTemplateStoreManagerContract(templateStoreManager);
-        String owner= templateStoreManager.owner().send();
+        owner= templateStoreManager.owner().send();
 
         log.debug("OceanAPI main account: " + oceanAPI.getMainAccount().getAddress());
         log.debug("TemplateStoreManager Owner: " + owner);
@@ -65,14 +59,26 @@ public class TemplatesApiIT {
     @Test
     public void templatesLifecycle() throws Exception {
 
+        final String templateAddress= "0xBd7e5fFf4Eb8d67111227C9541080a74c634d643";
+        final String templateName= "MyTestTemplate";
 
-        String templateAddress= "0x0990484293948238943289428394328943234233";
+        final String escrowConditionAddress = config.getString("contract.EscrowReward.address");
 
         BigInteger numberTemplates= oceanAPI.getTemplatesAPI().getListSize();
         log.debug("Number of existing templates: " + numberTemplates.toString());
 
+        log.debug("Registering actor type");
+        oceanAPI.getTemplatesAPI().registerActorType("consumer");
+        final byte[] consumers = templateStoreManager.getTemplateActorTypeId("consumer").send();
+        assertTrue(consumers.length > 0);
+
+        // new Bytes32(Hash.sha3(io.keyko.common.helpers.EncodingHelper.hexStringToBytes("Bd7e5fFf4Eb8d67111227C9541080a74c634d643")))
         log.debug("Proposing template: " + templateAddress);
-        oceanAPI.getTemplatesAPI().propose(templateAddress, new ArrayList<>(), new ArrayList<>(), "test");
+        oceanAPI.getTemplatesAPI().propose(
+                CryptoHelper.keccak256(templateAddress),
+                Arrays.asList(escrowConditionAddress),
+                Arrays.asList(CryptoHelper.keccak256(owner)),
+                templateName);
 
 
         for (int counter= 0; counter<10; counter++) {

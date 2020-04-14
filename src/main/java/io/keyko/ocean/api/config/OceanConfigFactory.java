@@ -50,7 +50,6 @@ public class OceanConfigFactory {
         oceanConfig.setProviderAddress((String) properties.getOrDefault(OceanConfig.PROVIDER_ADDRESS, ""));
         oceanConfig.setDidRegistryAddress((String) properties.getOrDefault(OceanConfig.DID_REGISTRY_ADDRESS, ""));
         oceanConfig.setEscrowRewardConditionsAddress((String) properties.getOrDefault(OceanConfig.ESCROWREWARD_CONDITIONS_ADDRESS, ""));
-        oceanConfig.setEscrowAccessSecretStoreTemplateAddress((String) properties.getOrDefault(OceanConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS, ""));
         oceanConfig.setLockrewardConditionsAddress((String) properties.getOrDefault(OceanConfig.LOCKREWARD_CONDITIONS_ADDRESS, ""));
         oceanConfig.setAccessSsConditionsAddress((String) properties.getOrDefault(OceanConfig.ACCESS_SS_CONDITIONS_ADDRESS, ""));
         oceanConfig.setAgreementStoreManagerAddress((String) properties.getOrDefault(OceanConfig.AGREEMENT_STORE_MANAGER_ADDRESS, ""));
@@ -62,8 +61,6 @@ public class OceanConfigFactory {
         oceanConfig.setMainAccountAddress((String) properties.getOrDefault(OceanConfig.MAIN_ACCOUNT_ADDRESS, ""));
         oceanConfig.setMainAccountPassword((String) properties.getOrDefault(OceanConfig.MAIN_ACCOUNT_PASSWORD, ""));
         oceanConfig.setMainAccountCredentialsFile((String) properties.getOrDefault(OceanConfig.MAIN_ACCOUNT_CREDENTIALS_FILE, ""));
-
-        oceanConfig.setEscrowComputeExecutionTemplateAddress((String) properties.getOrDefault(OceanConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, ""));
         oceanConfig.setComputeExecutionConditionAddress((String) properties.getOrDefault(OceanConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, ""));
 
         return oceanConfig;

@@ -40,9 +40,9 @@ public class ServiceMain extends AbstractModel {
     @JsonProperty
     public String creator;
 
-
-    @JsonProperty
-    public int timeout;
+//
+//    @JsonProperty
+//    public int timeout;
 
     // Properties of Metadata
 

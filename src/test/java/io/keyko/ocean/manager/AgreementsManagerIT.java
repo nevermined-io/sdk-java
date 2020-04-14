@@ -36,7 +36,6 @@ public class AgreementsManagerIT {
     private static AquariusService aquarius;
     private static final Config config = ConfigFactory.load();
     private static AccessSecretStoreCondition accessSecretStoreCondition;
-    private static EscrowAccessSecretStoreTemplate escrowAccessSecretStoreTemplate;
     private static EscrowReward escrowReward;
     private static LockRewardCondition lockRewardCondition;
     private static AgreementStoreManager agreementsStoreManager;
@@ -80,19 +79,16 @@ public class AgreementsManagerIT {
         properties.put(OceanConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
         properties.put(OceanConfig.LOCKREWARD_CONDITIONS_ADDRESS, config.getString("contract.LockRewardCondition.address"));
         properties.put(OceanConfig.ESCROWREWARD_CONDITIONS_ADDRESS, config.getString("contract.EscrowReward.address"));
-        properties.put(OceanConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
         properties.put(OceanConfig.ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.AccessSecretStoreCondition.address"));
         properties.put(OceanConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
         properties.put(OceanConfig.TOKEN_ADDRESS, config.getString("contract.OceanToken.address"));
         properties.put(OceanConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
         properties.put(OceanConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.ComputeExecutionCondition.address"));
-        properties.put(OceanConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.EscrowComputeExecutionTemplate.address"));
         properties.put(OceanConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
         oceanAPIConsumer = OceanAPI.getInstance(properties);
         oceanAPIConsumer.getTokensAPI().request(BigInteger.TEN);
         agreementsManager = AgreementsManager.getInstance(keeper, aquarius);
         accessSecretStoreCondition = ManagerHelper.loadAccessSecretStoreConditionContract(keeper, config.getString("contract.AccessSecretStoreCondition.address"));
-        escrowAccessSecretStoreTemplate = ManagerHelper.loadEscrowAccessSecretStoreTemplate(keeper, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
         escrowReward = ManagerHelper.loadEscrowRewardContract(keeper, config.getString("contract.EscrowReward.address"));
         lockRewardCondition = ManagerHelper.loadLockRewardCondition(keeper, config.getString("contract.LockRewardCondition.address"));
         agreementsStoreManager = ManagerHelper.loadAgreementStoreManager(keeper, config.getString("contract.AgreementStoreManager.address"));
@@ -100,7 +96,6 @@ public class AgreementsManagerIT {
         agreementsManager.setAgreementStoreManagerContract(agreementsStoreManager);
         agreementsManager.setLockRewardCondition(lockRewardCondition);
         agreementsManager.setAccessSecretStoreCondition(accessSecretStoreCondition);
-        agreementsManager.setEscrowAccessSecretStoreTemplate(escrowAccessSecretStoreTemplate);
         agreementsManager.setEscrowReward(escrowReward);
         agreementsManager.setConditionStoreManagerContract(conditionStoreManager);
 
@@ -109,7 +104,7 @@ public class AgreementsManagerIT {
     @Test
     public void status() throws Exception {
         providerConfig.setSecretStoreEndpoint(config.getString("secretstore.url"));
-        AssetMetadata metadata = DDO.fromJSON(new TypeReference<AssetMetadata>() {
+        AssetMetadata metadata = DDO.fromJSON(new TypeReference<>() {
         }, METADATA_JSON_CONTENT);
         DDO ddo = oceanAPI.getAssetsAPI().create(metadata, providerConfig);
         DID did = new DID(ddo.id);
@@ -121,7 +116,7 @@ public class AgreementsManagerIT {
         Flowable<OrderResult> response = oceanAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_ACCESS_INDEX);
 
         OrderResult orderResult = response.blockingFirst();
-        TimeUnit.SECONDS.sleep(5l);
+        TimeUnit.SECONDS.sleep(5L);
         agreementsManager.getAgreement(orderResult.getServiceAgreementId());
         AgreementStatus status = agreementsManager.getStatus(orderResult.getServiceAgreementId());
         assertEquals(orderResult.getServiceAgreementId(), status.agreementId);

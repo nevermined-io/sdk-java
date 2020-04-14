@@ -58,7 +58,7 @@ public interface ServiceBuilder {
 
         serviceAgreementTemplate.events = Arrays.asList(executeAgreementEvent);
 
-        // The templateId of the AccessService is the address of the escrowAccessSecretStoreTemplate contract
+        // The templateId of the AccessService is the address of the AgreementStoreManager contract
         ComputingService computingService = new ComputingService(providerConfig.getAccessEndpoint(),
                 Service.DEFAULT_COMPUTING_INDEX,
                 serviceAgreementTemplate,

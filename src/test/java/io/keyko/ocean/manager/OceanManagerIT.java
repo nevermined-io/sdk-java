@@ -1,19 +1,22 @@
 package io.keyko.ocean.manager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.keyko.ocean.keeper.contracts.*;
 import com.oceanprotocol.secretstore.core.EvmDto;
-import io.keyko.ocean.exceptions.DDOException;
-import io.keyko.ocean.external.AquariusService;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.common.web3.parity.JsonRpcSquidAdmin;
+import io.keyko.ocean.exceptions.DDOException;
+import io.keyko.ocean.external.AquariusService;
+import io.keyko.ocean.keeper.contracts.AccessSecretStoreCondition;
+import io.keyko.ocean.keeper.contracts.DIDRegistry;
+import io.keyko.ocean.keeper.contracts.EscrowReward;
+import io.keyko.ocean.keeper.contracts.LockRewardCondition;
 import io.keyko.ocean.models.Account;
 import io.keyko.ocean.models.DDO;
 import io.keyko.ocean.models.DID;
 import io.keyko.ocean.models.asset.AssetMetadata;
 import io.keyko.ocean.models.service.ProviderConfig;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,7 +59,6 @@ public class OceanManagerIT {
     private static EscrowReward escrowReward;
     private static AccessSecretStoreCondition accessSecretStoreCondition;
     private static LockRewardCondition lockRewardCondition;
-    private static EscrowAccessSecretStoreTemplate escrowAccessSecretStoreTemplate;
 
 
     private static final Config config = ConfigFactory.load();
@@ -108,8 +110,6 @@ public class OceanManagerIT {
         escrowReward= ManagerHelper.loadEscrowRewardContract(keeperPublisher, ESCROW_REWARD_CONTRACT);
         accessSecretStoreCondition= ManagerHelper.loadAccessSecretStoreConditionContract(keeperPublisher, ACCESS_SS_CONDITION_CONTRACT);
         lockRewardCondition= ManagerHelper.loadLockRewardCondition(keeperPublisher, LOCK_REWARD_CONTRACT);
-        escrowAccessSecretStoreTemplate= ManagerHelper.loadEscrowAccessSecretStoreTemplate(keeperPublisher, ESCROW_ACCESS_CONTRACT);
-
 
         // Initializing the OceanManager for the Publisher
         managerPublisher = OceanManager.getInstance(keeperPublisher, aquarius);
@@ -118,7 +118,6 @@ public class OceanManagerIT {
                 .setEscrowReward(escrowReward)
                 .setAccessSecretStoreCondition(accessSecretStoreCondition)
                 .setLockRewardCondition(lockRewardCondition)
-                .setEscrowAccessSecretStoreTemplate(escrowAccessSecretStoreTemplate)
                 .setMainAccount(publisherAccount)
                 .setEvmDto(evmDto);
 
@@ -129,7 +128,6 @@ public class OceanManagerIT {
                 .setEscrowReward(escrowReward)
                 .setAccessSecretStoreCondition(accessSecretStoreCondition)
                 .setLockRewardCondition(lockRewardCondition)
-                .setEscrowAccessSecretStoreTemplate(escrowAccessSecretStoreTemplate)
                 .setMainAccount(consumerAccount)
                 .setEvmDto(evmDto);
 
