@@ -60,6 +60,7 @@
         "main": {
           "author": "John Doe",
           "dateCreated": "2019-02-08T08:13:49Z",
+          "datePublished": "2019-02-08T08:13:49Z",
           "license": "CC-BY",
           "name": "My workflow",
           "price": "1",

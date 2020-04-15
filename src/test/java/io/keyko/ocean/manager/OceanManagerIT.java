@@ -84,11 +84,6 @@ public class OceanManagerIT {
         ACCESS_SS_CONDITION_CONTRACT = config.getString("contract.AccessSecretStoreCondition.address");
     }
 
-    private static final String ESCROW_ACCESS_CONTRACT;
-    static {
-        ESCROW_ACCESS_CONTRACT = config.getString("contract.EscrowAccessSecretStoreTemplate.address");
-    }
-
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -152,13 +147,15 @@ public class OceanManagerIT {
 
     private DDO newRegisteredAsset() throws Exception {
 
+        /*
         String OEP7_DATASET_EXAMPLE_CONTENT = IOUtils.toString(new URI(OEP7_DATASET_EXAMPLE_URL), "utf-8");
 
         DDO completeDDO = DDO.fromJSON(new TypeReference<DDO>() {
         }, OEP7_DATASET_EXAMPLE_CONTENT);
 
-        metadataBase = DDO.fromJSON(new TypeReference<AssetMetadata>() {}, completeDDO.services.get(0).toJson());
 
+        metadataBase = DDO.fromJSON(new TypeReference<AssetMetadata>() {}, completeDDO.services.get(0).toJson());
+*/
         String metadataUrl= config.getString("aquarius-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
         String provenanceUrl= config.getString("aquarius-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
         String consumeUrl= config.getString("brizo.url") + "/api/v1/brizo/services/consume";

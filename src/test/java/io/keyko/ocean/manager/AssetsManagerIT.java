@@ -14,6 +14,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,7 +29,7 @@ public class AssetsManagerIT {
     private static KeeperService keeper;
     private static AquariusService aquarius;
 
-    private static final String DDO_JSON_SAMPLE = "https://raw.githubusercontent.com/oceanprotocol/OEPs/master/8/v0.4/ddo-example-access.json";
+    private static final String DDO_JSON_SAMPLE = "src/test/resources/examples/ddo-example.json";
     private static String DDO_JSON_CONTENT;
 
     private static final Config config = ConfigFactory.load();
@@ -44,7 +46,7 @@ public class AssetsManagerIT {
         SecretStoreManager secretStore= ManagerHelper.getSecretStoreController(config, ManagerHelper.VmClient.parity);
         manager.setSecretStoreManager(secretStore);
 
-        DDO_JSON_CONTENT=  IOUtils.toString(new URI(DDO_JSON_SAMPLE), "utf-8");
+        DDO_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(DDO_JSON_SAMPLE)));
 
     }
 

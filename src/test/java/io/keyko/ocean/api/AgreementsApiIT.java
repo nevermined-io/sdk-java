@@ -12,6 +12,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -19,12 +21,15 @@ import static org.junit.Assert.assertTrue;
 public class AgreementsApiIT {
 
     private static OceanAPI oceanAPI;
-    private static final String DDO_JSON_SAMPLE = "https://raw.githubusercontent.com/oceanprotocol/OEPs/master/8/v0.4/ddo-example-access.json";
-    private static String DDO_JSON_CONTENT;
-    //private static String METADATA_JSON_SAMPLE = "src/test/resources/examples/metadata.json";
-    private static String METADATA_JSON_CONTENT;
     private static AssetMetadata metadataBase;
+    private static DDO ddoBase;
     private static ProviderConfig providerConfig;
+
+    private static final String DDO_JSON_SAMPLE = "src/test/resources/examples/ddo-example.json";
+    private static String DDO_JSON_CONTENT;
+    private static final String METADATA_JSON_SAMPLE = "src/test/resources/examples/metadata.json";
+    private static String METADATA_JSON_CONTENT;
+
 
 
     @BeforeClass
@@ -32,14 +37,13 @@ public class AgreementsApiIT {
 
 
         Config config = ConfigFactory.load();
-        DDO_JSON_CONTENT=  IOUtils.toString(new URI(DDO_JSON_SAMPLE), "utf-8");
-        DDO fullDDO = DDO.fromJSON(new TypeReference<DDO>() {
-        }, DDO_JSON_CONTENT);
 
+        // Pre-parsing of json's and models
+        DDO_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(DDO_JSON_SAMPLE)));
+        ddoBase = DDO.fromJSON(new TypeReference<DDO>() {}, DDO_JSON_CONTENT);
 
-        METADATA_JSON_CONTENT = fullDDO.services.get(0).toJson();
-        metadataBase = DDO.fromJSON(new TypeReference<AssetMetadata>() {
-        }, METADATA_JSON_CONTENT);
+        METADATA_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(METADATA_JSON_SAMPLE)));
+        metadataBase = DDO.fromJSON(new TypeReference<AssetMetadata>() {}, METADATA_JSON_CONTENT);
 
         String metadataUrl = config.getString("aquarius-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
         String provenanceUrl = config.getString("aquarius-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";

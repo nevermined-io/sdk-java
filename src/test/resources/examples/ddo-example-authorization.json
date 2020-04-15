@@ -71,6 +71,7 @@
         "main": {
           "author": "Met Office",
           "dateCreated": "2019-02-08T08:13:49Z",
+          "datePublished": "2019-02-08T08:13:49Z",
           "files": [
             {
               "url": "https://raw.githubusercontent.com/tbertinmahieux/MSongsDB/master/Tasks_Demos/CoverSongs/shs_dataset_test.txt",
