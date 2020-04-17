@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.keyko.common.helpers.CryptoHelper;
+import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.ocean.api.config.OceanConfig;
 import io.keyko.ocean.exceptions.DDOException;
@@ -107,10 +108,11 @@ public class AssetsApiIT {
 
         ManagerHelper.prepareEscrowTemplate(
                 oceanAPI,
+                config.getString("contract.AccessSecretStoreCondition.address"),
+                config.getString("contract.LockRewardCondition.address"),
                 config.getString("contract.EscrowReward.address"),
                 owner,
                 "EscrowAccessSecretStoreTemplate");
-
 
 
         Balance balance = oceanAPIConsumer.getAccountsAPI().balance(oceanAPIConsumer.getMainAccount());

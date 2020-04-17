@@ -103,4 +103,7 @@ public interface TemplatesAPI {
      */
     TransactionReceipt deregisterActorType(String actorType) throws EthereumException;
 
+
+    byte[] getActorTypeId(String actorType) throws EthereumException;
+
 }

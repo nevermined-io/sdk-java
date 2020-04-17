@@ -100,7 +100,7 @@ public abstract class ManagerHelper {
         return SecretStoreManager.getInstance(getSecretStoreDto(config), evmDto);
     }
 
-    public static boolean prepareEscrowTemplate(OceanAPI oceanAPI, String conditionAddress, String owner, String templateName) throws EthereumException, InterruptedException {
+    public static boolean prepareEscrowTemplate(OceanAPI oceanAPI, String accessSecretStoreConditionAddress, String lockRewardConditionAddress, String escrowRewardConditionAddress, String owner, String templateName) throws EthereumException, InterruptedException {
 
         BigInteger numberTemplates= oceanAPI.getTemplatesAPI().getListSize();
         log.debug("Number of existing templates: " + numberTemplates.toString());
@@ -117,10 +117,13 @@ public abstract class ManagerHelper {
 
         if (template.state.compareTo(TemplateSEA.TemplateState.Uninitialized.getStatus()) == 0) {
             log.debug("Proposing template: " + templateId);
+
+            byte[] actorTypeId = oceanAPI.getTemplatesAPI().getActorTypeId("consumer");
+
             oceanAPI.getTemplatesAPI().propose(
                     _id,
-                    Arrays.asList(conditionAddress),
-                    Arrays.asList(CryptoHelper.keccak256(owner)),
+                    Arrays.asList(accessSecretStoreConditionAddress, lockRewardConditionAddress, escrowRewardConditionAddress),
+                    Arrays.asList(actorTypeId),
                     templateName);
 
         }

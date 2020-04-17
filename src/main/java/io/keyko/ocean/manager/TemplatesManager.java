@@ -203,4 +203,14 @@ public class TemplatesManager extends BaseManager {
         }
     }
 
+    public byte[] getActorTypeId(String actorType)throws EthereumException {
+        try{
+            return templateStoreManager.getTemplateActorTypeId(actorType).send();
+        }catch (Exception ex) {
+            String msg = "Error getting id for actorType " + actorType;
+            log.error(msg + ": " + ex.getMessage());
+            throw new EthereumException(msg, ex);
+        }
+    }
+
 }

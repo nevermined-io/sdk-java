@@ -71,4 +71,9 @@ public class TemplatesImpl implements TemplatesAPI {
     public TransactionReceipt deregisterActorType(String actorType) throws EthereumException {
         return templatesManager.deregisterTemplateActorType(actorType);
     }
+
+    @Override
+    public byte[] getActorTypeId(String actorType) throws EthereumException {
+        return  templatesManager.getActorTypeId(actorType);
+    }
 }
