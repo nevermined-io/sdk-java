@@ -1,6 +1,8 @@
 package io.keyko.ocean.manager;
 
 import io.keyko.common.helpers.CryptoHelper;
+import io.keyko.common.helpers.EncodingHelper;
+import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.ocean.api.OceanAPI;
 import io.keyko.ocean.api.config.OceanConfig;
 import io.keyko.ocean.exceptions.EthereumException;
@@ -98,7 +100,7 @@ public abstract class ManagerHelper {
         return SecretStoreManager.getInstance(getSecretStoreDto(config), evmDto);
     }
 
-    public static boolean prepareEscrowTemplate(OceanAPI oceanAPI, String templateId, String conditionAddress, String owner, String templateName) throws EthereumException, InterruptedException {
+    public static boolean prepareEscrowTemplate(OceanAPI oceanAPI, String conditionAddress, String owner, String templateName) throws EthereumException, InterruptedException {
 
         BigInteger numberTemplates= oceanAPI.getTemplatesAPI().getListSize();
         log.debug("Number of existing templates: " + numberTemplates.toString());
@@ -108,12 +110,15 @@ public abstract class ManagerHelper {
             oceanAPI.getTemplatesAPI().registerActorType("consumer");
         } catch (EthereumException ex)  {}
 
+        byte[] _id = CryptoHelper.keccak256(templateName);
+        String templateId = EthereumHelper.remove0x(EncodingHelper.toHexString(_id));
+
         TemplateSEA template= oceanAPI.getTemplatesAPI().getTemplate(templateId);
 
         if (template.state.compareTo(TemplateSEA.TemplateState.Uninitialized.getStatus()) == 0) {
             log.debug("Proposing template: " + templateId);
             oceanAPI.getTemplatesAPI().propose(
-                    CryptoHelper.keccak256(templateId),
+                    _id,
                     Arrays.asList(conditionAddress),
                     Arrays.asList(CryptoHelper.keccak256(owner)),
                     templateName);
@@ -122,7 +127,7 @@ public abstract class ManagerHelper {
 
         for (int counter= 0; counter<10; counter++) {
             log.debug("Waiting for the template proposal ...");
-            template= oceanAPI.getTemplatesAPI().getTemplate(templateId);
+            template= oceanAPI.getTemplatesAPI().getTemplate(templateName);
             if (template.state.compareTo(TemplateSEA.TemplateState.Proposed.getStatus()) == 0) {
                 log.debug("Template " + templateId + " in Proposed state");
                 break;
@@ -130,11 +135,13 @@ public abstract class ManagerHelper {
             ManagerHelper.class.wait(1000L);
         }
 
-        final boolean isApproved = oceanAPI.getTemplatesAPI().isApproved(templateId);
+        final boolean isApproved = oceanAPI.getTemplatesAPI().isApproved(templateName);
+
         if (!isApproved) {
             log.debug("Approving template: " + templateId);
-            oceanAPI.getTemplatesAPI().approve(templateId);
+            oceanAPI.getTemplatesAPI().approve(templateName);
         }
+
         return true;
     }
 

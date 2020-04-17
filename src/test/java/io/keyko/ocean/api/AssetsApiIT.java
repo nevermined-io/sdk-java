@@ -103,10 +103,10 @@ public class AssetsApiIT {
         String owner= templateStoreManager.owner().send();
 
         oceanAPI.setTemplateStoreManagerContract(templateStoreManager);
+        oceanAPIConsumer.setTemplateStoreManagerContract(templateStoreManager);
 
         ManagerHelper.prepareEscrowTemplate(
                 oceanAPI,
-                accessTemplateAddress,
                 config.getString("contract.EscrowReward.address"),
                 owner,
                 "EscrowAccessSecretStoreTemplate");

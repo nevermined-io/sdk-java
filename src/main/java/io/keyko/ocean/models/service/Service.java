@@ -171,8 +171,8 @@ public class Service extends AbstractModel implements FromJsonToModel {
         }
     }
 
-    public byte[] fetchTemplateIdEncoded()   {
-        return CryptoHelper.keccak256(getTemplateId());
+    public byte[] fetchTemplateIdEncoded() throws UnsupportedEncodingException {
+        return EncodingHelper.hexStringToBytes(getTemplateId());
     }
 
     public List<BigInteger> retrieveTimeOuts() {

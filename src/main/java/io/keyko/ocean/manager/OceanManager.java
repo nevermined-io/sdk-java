@@ -446,10 +446,8 @@ public class OceanManager extends BaseManager {
 
         Boolean isTemplateApproved;
         try {
-            // service.attributes.serviceAgreementTemplate.contractName
-            isTemplateApproved = templatesManager.isTemplateIdApproved(
-                    CryptoHelper.keccak256(service.templateId));
-        } catch (EthereumException e) {
+            isTemplateApproved = templatesManager.isTemplateIdApproved(EncodingHelper.hexStringToBytes(service.templateId));
+        } catch (EthereumException|UnsupportedEncodingException e) {
             String msg = "Error creating Service Agreement: " + serviceAgreementId + ". Error verifying template " + service.templateId;
             log.error(msg + ": " + e.getMessage());
             throw new ServiceAgreementException(serviceAgreementId, msg, e);

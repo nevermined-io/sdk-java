@@ -336,5 +336,8 @@ public class OceanAPI {
         templatesManager.setTemplateStoreManagerContract(
                 contract);
 
+        oceanManager.setTemplateStoreManagerContract(contract);
+        oceanManager.setTemplatesManager(templatesManager);
+
     }
 }
