@@ -108,6 +108,7 @@ public abstract class ManagerHelper {
         try {
             log.debug("Registering actor type");
             oceanAPI.getTemplatesAPI().registerActorType("consumer");
+            oceanAPI.getTemplatesAPI().registerActorType("provider");
         } catch (EthereumException ex)  {}
 
         byte[] _id = CryptoHelper.keccak256(templateName);
@@ -118,12 +119,13 @@ public abstract class ManagerHelper {
         if (template.state.compareTo(TemplateSEA.TemplateState.Uninitialized.getStatus()) == 0) {
             log.debug("Proposing template: " + templateId);
 
-            byte[] actorTypeId = oceanAPI.getTemplatesAPI().getActorTypeId("consumer");
+            byte[] consumerTypeId = oceanAPI.getTemplatesAPI().getActorTypeId("consumer");
+            byte[] providerTypeId = oceanAPI.getTemplatesAPI().getActorTypeId("provider");
 
             oceanAPI.getTemplatesAPI().propose(
                     _id,
                     Arrays.asList(accessSecretStoreConditionAddress, lockRewardConditionAddress, escrowRewardConditionAddress),
-                    Arrays.asList(actorTypeId),
+                    Arrays.asList(providerTypeId, consumerTypeId),
                     templateName);
 
         }

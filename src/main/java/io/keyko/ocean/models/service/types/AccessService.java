@@ -80,8 +80,15 @@ public class AccessService extends Service {
         String lockRewardId = generateLockRewardId(agreementId, escrowRewardAddress,lockRewardConditionAddress);
         String accessSecretStoreId = generateAccessSecretStoreConditionId(agreementId, consumerAddress,accessSecretStoreConditionAddress);
         String escrowRewardId = generateEscrowRewardConditionId(agreementId, consumerAddress, publisherAddress, escrowRewardAddress, lockRewardId, accessSecretStoreId);
+        /*
         conditionIds.add(accessSecretStoreId);
         conditionIds.add(lockRewardId);
+        conditionIds.add(escrowRewardId);
+         */
+        // Changing the order of conditions to match the order in the service agreement template
+        // TODO check if this is correct
+        conditionIds.add(lockRewardId);
+        conditionIds.add(accessSecretStoreId);
         conditionIds.add(escrowRewardId);
         return conditionIds;
     }

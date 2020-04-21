@@ -11,6 +11,7 @@ import io.keyko.ocean.models.DID;
 import io.keyko.ocean.models.service.Agreement;
 import io.keyko.ocean.models.service.AgreementStatus;
 import io.keyko.ocean.models.service.Service;
+import io.keyko.ocean.models.service.types.AccessService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.abi.EventEncoder;
@@ -65,6 +66,10 @@ public class AgreementsManager extends BaseManager {
     public Boolean createAccessAgreement(String agreementId, DDO ddo, List<byte[]> conditionIds,
                                          String accessConsumer, Service service) throws Exception {
 
+        // get the provider's address
+       AccessService accessService = ddo.getAccessService();
+       String provider =accessService.attributes.main.creator;
+
         log.debug("Creating agreement with id: " + agreementId);
         TransactionReceipt txReceipt = agreementStoreManager.createAgreement(
                 EncodingHelper.hexStringToBytes("0x" + agreementId),
@@ -73,7 +78,7 @@ public class AgreementsManager extends BaseManager {
                 conditionIds,
                 service.retrieveTimeLocks(),
                 service.retrieveTimeOuts(),
-                Arrays.asList(accessConsumer)
+                Arrays.asList(provider, accessConsumer)
         ).send();
         return txReceipt.isStatusOK();
     }
