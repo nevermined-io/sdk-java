@@ -1,12 +1,12 @@
 [![banner](https://raw.githubusercontent.com/keyko-io/assets/master/images/logo/small/keyko_logo@2x-100.jpg)](https://keyko.io)
 
-# Keyko Java API for Ocean
+# Java API for Nevermind Data platform
 
-> 🦑 Keyko Java SDK for connecting with Ocean Protocol
+> 🦑 Java SDK for connecting with Nevermind Data Platform
 > [keyko.io](https://keyko.io)
 
-![Java Maven CI](https://github.com/keyko-io/ocean-api-java/workflows/Java%20Maven%20CI/badge.svg)
-[![javadoc](https://javadoc.io/badge2/io.keyko.ocean/ocean-api-java/javadoc.svg)](https://javadoc.io/doc/io.keyko.ocean/ocean-api-java)
+![Java Maven CI](https://github.com/keyko-io/nevermind-sdk-java/workflows/Java%20Maven%20CI/badge.svg)
+[![javadoc](https://javadoc.io/badge2/io.keyko.ocean/nevermind-sdk-java/javadoc.svg)](https://javadoc.io/doc/io.keyko.ocean/ocean-api-java)
 
 ---
 
@@ -34,11 +34,11 @@
 
 ## Features
 
-This library enables to integrate the Ocean Protocol capabilities from JVM clients.
+This library enables to integrate the Nevermind Data Platform based in Ocean Protocol.
 
 ## Installation
 
-Typically in Maven you can add squid-java as a dependency:
+Typically in Maven you can add nevermind sdk as a dependency:
 
 ```xml
 <dependency>
@@ -48,7 +48,7 @@ Typically in Maven you can add squid-java as a dependency:
 </dependency>
 ```
 
-Squid-java requires Java 11 and Maven >= 3.5.2
+Nevermind SDK requires Java 11 and Maven >= 3.5.2
 
 ## Configuration
 
@@ -98,9 +98,12 @@ And you can instantiate the API with the following lines:
  OceanAPI oceanAPI = OceanAPI.getInstance(config);
 ```
 
-Remember that TypeSafe Config allows you to overwrite the values using environment variables or arguments passed to the JVM.
+Remember that TypeSafe Config allows you to overwrite the values using environment variables or arguments passed to 
+the JVM.
 
-If you want to use Java's Properties, you just need to create a Properties object with the same properties of the application.conf. You can read these Properties from a properties file, or define the values of these properties in your code:
+If you want to use Java's Properties, you just need to create a Properties object with the same properties of the 
+`application.conf`. You can read these Properties from a properties file, or define the values of these properties 
+in your code:
 
 ```java
 // Default values for KEEPER_URL, KEEPER_GAS_LIMIT, KEEPER_GAS_PRICE, AQUARIUS_URL, SECRETSTORE_URL, CONSUME_BASE_PATH
@@ -134,9 +137,10 @@ Once you have initialized the API you can call the methods through their corresp
  boolean result = oceanAPI.getAssetsAPI().consume(orderResult.getServiceAgreementId(), did, SERVICE_DEFINITION_ID, "/tmp");
 ```
 
-### Using Squid-Java with Barge
+### Using the SDK with the Nevermind Tools
 
-If you are using [Barge](https://github.com/oceanprotocol/barge/) for playing with the Ocean Protocol stack, you can use the following command to run the components necessary to have a fully functional environment:
+If you are using [Nevermind Tools](https://github.com/keyko-io/nevermind-tools/) for playing with the Nevermind stack, 
+you can use the following command to run the components necessary to have a fully functional environment:
 
 `KEEPER_VERSION=v0.13.2 BRIZO_VERSION=v0.3.12 AQUARIUS_VERSION=v0.4.2 bash start_ocean.sh --no-pleuston --local-spree-node`
 
@@ -149,11 +153,14 @@ to update the addresses to use in your `src/test/resources/application.conf` fil
 
 ### Dealing with Flowables
 
-Squid-java uses web3j to interact with Solidity's Smart Contracts. It relies on [RxJava](https://github.com/ReactiveX/RxJava) to deal with asynchronous calls.
+The library uses web3j to interact with Solidity's Smart Contracts. It relies on 
+[RxJava](https://github.com/ReactiveX/RxJava) to deal with asynchronous calls.
 
-The order method in AssetsAPI returns a Flowable over an OrderResult object. It's your choice if you want to handle this in a synchronous or asynchronous fashion.
+The order method in AssetsAPI returns a Flowable over an OrderResult object. It's your choice if you want to handle 
+this in a synchronous or asynchronous fashion.
 
-If you prefer to deal with this method in a synchronous way, you will need to block the current thread until you get a response:
+If you prefer to deal with this method in a synchronous way, you will need to block the current thread until you get 
+a response:
 
 ```java
  Flowable<OrderResult> response = oceanAPI.getAssetsAPI().order(did, SERVICE_DEFINITION_ID);
@@ -206,15 +213,17 @@ mvn clean test
 
 ### Integration Tests
 
-The execution of the integration tests require to have running the complete Ocean stack using [Ocean Barge](https://github.com/oceanprotocol/barge).
+The execution of the integration tests require to have running the complete Ocean stack using 
+[Nevermind Tools](https://github.com/keyko-io/nevermind-tools/).
 
-After having `barge` in your environment, you can run the components needed running:
+After having the tools in your environment, you can run the components needed running:
 
 ```bash
-KEEPER_VERSION=v0.13.2 bash start_ocean.sh --latest --no-commons --force-pull
+KEEPER_VERSION=v0.13.2 bash start_nevermind.sh --latest --no-commons --force-pull
 ```
 
-If you have older versions of the docker images is recommended to delete all them to be sure you are running the last version of the stack.
+If you have older versions of the docker images is recommended to delete all them to be sure you are running the 
+last version of the stack.
 
 You can execute the integration tests using the following command:
 
@@ -245,11 +254,13 @@ mvn verify  -P integration-test -Dconfig.file=src/test/resources/networks/nile-a
 
 ### Code Coverage
 
-The code coverage reports are generated using the JaCoCo Maven plugin. Reports are generated in the `target/site` folder.
+The code coverage reports are generated using the JaCoCo Maven plugin. Reports are generated in the `target/site` 
+folder.
 
 ## New Release
 
-The `bumpversion.sh` script helps to bump the project version. You can execute the script using as first argument {major|minor|patch} to bump accordingly the version.
+The `bumpversion.sh` script helps to bump the project version. You can execute the script using as first argument 
+{major|minor|patch} to bump accordingly the version.
 
 ## Attribution
 
