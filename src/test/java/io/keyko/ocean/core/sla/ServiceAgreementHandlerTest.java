@@ -99,7 +99,7 @@ public class ServiceAgreementHandlerTest {
         conditionsAddresses.put("accessSecretStoreConditionAddress", accessSecretStoreConditionAddress);
 
         String hash= accessService.generateServiceAgreementHash(agreementId, consumerAddress, publisherAddress,conditionsAddresses);
-        assertEquals("0xa25575970920e439cc076f1489e0b820cb2fd91b7a8643165fd26d296fa69ee6", hash);
+        assertEquals("0xe37c7893d42212559b76da5552658a4bc82d6c6727a75766309e9b18089149ec", hash);
 
     }
 
