@@ -5,8 +5,8 @@
     <artifactId>api</artifactId>
     <version>0.1.0</version>
     <packaging>jar</packaging>
-    <name>Java SDK for Ocean Protocol</name>
-    <url>https://github.com/keyko-io/ocean-sdk-java</url>
+    <name>Nevermind Data Platform Java SDK</name>
+    <url>https://github.com/keyko-io/nevermind-sdk-java</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -14,19 +14,19 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    <description>Squid facilitate the interaction of java clients with the Ocean Protocol network</description>
+    <description>The SDK facilitates the interaction of java clients with Nevermind networks</description>
     <properties>
         <maven.compiler.release>11</maven.compiler.release>
         <maven.enforced.version>3.5.2</maven.enforced.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <final-name>ocean-sdk</final-name>
+        <final-name>nevermind-sdk</final-name>
 
         <web3j.version>4.5.17</web3j.version>
         <common-utils.version>0.1.2</common-utils.version>
 
-        <ocean.keeper.version>0.13.2.5</ocean.keeper.version>
+        <nevermind.contracts.version>0.1.0</nevermind.contracts.version>
         <ocean.secretstore.version>0.1.4</ocean.secretstore.version>
         <eddsa.version>0.3.0</eddsa.version>
         <jackson.version>2.9.8</jackson.version>
@@ -47,16 +47,16 @@
     </properties>
     <developers>
         <developer>
-            <name>Keyko dev team</name>
+            <name>Keyko</name>
             <email>root@keyko.io</email>
             <organization>Keyko</organization>
             <organizationUrl>https://www.keyko.io</organizationUrl>
         </developer>
     </developers>
     <scm>
-        <connection>scm:git:git://github.com/keyko-io/ocean-sdk-java.git</connection>
-        <developerConnection>scm:git:ssh://keyko-io/ocean-sdk-java.git</developerConnection>
-        <url>https://github.com/keyko-io/ocean-sdk-java/tree/master</url>
+        <connection>scm:git:git://github.com/keyko-io/nevermind-sdk-java.git</connection>
+        <developerConnection>scm:git:ssh://keyko-io/nevermind-sdk-java.git</developerConnection>
+        <url>https://github.com/keyko-io/nevermind-sdk-java/tree/master</url>
     </scm>
     <profiles>
         <profile>
@@ -437,9 +437,9 @@
         </dependency>
         <!-- Ocean Keeper Contracts: Web3j stubs & ABI's -->
         <dependency>
-            <groupId>io.keyko.ocean.keeper</groupId>
+            <groupId>io.keyko.nevermind</groupId>
             <artifactId>contracts</artifactId>
-            <version>${ocean.keeper.version}</version>
+            <version>${nevermind.contracts.version}</version>
         </dependency>
 
         <dependency>

@@ -19,6 +19,8 @@ declare -a contracts=(
     "TemplateStoreManager"
     "ThresholdCondition"
     "WhitelistingCondition"
+    "EscrowAccessSecretStoreTemplate"
+    "EscrowComputeExecutionTemplate"
 )
 
 for c in "${contracts[@]}"
