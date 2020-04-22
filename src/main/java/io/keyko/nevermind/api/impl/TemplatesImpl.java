@@ -1,6 +1,5 @@
 package io.keyko.nevermind.api.impl;
 
-import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.nevermind.api.TemplatesAPI;
 import io.keyko.nevermind.exceptions.EthereumException;
 import io.keyko.nevermind.manager.TemplatesManager;
@@ -8,7 +7,6 @@ import io.keyko.nevermind.models.service.template.TemplateSEA;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
-import java.util.List;
 
 
 public class TemplatesImpl implements TemplatesAPI {
@@ -26,19 +24,23 @@ public class TemplatesImpl implements TemplatesAPI {
     }
 
     @Override
-    public TransactionReceipt propose(String templateId)
-            throws EthereumException {
-        return templatesManager.proposeTemplate(templateId);
+    public TransactionReceipt propose(String templateAddress) throws EthereumException {
+        return templatesManager.proposeTemplate(templateAddress);
     }
 
     @Override
-    public TransactionReceipt approve(String templateId) throws EthereumException {
-        return templatesManager.approveTemplate(templateId);
+    public TransactionReceipt approve(String templateAddress) throws EthereumException {
+        return templatesManager.approveTemplate(templateAddress);
     }
 
     @Override
-    public TransactionReceipt revoke(String templateId) throws EthereumException {
-        return templatesManager.revokeTemplate(templateId);
+    public TransactionReceipt revoke(String templateAddress) throws EthereumException {
+        return templatesManager.revokeTemplate(templateAddress);
+    }
+
+    @Override
+    public boolean isApproved(String templateAddress) throws EthereumException {
+        return templatesManager.isTemplateApproved(templateAddress);
     }
 
     @Override
@@ -47,13 +49,8 @@ public class TemplatesImpl implements TemplatesAPI {
     }
 
     @Override
-    public TemplateSEA getTemplate(String templateId) throws EthereumException {
-        return templatesManager.getTemplate(templateId);
-    }
-
-    @Override
-    public boolean isApproved(String templateAddress) throws EthereumException {
-        return templatesManager.isTemplateApproved(templateAddress);
+    public TemplateSEA getTemplate(String templateAddress) throws EthereumException {
+        return templatesManager.getTemplate(templateAddress);
     }
 
 }
