@@ -1,4 +1,4 @@
-package io.keyko.nevermind.models.brizo;
+package io.keyko.nevermind.models.gateway;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.keyko.nevermind.models.AbstractModel;

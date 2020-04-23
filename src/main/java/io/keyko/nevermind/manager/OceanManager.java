@@ -13,7 +13,7 @@ import io.keyko.nevermind.models.DID;
 import io.keyko.nevermind.models.Order;
 import io.keyko.nevermind.models.asset.AssetMetadata;
 import io.keyko.nevermind.models.asset.OrderResult;
-import io.keyko.nevermind.models.brizo.ExecuteService;
+import io.keyko.nevermind.models.gateway.ExecuteService;
 import io.keyko.nevermind.exceptions.DIDFormatException;
 import io.keyko.nevermind.exceptions.DIDRegisterException;
 import io.keyko.nevermind.exceptions.DDOException;
@@ -27,7 +27,7 @@ import io.keyko.nevermind.exceptions.EscrowRewardException;
 import io.keyko.nevermind.exceptions.ConsumeServiceException;
 import io.keyko.nevermind.exceptions.EncryptionException;
 import io.keyko.nevermind.external.MetadataService;
-import io.keyko.nevermind.external.BrizoService;
+import io.keyko.nevermind.external.GatewayService;
 import io.keyko.nevermind.models.service.ProviderConfig;
 import io.keyko.nevermind.models.service.Service;
 import io.keyko.nevermind.models.service.ServiceBuilder;
@@ -684,7 +684,7 @@ public class OceanManager extends BaseManager {
 
         for (AssetMetadata.File file : files) {
 
-            // For each url we call to consume Brizo endpoint that requires consumerAddress, serviceAgreementId and url as a parameters
+            // For each url we call to consume Gateway endpoint that requires consumerAddress, serviceAgreementId and url as a parameters
             try {
 
                 if (null == file.url) {
@@ -696,7 +696,7 @@ public class OceanManager extends BaseManager {
                 String fileName = file.url.substring(file.url.lastIndexOf("/") + 1);
                 String destinationPath = basePath + File.separator + fileName;
 
-                BrizoService.downloadUrl(serviceEndpoint, checkConsumerAddress, serviceAgreementId, file.url, destinationPath);
+                GatewayService.downloadUrl(serviceEndpoint, checkConsumerAddress, serviceAgreementId, file.url, destinationPath);
 
             } catch (IOException e) {
                 String msg = "Error consuming asset with DID " + did.getDid() + " and Service Agreement " + serviceAgreementId;
@@ -762,7 +762,7 @@ public class OceanManager extends BaseManager {
                 throw new ConsumeServiceException(msg);
             }
 
-            return BrizoService.downloadUrl(serviceEndpoint, checkConsumerAddress, serviceAgreementId, file.url, isRangeRequest, rangeStart, rangeEnd);
+            return GatewayService.downloadUrl(serviceEndpoint, checkConsumerAddress, serviceAgreementId, file.url, isRangeRequest, rangeStart, rangeEnd);
 
         } catch (IOException e) {
             String msg = "Error consuming asset with DID " + did.getDid() + " and Service Agreement " + serviceAgreementId;
@@ -797,7 +797,7 @@ public class OceanManager extends BaseManager {
             String signature = EthereumHelper.ethSignMessage(this.getKeeperService().getWeb3(), hash, getMainAccount().address, getMainAccount().password);
 
             ExecuteService executeService = new ExecuteService(agreementId, workflowId, checkConsumerAddress, signature);
-            BrizoService.ServiceExecutionResult result = BrizoService.initializeServiceExecution(service.serviceEndpoint, executeService);
+            GatewayService.ServiceExecutionResult result = GatewayService.initializeServiceExecution(service.serviceEndpoint, executeService);
             if (!result.getOk())
                 throw new ServiceException("There was a problem initializing the execution of the service. HTTP Code: " + result.getCode());
 

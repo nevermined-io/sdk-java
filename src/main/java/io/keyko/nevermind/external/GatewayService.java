@@ -6,8 +6,8 @@ import io.keyko.common.helpers.HttpHelper;
 import io.keyko.common.helpers.HttpHelper.DownloadResult;
 import io.keyko.common.helpers.StringsHelper;
 import io.keyko.common.models.HttpResponse;
-import io.keyko.nevermind.models.brizo.ExecuteService;
-import io.keyko.nevermind.models.brizo.InitializeAccessSLA;
+import io.keyko.nevermind.models.gateway.ExecuteService;
+import io.keyko.nevermind.models.gateway.InitializeAccessSLA;
 import io.keyko.nevermind.models.service.Service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,11 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Service for Brizo's Integration
+ * Service for Gateway's Integration
  */
-public class BrizoService {
+public class GatewayService {
 
-    private static final Logger log = LogManager.getLogger(BrizoService.class);
+    private static final Logger log = LogManager.getLogger(GatewayService.class);
 
     public static class ServiceAgreementResult {
 
@@ -82,11 +82,11 @@ public class BrizoService {
 
 
     /**
-     * Calls a Brizo's endpoint to request the initialization of a new Service Agreement
+     * Calls a Gateway's endpoint to request the initialization of a new Service Agreement
      *
      * @param url     the url
      * @param payload the payload
-     * @return an object that indicates if Brizo initialized the Service Agreement correctly
+     * @return an object that indicates if the Gateway initialized the Service Agreement correctly
      */
     public static ServiceAgreementResult initializeAccessServiceAgreement(String url, InitializeAccessSLA payload) {
 
@@ -121,7 +121,7 @@ public class BrizoService {
 
 
     /**
-     * Calls a Brizo´s endpoint to download an asset
+     * Calls a Gateway´s endpoint to download an asset
      *
      * @param serviceEndpoint    the service endpoint
      * @param consumerAddress    the address of the consumer
@@ -148,7 +148,7 @@ public class BrizoService {
     }
 
     /**
-     * Calls a Brizo´s endpoint to download an asset
+     * Calls a Gateway endpoint to download an asset
      *
      * @param serviceEndpoint    the service endpoint
      * @param consumerAddress    the address of the consumer
@@ -173,7 +173,7 @@ public class BrizoService {
     }
 
     /**
-     * Calls a Brizo´s endpoint to download an asset
+     * Calls a Gateway endpoint to download an asset
      * @param serviceEndpoint the service endpoint
      * @param consumerAddress the address of the consumer
      * @param serviceAgreementId the serviceAgreement Id
@@ -200,11 +200,11 @@ public class BrizoService {
     }
 
     /**
-     * Calls a Brizo's endpoint to request the execution of a Compute Service
+     * Calls a Gateway endpoint to request the execution of a Compute Service
      *
      * @param serviceEndpoint the serviceEndpoint
      * @param payload the payload
-     * @return an object that indicates if Brizo initialized the Execution of the Service correctly
+     * @return an object that indicates if Gateway initialized the Execution of the Service correctly
      */
     public static ServiceExecutionResult initializeServiceExecution(String serviceEndpoint, ExecuteService payload) {
 

@@ -164,7 +164,7 @@ public class OceanManagerIT {
 */
         String metadataUrl= config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
         String provenanceUrl= config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
-        String consumeUrl= config.getString("brizo.url") + "/api/v1/brizo/services/consume";
+        String consumeUrl= config.getString("gateway.url") + "/api/v1/brizo/services/consume";
         String secretStoreEndpoint= config.getString("secretstore.url");
         String providerAddress= config.getString("provider.address");
 
@@ -181,7 +181,7 @@ public class OceanManagerIT {
 
         String metadataUrl= config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
         String provenanceUrl= config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
-        String consumeUrl= config.getString("brizo.url") + "/api/v1/brizo/services/consume";
+        String consumeUrl= config.getString("gateway.url") + "/api/v1/brizo/services/consume";
         String secretStoreEndpoint= config.getString("secretstore.url");
         String providerAddress= config.getString("provider.address");
 

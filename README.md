@@ -68,7 +68,7 @@ metadata.url="http://localhost:5000"
 # Used in the internal communications between Docker containers (Spree network)
 metadata-internal.url="http://172.15.0.15:5000" # Running Nevermind tools
 # metadata-internal.url="http://localhost:5000" # Running local metadata
-brizo.url="http://localhost:8030"
+gateway.url="http://localhost:8030"
 secretstore.url="http://localhost:12001"
 #secretstore.url="https://secret-store.dev-drops.com"
 
@@ -150,7 +150,7 @@ Once you have initialized the API you can call the methods through their corresp
 If you are using [Nevermind Tools](https://github.com/keyko-io/nevermind-tools/) for playing with the Nevermind stack, 
 you can use the following command to run the components necessary to have a fully functional environment:
 
-`KEEPER_VERSION=v0.12.7 BRIZO_VERSION=v0.3.0 METADATA_VERSION=v1.0.3 bash start_ocean.sh --no-commons --local-spree-node`
+`KEEPER_VERSION=v0.12.7 GATEWAY_VERSION=v0.3.0 METADATA_VERSION=v1.0.3 bash start_ocean.sh --no-commons --local-spree-node`
 
 After a few minutes, when Keeper has deployed the contracts, the ABI files describing the Smart Contracts can be found 
 in the `${HOME}/.ocean/keeper-contracts/artifacts/` folder. Depending on the network you are using, each ABI includes the 
