@@ -139,7 +139,7 @@ public class DDOTest {
         assertEquals(0,  metadataService.attributes.main.workflow.stages.get(0).input.get(0).index.intValue());
         assertEquals("did:op:12345",  metadataService.attributes.main.workflow.stages.get(0).input.get(0).id.toString());
         assertEquals("did:op:abcde",  metadataService.attributes.main.workflow.stages.get(0).transformation.id.toString());
-        assertEquals("https://localhost:5000/api/v1/aquarius/assets/ddo/",
+        assertEquals("https://localhost:5000/api/v1/metadata/assets/ddo/",
                 metadataService.attributes.main.workflow.stages.get(0).output.metadataUrl);
     }
 

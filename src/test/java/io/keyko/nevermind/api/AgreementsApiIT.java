@@ -43,9 +43,9 @@ public class AgreementsApiIT {
         METADATA_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(METADATA_JSON_SAMPLE)));
         metadataBase = DDO.fromJSON(new TypeReference<AssetMetadata>() {}, METADATA_JSON_CONTENT);
 
-        String metadataUrl = config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
-        String provenanceUrl = config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
-        String consumeUrl = config.getString("gateway.url") + "/api/v1/brizo/services/consume";
+        String metadataUrl = config.getString("metadata-internal.url") + "/api/v1/metadata/assets/ddo/{did}";
+        String provenanceUrl = config.getString("metadata-internal.url") + "/api/v1/metadata/assets/provenance/{did}";
+        String consumeUrl = config.getString("gateway.url") + "/api/v1/gateway/services/consume";
         String secretStoreEndpoint = config.getString("secretstore.url");
         String providerAddress = config.getString("provider.address");
 

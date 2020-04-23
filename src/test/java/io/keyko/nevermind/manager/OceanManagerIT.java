@@ -162,9 +162,9 @@ public class OceanManagerIT {
 
         metadataBase = DDO.fromJSON(new TypeReference<AssetMetadata>() {}, completeDDO.services.get(0).toJson());
 */
-        String metadataUrl= config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
-        String provenanceUrl= config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
-        String consumeUrl= config.getString("gateway.url") + "/api/v1/brizo/services/consume";
+        String metadataUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/ddo/{did}";
+        String provenanceUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/provenance/{did}";
+        String consumeUrl= config.getString("gateway.url") + "/api/v1/gateway/services/consume";
         String secretStoreEndpoint= config.getString("secretstore.url");
         String providerAddress= config.getString("provider.address");
 
@@ -179,9 +179,9 @@ public class OceanManagerIT {
     @Test
     public void registerAsset() throws Exception {
 
-        String metadataUrl= config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
-        String provenanceUrl= config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
-        String consumeUrl= config.getString("gateway.url") + "/api/v1/brizo/services/consume";
+        String metadataUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/ddo/{did}";
+        String provenanceUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/provenance/{did}";
+        String consumeUrl= config.getString("gateway.url") + "/api/v1/gateway/services/consume";
         String secretStoreEndpoint= config.getString("secretstore.url");
         String providerAddress= config.getString("provider.address");
 
@@ -206,7 +206,7 @@ public class OceanManagerIT {
 
         DID did= DID.builder();
         String oldUrl= "http://mymetadata.io/api";
-        String newUrl= config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
+        String newUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/ddo/{did}";
 
         String checksum = "0xd190bc85ee50643baffe7afe84ec6a9dd5212b67223523cd8e4d88f9069255fb";
 
@@ -229,7 +229,7 @@ public class OceanManagerIT {
     @Test(expected = DDOException.class)
     public void resolveDIDException() throws Exception {
         DID did= DID.builder();
-        String url= "http://badhostname.inet:5000/api/v1/aquarius/assets/ddo/{did}";
+        String url= "http://badhostname.inet:5000/api/v1/metadata/assets/ddo/{did}";
         String checksum = "0xd190bc85ee50643baffe7afe84ec6a9dd5212b67223523cd8e4d88f9069255fb";
 
         ddoBase.id = did.toString();

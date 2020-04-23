@@ -74,7 +74,7 @@ public class BaseManagerTest {
 
         METADATA_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(METADATA_JSON_SAMPLE)));
         assetMetadata = DDO.fromJSON(new TypeReference<AssetMetadata>() {}, METADATA_JSON_CONTENT);
-        metadataService = new io.keyko.nevermind.models.service.types.MetadataService(assetMetadata, "http://localhost:5000/api/v1/aquarius/assets/ddo/{did}");
+        metadataService = new io.keyko.nevermind.models.service.types.MetadataService(assetMetadata, "http://localhost:5000/api/v1/metadata/assets/ddo/{did}");
 
     }
 

@@ -23,7 +23,7 @@ public class MetadataService {
 
     private static final Logger log = LogManager.getLogger(MetadataService.class);
 
-    private static final String DDO_URI = "/api/v1/aquarius/assets/ddo";
+    private static final String DDO_URI = "/api/v1/metadata/assets/ddo";
     private String ddoEndpoint;
 
     /**

@@ -72,9 +72,9 @@ public class AssetsApiIT {
         computingProvider = DDO.fromJSON(new TypeReference<ComputingService.Provider>() {
         },  COMPUTING_PROVIDER_JSON_CONTENT);
 
-        String metadataUrl = config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
-        String provenanceUrl = config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
-        String consumeUrl = config.getString("gateway.url") + "/api/v1/brizo/services/consume";
+        String metadataUrl = config.getString("metadata-internal.url") + "/api/v1/metadata/assets/ddo/{did}";
+        String provenanceUrl = config.getString("metadata-internal.url") + "/api/v1/metadata/assets/provenance/{did}";
+        String consumeUrl = config.getString("gateway.url") + "/api/v1/gateway/services/consume";
         String secretStoreEndpoint = config.getString("secretstore.url");
         String providerAddress = config.getString("provider.address");
 
@@ -157,7 +157,7 @@ public class AssetsApiIT {
     public void orderComputingService() throws Exception {
 
         metadataBaseAlgorithm.attributes.main.dateCreated = new Date();
-        String computeServiceEndpoint =   config.getString("gateway.url") + "/api/v1/brizo/services/exec";
+        String computeServiceEndpoint =   config.getString("gateway.url") + "/api/v1/gateway/services/exec";
         providerConfig.setAccessEndpoint(computeServiceEndpoint);
         DDO ddo = oceanAPI.getAssetsAPI().createComputingService(metadataBaseAlgorithm, providerConfig, computingProvider);
 
