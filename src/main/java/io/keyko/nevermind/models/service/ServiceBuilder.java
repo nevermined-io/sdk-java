@@ -58,7 +58,7 @@ public interface ServiceBuilder {
 
         serviceAgreementTemplate.events = Arrays.asList(executeAgreementEvent);
 
-        // The templateId of the AccessService is the address of the AgreementStoreManager contract
+        // The templateId of the AccessService is the address of the escrowAccessSecretStoreTemplate contract
         ComputingService computingService = new ComputingService(providerConfig.getAccessEndpoint(),
                 Service.DEFAULT_COMPUTING_INDEX,
                 serviceAgreementTemplate,
@@ -151,7 +151,7 @@ public interface ServiceBuilder {
      * @param lockRewardConditionAddress the address of the lockReward Condition
      * @return a Map with the params of the Access ConditionStatusMap
      */
-    public static  Map<String, Object> getAccessConditionParams(String did, String price,  String escrowRewardAddress, String lockRewardConditionAddress, String accessSecretStoreConditionAddress) {
+    static  Map<String, Object> getAccessConditionParams(String did, String price,  String escrowRewardAddress, String lockRewardConditionAddress, String accessSecretStoreConditionAddress) {
         Map<String, Object> params = new HashMap<>();
         params.put("parameter.did", did);
         params.put("parameter.price", price);
@@ -166,7 +166,7 @@ public interface ServiceBuilder {
     }
 
     /**
-     * Gets the Comnputing ConditionStatusMap Params of a DDO
+     * Gets the Computing ConditionStatusMap Params of a DDO
      *
      * @param did   the did
      * @param price the price
@@ -175,7 +175,7 @@ public interface ServiceBuilder {
      * @param execComputeConditionAddress the address of the execCoompute condition
      * @return a Map with the params of the Access ConditionStatusMap
      */
-    public static  Map<String, Object> getComputingConditionParams(String did, String price,  String escrowRewardAddress, String lockRewardConditionAddress, String execComputeConditionAddress) {
+    static  Map<String, Object> getComputingConditionParams(String did, String price,  String escrowRewardAddress, String lockRewardConditionAddress, String execComputeConditionAddress) {
         Map<String, Object> params = new HashMap<>();
         params.put("parameter.did", did);
         params.put("parameter.price", price);

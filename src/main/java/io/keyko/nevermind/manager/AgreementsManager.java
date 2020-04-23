@@ -89,10 +89,10 @@ public class AgreementsManager extends BaseManager {
      * @throws Exception exception
      */
     public Boolean createComputeAgreement(String agreementId, DDO ddo, List<byte[]> conditionIds,
-                                         String accessConsumer, Service service) throws Exception {
+                                          String accessConsumer, Service service) throws Exception {
 
         log.debug("Creating agreement with id: " + agreementId);
-        TransactionReceipt txReceipt = escrowAccessSecretStoreTemplate.createAgreement(
+        TransactionReceipt txReceipt = escrowComputeExecutionTemplate.createAgreement(
                 EncodingHelper.hexStringToBytes("0x" + agreementId),
                 EncodingHelper.hexStringToBytes("0x" + ddo.getDid().getHash()),
                 conditionIds,
