@@ -42,7 +42,7 @@ Typically in Maven you can add nevermind sdk as a dependency:
 
 ```xml
 <dependency>
-  <groupId>io.keyko.ocean</groupId>
+  <groupId>io.keyko.nevermind</groupId>
   <artifactId>api</artifactId>
   <version>0.1.0</version>
 </dependency>
@@ -63,25 +63,33 @@ keeper.gasPrice=100000000000
 keeper.tx.attempts=50
 keeper.tx.sleepDuration=2000
 
+
 aquarius.url="http://localhost:5000"
-
+# Used in the internal communications between Docker containers (Spree network)
+aquarius-internal.url="http://172.15.0.15:5000" # Running Barge
+# aquarius-internal.url="http://localhost:5000" # Running local aquarius
+brizo.url="http://localhost:8030"
 secretstore.url="http://localhost:12001"
+#secretstore.url="https://secret-store.dev-drops.com"
 
-provider.address="0x413c9ba0a05b8a600899b41b0c62dd661e689354"
+provider.address="0x068ed00cf0441e4829d9784fcbe7b9e26d4bd8d0"
 
 # Contracts addresses
-contract.SignCondition.address="0xEEE56e2a630DD29F9A628d618E58bb173911F393"
-contract.HashLockCondition.address="0x85cCa2B01adddCA8Df221e6027EE0D7716224202"
-contract.LockRewardCondition.address="0x3a3926f3f88F1eE05164404f93FDb3887cbE8e35"
-contract.AccessSecretStoreCondition.address="0x19513460bc16254c74AE806683E906478A42B543"
-contract.EscrowReward.address="0x8F006DbB3727d18f032C5618595ecDD2EDE13b61"
-contract.EscrowAccessSecretStoreTemplate.address="0xD306b5edCDC7819E1EB80B43De6548931706A3f4"
-contract.OceanToken.address="0x726baA2f854A3BEC2378a707AeB38c9d933Ebad6"
-contract.Dispenser.address="0xF152cF3c67dFD41a317eAe8fAc0e1e8E98724A13"
-contract.DIDRegistry.address="0xc354ba9AD5dF1023C2640b14A09E61a500F21546"
-contract.ConditionStoreManager.address="0x336EFb3c9E56F713dFdA4CDB3Dd0882F3226b6eE"
-contract.TemplateStoreManager.address="0xfeA10BBb093d7fcb1EDf575Aa7e28d37b9DcFcE9"
-contract.AgreementStoreManager.address="0x645439117eB378a6d35148452E287a038666Ed67"
+
+contract.SignCondition.address="0x8F006DbB3727d18f032C5618595ecDD2EDE13b61"
+contract.HashLockCondition.address="0x19513460bc16254c74AE806683E906478A42B543"
+contract.LockRewardCondition.address="0x4999A8428d1D42fc955FbBC2f1E22323a55B6f86"
+contract.AccessSecretStoreCondition.address="0x3Ef2ebF03002D828943EB1AbbFC470D1A53c6B21"
+contract.EscrowReward.address="0xE6E685823Ddd2e0D0B29917D84D687E5431136F6"
+contract.EscrowAccessSecretStoreTemplate.address="0x3c83D8E1F1BF33Ebb1E8D5A2ac56cE482e54caCd"
+contract.OceanToken.address="0xEEE56e2a630DD29F9A628d618E58bb173911F393"
+contract.Dispenser.address="0x85cCa2B01adddCA8Df221e6027EE0D7716224202"
+contract.DIDRegistry.address="0xfeA10BBb093d7fcb1EDf575Aa7e28d37b9DcFcE9"
+contract.ConditionStoreManager.address="0x645439117eB378a6d35148452E287a038666Ed67"
+contract.TemplateStoreManager.address="0x3a3926f3f88F1eE05164404f93FDb3887cbE8e35"
+contract.AgreementStoreManager.address="0x15338ade17C4b6F65E4ff7b3aCE22AAdED00aC4d"
+contract.ComputeExecutionCondition.address="0x884AAAAf48D4A7B4Dc4CB9B2cf47a150b3d535A6"
+contract.EscrowComputeExecutionTemplate.address="0x02175de5A7F168517688e3E93f55936C9c2C7A19"
 
 consume.basePath = "/tmp"
 
@@ -142,7 +150,7 @@ Once you have initialized the API you can call the methods through their corresp
 If you are using [Nevermind Tools](https://github.com/keyko-io/nevermind-tools/) for playing with the Nevermind stack, 
 you can use the following command to run the components necessary to have a fully functional environment:
 
-`KEEPER_VERSION=v0.13.2 BRIZO_VERSION=v0.3.12 AQUARIUS_VERSION=v0.4.2 bash start_ocean.sh --no-pleuston --local-spree-node`
+`KEEPER_VERSION=v0.12.7 BRIZO_VERSION=v0.3.0 AQUARIUS_VERSION=v1.0.3 bash start_ocean.sh --no-commons --local-spree-node`
 
 After a few minutes, when Keeper has deployed the contracts, the ABI files describing the Smart Contracts can be found 
 in the `${HOME}/.ocean/keeper-contracts/artifacts/` folder. Depending on the network you are using, each ABI includes the 
