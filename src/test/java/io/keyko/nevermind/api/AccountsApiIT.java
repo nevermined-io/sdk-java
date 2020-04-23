@@ -16,24 +16,24 @@ import static org.junit.Assert.*;
 
 public class AccountsApiIT {
 
-    private static OceanAPI oceanAPI;
+    private static NevermindAPI nevermindAPI;
     private static final Logger log = LogManager.getLogger(AccountsApiIT.class);
 
     @BeforeClass
     public static void setUp() throws Exception {
 
         Config config = ConfigFactory.load();
-        oceanAPI = OceanAPI.getInstance(config);
+        nevermindAPI = NevermindAPI.getInstance(config);
 
-        assertNotNull(oceanAPI.getAccountsAPI());
-        assertNotNull(oceanAPI.getMainAccount());
+        assertNotNull(nevermindAPI.getAccountsAPI());
+        assertNotNull(nevermindAPI.getMainAccount());
 
     }
 
     @Test
     public void list() throws Exception {
 
-        List<Account> accounts = oceanAPI.getAccountsAPI().list();
+        List<Account> accounts = nevermindAPI.getAccountsAPI().list();
         assertNotNull(accounts);
         assertFalse(accounts.isEmpty());
     }
@@ -41,10 +41,10 @@ public class AccountsApiIT {
     @Test
     public void balance() throws Exception {
 
-        Balance balance = oceanAPI.getAccountsAPI().balance(oceanAPI.getMainAccount());
+        Balance balance = nevermindAPI.getAccountsAPI().balance(nevermindAPI.getMainAccount());
         assertNotNull(balance);
 
-        log.debug("Balance of " + oceanAPI.getMainAccount().address);
+        log.debug("Balance of " + nevermindAPI.getMainAccount().address);
         log.debug("Eth: " + balance.getEth());
         log.debug("Drops: " + balance.getDrops());
 

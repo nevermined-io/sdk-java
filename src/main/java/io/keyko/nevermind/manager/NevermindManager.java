@@ -57,13 +57,13 @@ import java.util.concurrent.TimeoutException;
 /**
  * Handles several operations related with Ocean's flow
  */
-public class OceanManager extends BaseManager {
+public class NevermindManager extends BaseManager {
 
-    private static final Logger log = LogManager.getLogger(OceanManager.class);
+    private static final Logger log = LogManager.getLogger(NevermindManager.class);
     private AgreementsManager agreementsManager;
     private TemplatesManager templatesManager;
 
-    protected OceanManager(KeeperService keeperService, MetadataService metadataService) {
+    protected NevermindManager(KeeperService keeperService, MetadataService metadataService) {
         super(keeperService, metadataService);
     }
 
@@ -75,16 +75,16 @@ public class OceanManager extends BaseManager {
      * @param metadataService Provider Dto
      * @return OceanManager
      */
-    public static OceanManager getInstance(KeeperService keeperService, MetadataService metadataService) {
-        return new OceanManager(keeperService, metadataService);
+    public static NevermindManager getInstance(KeeperService keeperService, MetadataService metadataService) {
+        return new NevermindManager(keeperService, metadataService);
     }
 
-    public OceanManager setAgreementManager(AgreementsManager agreementManager){
+    public NevermindManager setAgreementManager(AgreementsManager agreementManager){
         this.agreementsManager = agreementManager;
         return this;
     }
 
-    public OceanManager setTemplatesManager(TemplatesManager templatesManager){
+    public NevermindManager setTemplatesManager(TemplatesManager templatesManager){
         this.templatesManager = templatesManager;
         return this;
     }

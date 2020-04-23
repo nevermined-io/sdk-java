@@ -4,7 +4,7 @@ package io.keyko.nevermind.exceptions;
 /**
  * Business Exception related with Service Agreement issues
  */
-public class ServiceAgreementException extends OceanException {
+public class ServiceAgreementException extends NevermindException {
 
     private String serviceAgreementId;
 

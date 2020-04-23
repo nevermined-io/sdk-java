@@ -27,9 +27,9 @@ import java.util.Arrays;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class OceanManagerIT {
+public class NevermindManagerIT {
 
-    private static final Logger log = LogManager.getLogger(OceanManagerIT.class);
+    private static final Logger log = LogManager.getLogger(NevermindManagerIT.class);
 
     private static final String OEP7_DATASET_EXAMPLE_URL = "https://raw.githubusercontent.com/oceanprotocol/OEPs/master/8/v0.4/ddo-example-access.json";
 
@@ -41,8 +41,8 @@ public class OceanManagerIT {
     private static DDO ddoBase;
     private static AssetMetadata metadataBase;
 
-    private static OceanManager managerPublisher;
-    private static OceanManager managerConsumer;
+    private static NevermindManager managerPublisher;
+    private static NevermindManager managerConsumer;
 
     private static KeeperService keeperPublisher;
     private static KeeperService keeperConsumer;
@@ -111,7 +111,7 @@ public class OceanManagerIT {
 
 
         // Initializing the OceanManager for the Publisher
-        managerPublisher = OceanManager.getInstance(keeperPublisher, metadataService);
+        managerPublisher = NevermindManager.getInstance(keeperPublisher, metadataService);
         managerPublisher.setSecretStoreManager(secretStore)
                 .setDidRegistryContract(didRegistry)
                 .setEscrowReward(escrowReward)
@@ -122,7 +122,7 @@ public class OceanManagerIT {
                 .setEvmDto(evmDto);
 
         // Initializing the OceanManager for the Consumer
-        managerConsumer = OceanManager.getInstance(keeperConsumer, metadataService);
+        managerConsumer = NevermindManager.getInstance(keeperConsumer, metadataService);
         managerConsumer.setSecretStoreManager(secretStore)
                 .setDidRegistryContract(didRegistry)
                 .setEscrowReward(escrowReward)

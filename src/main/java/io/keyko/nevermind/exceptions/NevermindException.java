@@ -3,13 +3,13 @@ package io.keyko.nevermind.exceptions;
 /**
  * Base Class to implement a hierarchy of Functional Ocean's Exceptions
  */
-public abstract class OceanException extends Exception {
+public abstract class NevermindException extends Exception {
 
-    public OceanException(String message, Throwable e) {
+    public NevermindException(String message, Throwable e) {
         super(message, e);
     }
 
-    public OceanException(String message) {
+    public NevermindException(String message) {
         super(message);
     }
 }

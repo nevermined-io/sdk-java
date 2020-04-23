@@ -1,6 +1,6 @@
 package io.keyko.nevermind.exceptions;
 
-public class TokenApproveException extends OceanException {
+public class TokenApproveException extends NevermindException {
 
     public TokenApproveException(String message, Throwable e) {
         super(message, e);

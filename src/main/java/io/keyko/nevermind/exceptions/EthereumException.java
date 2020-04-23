@@ -3,7 +3,7 @@ package io.keyko.nevermind.exceptions;
 /**
  * Business Exception related with Ethereum interactions issues
  */
-public class EthereumException extends OceanException {
+public class EthereumException extends NevermindException {
 
 
     public EthereumException(String message, Throwable e) {

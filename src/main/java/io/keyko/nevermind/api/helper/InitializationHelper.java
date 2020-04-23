@@ -1,11 +1,11 @@
 package io.keyko.nevermind.api.helper;
 
 import io.keyko.common.web3.KeeperService;
+import io.keyko.nevermind.api.config.NevermindConfig;
 import io.keyko.nevermind.manager.*;
 import io.keyko.nevermind.contracts.*;
 import com.oceanprotocol.secretstore.core.EvmDto;
 import com.oceanprotocol.secretstore.core.SecretStoreDto;
-import io.keyko.nevermind.api.config.OceanConfig;
 import io.keyko.nevermind.external.MetadataService;
 import org.web3j.crypto.CipherException;
 
@@ -14,17 +14,17 @@ import java.io.IOException;
 /**
  * Helper to initialize all the managers, services and contracts needed for the API
  */
-public class OceanInitializationHelper {
+public class InitializationHelper {
 
-    private OceanConfig oceanConfig;
+    private NevermindConfig nevermindConfig;
 
     /**
      * Constructor
      *
-     * @param oceanConfig object with the configuration
+     * @param nevermindConfig object with the configuration
      */
-    public OceanInitializationHelper(OceanConfig oceanConfig) {
-        this.oceanConfig = oceanConfig;
+    public InitializationHelper(NevermindConfig nevermindConfig) {
+        this.nevermindConfig = nevermindConfig;
     }
 
     /**
@@ -37,16 +37,16 @@ public class OceanInitializationHelper {
     public KeeperService getKeeper() throws IOException, CipherException {
 
         KeeperService keeper = KeeperService.getInstance(
-                oceanConfig.getKeeperUrl(),
-                oceanConfig.getMainAccountAddress(),
-                oceanConfig.getMainAccountPassword(),
-                oceanConfig.getMainAccountCredentialsFile(),
-                oceanConfig.getKeeperTxAttempts(),
-                oceanConfig.getKeeperTxSleepDuration()
+                nevermindConfig.getKeeperUrl(),
+                nevermindConfig.getMainAccountAddress(),
+                nevermindConfig.getMainAccountPassword(),
+                nevermindConfig.getMainAccountCredentialsFile(),
+                nevermindConfig.getKeeperTxAttempts(),
+                nevermindConfig.getKeeperTxSleepDuration()
         );
 
-        keeper.setGasLimit(oceanConfig.getKeeperGasLimit())
-                .setGasPrice(oceanConfig.getKeeperGasPrice());
+        keeper.setGasLimit(nevermindConfig.getKeeperGasLimit())
+                .setGasPrice(nevermindConfig.getKeeperGasPrice());
 
         return keeper;
     }
@@ -57,7 +57,7 @@ public class OceanInitializationHelper {
      * @return an initialized MetadataService object
      */
     public MetadataService getMetadataService() {
-        return MetadataService.getInstance(oceanConfig.getMetadataUrl());
+        return MetadataService.getInstance(nevermindConfig.getMetadataUrl());
     }
 
     /**
@@ -66,7 +66,7 @@ public class OceanInitializationHelper {
      * @return an initializedSecretStoreDto object
      */
     public SecretStoreDto getSecretStoreDto() {
-        return SecretStoreDto.builder(oceanConfig.getSecretStoreUrl());
+        return SecretStoreDto.builder(nevermindConfig.getSecretStoreUrl());
     }
 
     /**
@@ -76,9 +76,9 @@ public class OceanInitializationHelper {
      */
     public EvmDto getEvmDto() {
         return EvmDto.builder(
-                oceanConfig.getKeeperUrl(),
-                oceanConfig.getMainAccountAddress(),
-                oceanConfig.getMainAccountPassword()
+                nevermindConfig.getKeeperUrl(),
+                nevermindConfig.getMainAccountAddress(),
+                nevermindConfig.getMainAccountPassword()
         );
     }
 
@@ -102,8 +102,8 @@ public class OceanInitializationHelper {
      * @throws IOException     IOException
      * @throws CipherException CipherException
      */
-    public OceanManager getOceanManager(KeeperService keeperService, MetadataService metadataService) throws IOException, CipherException {
-        return OceanManager.getInstance(keeperService, metadataService);
+    public NevermindManager getOceanManager(KeeperService keeperService, MetadataService metadataService) throws IOException, CipherException {
+        return NevermindManager.getInstance(keeperService, metadataService);
     }
 
     /**
@@ -182,7 +182,7 @@ public class OceanInitializationHelper {
     public OceanToken loadOceanTokenContract(KeeperService keeper) throws IOException, CipherException {
 
         return OceanToken.load(
-                oceanConfig.getTokenAddress(),
+                nevermindConfig.getTokenAddress(),
                 keeper.getWeb3(),
 //                keeper.getCredentials(),
                 keeper.getTxManager(),
@@ -199,7 +199,7 @@ public class OceanInitializationHelper {
      */
     public TemplateStoreManager loadTemplateStoreManagerContract(KeeperService keeper) throws IOException, CipherException {
         return TemplateStoreManager.load(
-                oceanConfig.getTemplateStoreManagerAddress(),
+                nevermindConfig.getTemplateStoreManagerAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider());
@@ -216,7 +216,7 @@ public class OceanInitializationHelper {
      */
     public Dispenser loadDispenserContract(KeeperService keeper) throws IOException, CipherException {
         return Dispenser.load(
-                oceanConfig.getDispenserAddress(),
+                nevermindConfig.getDispenserAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
@@ -235,7 +235,7 @@ public class OceanInitializationHelper {
     public DIDRegistry loadDIDRegistryContract(KeeperService keeper) throws IOException, CipherException {
 
         return DIDRegistry.load(
-                oceanConfig.getDidRegistryAddress(),
+                nevermindConfig.getDidRegistryAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
@@ -252,7 +252,7 @@ public class OceanInitializationHelper {
      */
     public EscrowAccessSecretStoreTemplate loadEscrowAccessSecretStoreTemplate(KeeperService keeper) throws IOException, CipherException {
         return EscrowAccessSecretStoreTemplate.load(
-                oceanConfig.getEscrowAccessSecretStoreTemplateAddress(),
+                nevermindConfig.getEscrowAccessSecretStoreTemplateAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider());
@@ -268,7 +268,7 @@ public class OceanInitializationHelper {
      */
     public LockRewardCondition loadLockRewardCondition(KeeperService keeper) throws IOException, CipherException {
         return LockRewardCondition.load(
-                oceanConfig.getLockrewardConditionsAddress(),
+                nevermindConfig.getLockrewardConditionsAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
@@ -285,7 +285,7 @@ public class OceanInitializationHelper {
      */
     public EscrowReward loadEscrowReward(KeeperService keeper) throws IOException, CipherException {
         return EscrowReward.load(
-                oceanConfig.getEscrowRewardConditionsAddress(),
+                nevermindConfig.getEscrowRewardConditionsAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
@@ -302,7 +302,7 @@ public class OceanInitializationHelper {
      */
     public AgreementStoreManager loadAgreementStoreManager(KeeperService keeper) throws IOException, CipherException {
         return AgreementStoreManager.load(
-                oceanConfig.getAgreementStoreManagerAddress(),
+                nevermindConfig.getAgreementStoreManagerAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
@@ -320,7 +320,7 @@ public class OceanInitializationHelper {
      */
     public ConditionStoreManager loadConditionStoreManager(KeeperService keeper) throws IOException, CipherException {
         return ConditionStoreManager.load(
-                oceanConfig.getConditionStoreManagerAddress(),
+                nevermindConfig.getConditionStoreManagerAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
@@ -337,7 +337,7 @@ public class OceanInitializationHelper {
      */
     public AccessSecretStoreCondition loadAccessSecretStoreCondition(KeeperService keeper) throws IOException, CipherException {
         return AccessSecretStoreCondition.load(
-                oceanConfig.getAccessSsConditionsAddress(),
+                nevermindConfig.getAccessSsConditionsAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
@@ -354,7 +354,7 @@ public class OceanInitializationHelper {
      */
     public EscrowComputeExecutionTemplate loadEscrowComputeExecutionTemplate(KeeperService keeper) throws IOException, CipherException {
         return EscrowComputeExecutionTemplate.load(
-                oceanConfig.getEscrowComputeExecutionTemplateAddress(),
+                nevermindConfig.getEscrowComputeExecutionTemplateAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider());
@@ -370,7 +370,7 @@ public class OceanInitializationHelper {
      */
     public ComputeExecutionCondition loadComputeExecutionCondition(KeeperService keeper) throws IOException, CipherException {
         return ComputeExecutionCondition.load(
-                oceanConfig.getComputeExecutionConditionAddress(),
+                nevermindConfig.getComputeExecutionConditionAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()

@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Class that keeps all the configurations to initialize the API
  */
-public class OceanConfig {
+public class NevermindConfig {
 
     public static final String KEEPER_URL = "keeper.url";
     public static final String KEEPER_GAS_LIMIT = "keeper.gasLimit";
@@ -63,7 +63,7 @@ public class OceanConfig {
     /**
      * Class to hold the result of a Configuration's validation
      */
-    public static class OceanConfigValidation {
+    public static class NevermindConfigValidation {
 
         private Boolean valid = true;
         private List<String> errors = new ArrayList<>();
@@ -94,95 +94,95 @@ public class OceanConfig {
     /**
      * Validates that all the needed properties are set in the configuration
      *
-     * @param oceanConfig the configuration
-     * @return an OceanConfigValidation object that indicates if the configuration is valid
+     * @param nevermindConfig the configuration
+     * @return an NevermindConfigValidation object that indicates if the configuration is valid
      */
-    public static OceanConfigValidation validate(OceanConfig oceanConfig) {
+    public static NevermindConfigValidation validate(NevermindConfig nevermindConfig) {
 
-        OceanConfigValidation validation = new OceanConfigValidation();
+        NevermindConfigValidation validation = new NevermindConfigValidation();
 
-        if (oceanConfig.getDidRegistryAddress() == null || oceanConfig.getDidRegistryAddress().isEmpty()) {
+        if (nevermindConfig.getDidRegistryAddress() == null || nevermindConfig.getDidRegistryAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of DIDRegistry Contract must be set with the property "
-                    + OceanConfig.DID_REGISTRY_ADDRESS);
+                    + NevermindConfig.DID_REGISTRY_ADDRESS);
         }
 
 
-        if (oceanConfig.getAgreementStoreManagerAddress() == null || oceanConfig.getAgreementStoreManagerAddress().isEmpty()) {
+        if (nevermindConfig.getAgreementStoreManagerAddress() == null || nevermindConfig.getAgreementStoreManagerAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of agreementStoreManager Contract must be set with the property "
-                    + OceanConfig.AGREEMENT_STORE_MANAGER_ADDRESS);
+                    + NevermindConfig.AGREEMENT_STORE_MANAGER_ADDRESS);
         }
-        if (oceanConfig.getConditionStoreManagerAddress() == null || oceanConfig.getConditionStoreManagerAddress().isEmpty()) {
+        if (nevermindConfig.getConditionStoreManagerAddress() == null || nevermindConfig.getConditionStoreManagerAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of conditionStoreManager Contract must be set with the property "
-                    + OceanConfig.CONDITION_STORE_MANAGER_ADDRESS);
+                    + NevermindConfig.CONDITION_STORE_MANAGER_ADDRESS);
         }
 
-        if (oceanConfig.getEscrowRewardConditionsAddress() == null || oceanConfig.getEscrowRewardConditionsAddress().isEmpty()) {
+        if (nevermindConfig.getEscrowRewardConditionsAddress() == null || nevermindConfig.getEscrowRewardConditionsAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of EscrowReward Contract must be set with the property "
-                    + OceanConfig.ESCROWREWARD_CONDITIONS_ADDRESS);
+                    + NevermindConfig.ESCROWREWARD_CONDITIONS_ADDRESS);
         }
 
-        if (oceanConfig.getEscrowAccessSecretStoreTemplateAddress() == null || oceanConfig.getEscrowAccessSecretStoreTemplateAddress().isEmpty()) {
+        if (nevermindConfig.getEscrowAccessSecretStoreTemplateAddress() == null || nevermindConfig.getEscrowAccessSecretStoreTemplateAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of EscrowAccessSecretStoreTemplate Contract must be set with the property "
-                    + OceanConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS);
+                    + NevermindConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS);
         }
 
-        if (oceanConfig.getLockrewardConditionsAddress() == null || oceanConfig.getLockrewardConditionsAddress().isEmpty()) {
+        if (nevermindConfig.getLockrewardConditionsAddress() == null || nevermindConfig.getLockrewardConditionsAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of LockReward Contract must be set with the property "
-                    + OceanConfig.LOCKREWARD_CONDITIONS_ADDRESS);
+                    + NevermindConfig.LOCKREWARD_CONDITIONS_ADDRESS);
         }
 
-        if (oceanConfig.getAccessSsConditionsAddress() == null || oceanConfig.getAccessSsConditionsAddress().isEmpty()) {
+        if (nevermindConfig.getAccessSsConditionsAddress() == null || nevermindConfig.getAccessSsConditionsAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of AccessSecretsToreConditions Contract must be set with the property "
-                    + OceanConfig.ACCESS_SS_CONDITIONS_ADDRESS);
+                    + NevermindConfig.ACCESS_SS_CONDITIONS_ADDRESS);
         }
 
-        if (oceanConfig.getTemplateStoreManagerAddress() == null || oceanConfig.getTemplateStoreManagerAddress().isEmpty()) {
+        if (nevermindConfig.getTemplateStoreManagerAddress() == null || nevermindConfig.getTemplateStoreManagerAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of TemplateStoreManager Contract must be set with the property "
-                    + OceanConfig.TEMPLATE_STORE_MANAGER_ADDRESS);
+                    + NevermindConfig.TEMPLATE_STORE_MANAGER_ADDRESS);
         }
 
-        if (oceanConfig.getComputeExecutionConditionAddress() == null || oceanConfig.getComputeExecutionConditionAddress().isEmpty()) {
+        if (nevermindConfig.getComputeExecutionConditionAddress() == null || nevermindConfig.getComputeExecutionConditionAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of ComputeExecutionCondition Contract must be set with the property "
-                    + OceanConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS);
+                    + NevermindConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS);
         }
 
-        if (oceanConfig.getEscrowComputeExecutionTemplateAddress()== null || oceanConfig.getEscrowComputeExecutionTemplateAddress().isEmpty()) {
+        if (nevermindConfig.getEscrowComputeExecutionTemplateAddress()== null || nevermindConfig.getEscrowComputeExecutionTemplateAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of EscrowComputeExecutionTemplate Contract must be set with the property "
-                    + OceanConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS);
+                    + NevermindConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS);
         }
 
-        if (oceanConfig.getMainAccountAddress() == null || oceanConfig.getMainAccountAddress().isEmpty()) {
+        if (nevermindConfig.getMainAccountAddress() == null || nevermindConfig.getMainAccountAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of the Main Account must be set with the property "
-                    + OceanConfig.MAIN_ACCOUNT_ADDRESS);
+                    + NevermindConfig.MAIN_ACCOUNT_ADDRESS);
         }
 
-        if (oceanConfig.getMainAccountPassword() == null) {
+        if (nevermindConfig.getMainAccountPassword() == null) {
             validation.setValid(false);
             validation.addErrorMessage("The Password of the Main Account must be set with the property "
-                    + OceanConfig.MAIN_ACCOUNT_PASSWORD);
+                    + NevermindConfig.MAIN_ACCOUNT_PASSWORD);
         }
 
-        if (oceanConfig.getMainAccountCredentialsFile() == null) {
+        if (nevermindConfig.getMainAccountCredentialsFile() == null) {
             validation.setValid(false);
             validation.addErrorMessage("The Credentials File of the Main Account must be set with the property "
-                    + OceanConfig.MAIN_ACCOUNT_CREDENTIALS_FILE);
+                    + NevermindConfig.MAIN_ACCOUNT_CREDENTIALS_FILE);
         }
 
-        if (oceanConfig.getProviderAddress() == null || oceanConfig.getProviderAddress().isEmpty()) {
+        if (nevermindConfig.getProviderAddress() == null || nevermindConfig.getProviderAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of the Provider must be set with the property "
-                    + OceanConfig.PROVIDER_ADDRESS);
+                    + NevermindConfig.PROVIDER_ADDRESS);
         }
 
         return validation;
@@ -192,7 +192,7 @@ public class OceanConfig {
         return keeperUrl;
     }
 
-    public OceanConfig setKeeperUrl(String keeperUrl) {
+    public NevermindConfig setKeeperUrl(String keeperUrl) {
         this.keeperUrl = keeperUrl;
         return this;
     }
@@ -201,7 +201,7 @@ public class OceanConfig {
         return keeperGasLimit;
     }
 
-    public OceanConfig setKeeperGasLimit(BigInteger keeperGasLimit) {
+    public NevermindConfig setKeeperGasLimit(BigInteger keeperGasLimit) {
         this.keeperGasLimit = keeperGasLimit;
         return this;
     }
@@ -210,7 +210,7 @@ public class OceanConfig {
         return keeperGasPrice;
     }
 
-    public OceanConfig setKeeperGasPrice(BigInteger keeperGasPrice) {
+    public NevermindConfig setKeeperGasPrice(BigInteger keeperGasPrice) {
         this.keeperGasPrice = keeperGasPrice;
         return this;
     }
@@ -219,7 +219,7 @@ public class OceanConfig {
         return keeperTxAttempts;
     }
 
-    public OceanConfig setKeeperTxAttempts(int keeperTxAttempts) {
+    public NevermindConfig setKeeperTxAttempts(int keeperTxAttempts) {
         this.keeperTxAttempts = keeperTxAttempts;
         return this;
     }
@@ -228,7 +228,7 @@ public class OceanConfig {
         return keeperTxSleepDuration;
     }
 
-    public OceanConfig setKeeperTxSleepDuration(long keeperTxSleepDuration) {
+    public NevermindConfig setKeeperTxSleepDuration(long keeperTxSleepDuration) {
         this.keeperTxSleepDuration = keeperTxSleepDuration;
         return this;
     }
@@ -237,7 +237,7 @@ public class OceanConfig {
         return metadataUrl;
     }
 
-    public OceanConfig setMetadataUrl(String address) {
+    public NevermindConfig setMetadataUrl(String address) {
         this.metadataUrl = address;
         return this;
     }
@@ -246,7 +246,7 @@ public class OceanConfig {
         return secretStoreUrl;
     }
 
-    public OceanConfig setSecretStoreUrl(String secretStoreUrl) {
+    public NevermindConfig setSecretStoreUrl(String secretStoreUrl) {
         this.secretStoreUrl = secretStoreUrl;
         return this;
     }
@@ -255,7 +255,7 @@ public class OceanConfig {
         return didRegistryAddress;
     }
 
-    public OceanConfig setDidRegistryAddress(String address) {
+    public NevermindConfig setDidRegistryAddress(String address) {
         this.didRegistryAddress = address;
         return this;
     }
@@ -264,7 +264,7 @@ public class OceanConfig {
         return escrowRewardAddress;
     }
 
-    public OceanConfig setEscrowRewardConditionsAddress(String address) {
+    public NevermindConfig setEscrowRewardConditionsAddress(String address) {
         this.escrowRewardAddress = address;
         return this;
     }
@@ -273,7 +273,7 @@ public class OceanConfig {
         return agreementStoreManagerAddress;
     }
 
-    public OceanConfig setAgreementStoreManagerAddress(String address) {
+    public NevermindConfig setAgreementStoreManagerAddress(String address) {
         this.agreementStoreManagerAddress = address;
         return this;
     }
@@ -282,7 +282,7 @@ public class OceanConfig {
         return conditionStoreManagerAddress;
     }
 
-    public OceanConfig setConditionStoreManagerAddress(String address) {
+    public NevermindConfig setConditionStoreManagerAddress(String address) {
         this.conditionStoreManagerAddress = address;
         return this;
     }
@@ -291,7 +291,7 @@ public class OceanConfig {
         return lockRewardAddress;
     }
 
-    public OceanConfig setLockrewardConditionsAddress(String address) {
+    public NevermindConfig setLockrewardConditionsAddress(String address) {
         this.lockRewardAddress = address;
         return this;
     }
@@ -300,7 +300,7 @@ public class OceanConfig {
         return accessSsConditionsAddress;
     }
 
-    public OceanConfig setAccessSsConditionsAddress(String address) {
+    public NevermindConfig setAccessSsConditionsAddress(String address) {
         this.accessSsConditionsAddress = address;
         return this;
     }
@@ -309,7 +309,7 @@ public class OceanConfig {
         return consumeBasePath;
     }
 
-    public OceanConfig setConsumeBasePath(String consumeBasePath) {
+    public NevermindConfig setConsumeBasePath(String consumeBasePath) {
         this.consumeBasePath = consumeBasePath;
         return this;
     }
@@ -318,7 +318,7 @@ public class OceanConfig {
         return mainAccountAddress;
     }
 
-    public OceanConfig setMainAccountAddress(String mainAccountAddress) {
+    public NevermindConfig setMainAccountAddress(String mainAccountAddress) {
         this.mainAccountAddress = mainAccountAddress;
         return this;
     }
@@ -327,7 +327,7 @@ public class OceanConfig {
         return mainAccountPassword;
     }
 
-    public OceanConfig setMainAccountPassword(String mainAccountPassword) {
+    public NevermindConfig setMainAccountPassword(String mainAccountPassword) {
         this.mainAccountPassword = mainAccountPassword;
         return this;
     }
@@ -336,7 +336,7 @@ public class OceanConfig {
         return mainAccountCredentialsFile;
     }
 
-    public OceanConfig setMainAccountCredentialsFile(String mainAccountCredentialsFile) {
+    public NevermindConfig setMainAccountCredentialsFile(String mainAccountCredentialsFile) {
         this.mainAccountCredentialsFile = mainAccountCredentialsFile;
         return this;
     }
@@ -345,7 +345,7 @@ public class OceanConfig {
         return tokenAddress;
     }
 
-    public OceanConfig setTokenAddress(String tokenAddress) {
+    public NevermindConfig setTokenAddress(String tokenAddress) {
         this.tokenAddress = tokenAddress;
         return this;
     }
@@ -354,7 +354,7 @@ public class OceanConfig {
         return templateStoreManagerAddress;
     }
 
-    public OceanConfig setTemplateStoreManagerAddress(String templateStoreManagerAddress) {
+    public NevermindConfig setTemplateStoreManagerAddress(String templateStoreManagerAddress) {
         this.templateStoreManagerAddress = templateStoreManagerAddress;
         return this;
     }
@@ -364,7 +364,7 @@ public class OceanConfig {
         return dispenserAddress;
     }
 
-    public OceanConfig setDispenserAddress(String dispenserAddress) {
+    public NevermindConfig setDispenserAddress(String dispenserAddress) {
         this.dispenserAddress = dispenserAddress;
         return this;
     }

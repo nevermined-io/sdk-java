@@ -31,7 +31,7 @@ public interface AccountsAPI {
     public Balance balance(Account account) throws EthereumException;
 
     /**
-     * Requests Ocean Tokens from the OceanMarket Smart Contract
+     * Requests Ocean Tokens
      *
      * @param amount the amount of tokens
      * @return a TransactionReceipt from the transaction sent to the smart contract

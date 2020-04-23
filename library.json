@@ -1,37 +1,37 @@
 {
-  "name": "Keyko Ocean Java API",
+  "name": "Keyko Nevermind Java API",
   "repository": {
     "type": "git",
-    "url": "https://github.com/keyko-io/ocean-api-java.git"
+    "url": "https://github.com/keyko-io/nevermind-sdk-java.git"
   },
   "dependencies": [
     {
-      "name": "squid-spec",
-      "version": "0.4"
+      "name": "squid",
+      "version": "0.1"
     },
     {
-      "name": "OEP-7",
-      "version": "0.2"
-    },
-    {
-      "name": "OEP-8",
-      "version": "0.4"
-    },
-    {
-      "name": "nevermind-contracts",
-      "version": "0.12.7"
+      "name": "did",
+      "version": "0.1"
     },
     {
       "name": "metadata",
-      "version": "1.0.7"
+      "version": "0.1"
+    },
+    {
+      "name": "nevermind-contracts",
+      "version": "0.1.2"
+    },
+    {
+      "name": "metadata",
+      "version": "0.1"
     },
     {
       "name": "gateway",
-      "version": "0.6.0"
+      "version": "0.1.0"
     },
     {
       "name": "events-handler",
-      "version": "0.3.0"
+      "version": "0.1.0"
     }
   ]
 }

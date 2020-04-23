@@ -6,7 +6,7 @@
 > [keyko.io](https://keyko.io)
 
 ![Java Maven CI](https://github.com/keyko-io/nevermind-sdk-java/workflows/Java%20Maven%20CI/badge.svg)
-[![javadoc](https://javadoc.io/badge2/io.keyko.ocean/nevermind-sdk-java/javadoc.svg)](https://javadoc.io/doc/io.keyko.ocean/ocean-api-java)
+[![javadoc](https://javadoc.io/badge2/io.keyko.nevermind/nevermind-sdk-java/javadoc.svg)](https://javadoc.io/doc/io.keyko.ocean/ocean-api-java)
 
 ---
 
@@ -103,7 +103,7 @@ And you can instantiate the API with the following lines:
 
 ```java
  Config config = ConfigFactory.load();
- OceanAPI oceanAPI = OceanAPI.getInstance(config);
+ OceanAPI nevermindAPI = OceanAPI.getInstance(config);
 ```
 
 Remember that TypeSafe Config allows you to overwrite the values using environment variables or arguments passed to 
@@ -135,14 +135,14 @@ OceanAPI oceanAPIFromProperties = OceanAPI.getInstance(properties);
 Once you have initialized the API you can call the methods through their corresponding API class. For instance:
 
 ```java
- Balance balance = oceanAPI.getAccountsAPI().balance(oceanAPI.getMainAccount());
+ Balance balance = nevermindAPI.getAccountsAPI().balance(nevermindAPI.getMainAccount());
 
  String filesJson = metadataBase.toJson(metadataBase.base.files);
  String did = DID.builder().getHash();
- String encryptedDocument = oceanAPI.getSecretStoreAPI().encrypt(did, filesJson, 0);
+ String encryptedDocument = nevermindAPI.getSecretStoreAPI().encrypt(did, filesJson, 0);
 
- Flowable<OrderResult> response = oceanAPI.getAssetsAPI().order(did, SERVICE_DEFINITION_ID);
- boolean result = oceanAPI.getAssetsAPI().consume(orderResult.getServiceAgreementId(), did, SERVICE_DEFINITION_ID, "/tmp");
+ Flowable<OrderResult> response = nevermindAPI.getAssetsAPI().order(did, SERVICE_DEFINITION_ID);
+ boolean result = nevermindAPI.getAssetsAPI().consume(orderResult.getServiceAgreementId(), did, SERVICE_DEFINITION_ID, "/tmp");
 ```
 
 ### Using the SDK with the Nevermind Tools
@@ -171,7 +171,7 @@ If you prefer to deal with this method in a synchronous way, you will need to bl
 a response:
 
 ```java
- Flowable<OrderResult> response = oceanAPI.getAssetsAPI().order(did, SERVICE_DEFINITION_ID);
+ Flowable<OrderResult> response = nevermindAPI.getAssetsAPI().order(did, SERVICE_DEFINITION_ID);
  OrderResult orderResult = response.blockingFirst();
 ```
 

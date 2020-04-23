@@ -24,8 +24,8 @@ public class SecretStoreApiIT {
     private static String METADATA_JSON_CONTENT;
     private static AssetMetadata metadataBase;
 
-    private static OceanAPI oceanAPIPublisher;
-    private static OceanAPI oceanAPIConsumer;
+    private static NevermindAPI nevermindAPIPublisher;
+    private static NevermindAPI nevermindAPIConsumer;
 
     // This test only made sense when Secret Store `acl_contract` is set to "none"
     // If not the complete encryption/decryption is tested in the purchase/order
@@ -38,7 +38,7 @@ public class SecretStoreApiIT {
         metadataBase = DDO.fromJSON(new TypeReference<AssetMetadata>() {}, METADATA_JSON_CONTENT);
 
         Config config = ConfigFactory.load();
-        oceanAPIPublisher = OceanAPI.getInstance(config);
+        nevermindAPIPublisher = NevermindAPI.getInstance(config);
 
         String consumerAddress= config.getString("account.parity.address2");
         String consumerPassword= config.getString("account.parity.password2");
@@ -49,10 +49,10 @@ public class SecretStoreApiIT {
                 .withValue("account.main.password", ConfigValueFactory.fromAnyRef(consumerPassword))
                 .withValue("account.main.credentialsFile", ConfigValueFactory.fromAnyRef(consumerFile));
 
-        oceanAPIConsumer = OceanAPI.getInstance(consumerConfig);
+        nevermindAPIConsumer = NevermindAPI.getInstance(consumerConfig);
 
-        assertNotNull(oceanAPIPublisher.getSecretStoreAPI());
-        assertNotNull(oceanAPIPublisher.getMainAccount());
+        assertNotNull(nevermindAPIPublisher.getSecretStoreAPI());
+        assertNotNull(nevermindAPIPublisher.getMainAccount());
 
     }
 
@@ -63,9 +63,9 @@ public class SecretStoreApiIT {
         String filesJson = metadataBase.toJson(metadataBase.attributes.main.files);
         String did = DID.builder().getHash();
 
-        String encryptedDocument = oceanAPIPublisher.getSecretStoreAPI().encrypt(did, filesJson, 0);
+        String encryptedDocument = nevermindAPIPublisher.getSecretStoreAPI().encrypt(did, filesJson, 0);
 
-        String decryptedDocument = oceanAPIConsumer.getSecretStoreAPI().decrypt(did, encryptedDocument);
+        String decryptedDocument = nevermindAPIConsumer.getSecretStoreAPI().decrypt(did, encryptedDocument);
 
         assertEquals(filesJson, decryptedDocument);
 

@@ -69,7 +69,7 @@
             "language": "scala",
             "format": "jar",
             "version": "0.1",
-            "entrypoint": "ocean-entrypoint.sh",
+            "entrypoint": "nevermind-entrypoint.sh",
             "requirements": [
               {
                 "requirement": "scala",

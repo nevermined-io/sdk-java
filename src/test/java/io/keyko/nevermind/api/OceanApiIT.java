@@ -16,12 +16,12 @@ public class OceanApiIT {
 
         Config config = ConfigFactory.load();
 
-        OceanAPI oceanAPI = OceanAPI.getInstance(config);
-        assertNotNull(oceanAPI.getMainAccount());
-        Assert.assertEquals(Keys.toChecksumAddress(config.getString("account.main.address")), oceanAPI.getMainAccount().address);
-        assertNotNull(oceanAPI.getAssetsAPI());
-        assertNotNull(oceanAPI.getAccountsAPI());
-        assertNotNull(oceanAPI.getSecretStoreAPI());
+        NevermindAPI nevermindAPI = NevermindAPI.getInstance(config);
+        assertNotNull(nevermindAPI.getMainAccount());
+        Assert.assertEquals(Keys.toChecksumAddress(config.getString("account.main.address")), nevermindAPI.getMainAccount().address);
+        assertNotNull(nevermindAPI.getAssetsAPI());
+        assertNotNull(nevermindAPI.getAccountsAPI());
+        assertNotNull(nevermindAPI.getSecretStoreAPI());
 
     }
 

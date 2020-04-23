@@ -26,7 +26,7 @@
         <web3j.version>4.5.17</web3j.version>
         <common-utils.version>0.1.2</common-utils.version>
 
-        <nevermind.contracts.version>0.1.0</nevermind.contracts.version>
+        <nevermind.contracts.version>0.1.2</nevermind.contracts.version>
         <ocean.secretstore.version>0.1.4</ocean.secretstore.version>
         <eddsa.version>0.3.0</eddsa.version>
         <jackson.version>2.9.8</jackson.version>

@@ -1,6 +1,6 @@
 package io.keyko.nevermind.request.executors;
 
-import io.keyko.nevermind.api.OceanAPI;
+import io.keyko.nevermind.api.NevermindAPI;
 import io.keyko.nevermind.models.DDO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,12 +14,12 @@ public class CreateExecutor extends BaseOceanExecutor {
     @Override
     public Boolean executeRequest()  throws Exception {
 
-        OceanAPI oceanAPI = getNextOceanApi();
+        NevermindAPI nevermindAPI = getNextOceanApi();
 
         log.debug("index:" + this.apiIndex);
-        log.debug("Main Account: " + oceanAPI.getMainAccount().address);
+        log.debug("Main Account: " + nevermindAPI.getMainAccount().address);
 
-         DDO ddo = oceanAPI.getAssetsAPI().create(metadataBase, providerConfig);
+         DDO ddo = nevermindAPI.getAssetsAPI().create(metadataBase, providerConfig);
          return ddo.id != null;
     }
 }

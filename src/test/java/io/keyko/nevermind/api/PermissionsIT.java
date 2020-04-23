@@ -1,7 +1,7 @@
 package io.keyko.nevermind.api;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.keyko.nevermind.api.config.OceanConfig;
+import io.keyko.nevermind.api.config.NevermindConfig;
 import io.keyko.nevermind.models.Balance;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.asset.AssetMetadata;
@@ -31,8 +31,8 @@ public class PermissionsIT {
     private static AssetMetadata metadataBase;
 
     private static ProviderConfig providerConfig;
-    private static OceanAPI oceanAPI;
-    private static OceanAPI oceanAPIConsumer;
+    private static NevermindAPI nevermindAPI;
+    private static NevermindAPI nevermindAPIConsumer;
 
     private static Config config;
 
@@ -53,43 +53,43 @@ public class PermissionsIT {
 
         providerConfig = new ProviderConfig(consumeUrl, metadataUrl, provenanceUrl, secretStoreEndpoint, providerAddress);
 
-        oceanAPI = OceanAPI.getInstance(config);
+        nevermindAPI = NevermindAPI.getInstance(config);
 
-        assertNotNull(oceanAPI.getAssetsAPI());
-        assertNotNull(oceanAPI.getMainAccount());
+        assertNotNull(nevermindAPI.getAssetsAPI());
+        assertNotNull(nevermindAPI.getMainAccount());
 
         Properties properties = new Properties();
-        properties.put(OceanConfig.KEEPER_URL, config.getString("keeper.url"));
-        properties.put(OceanConfig.KEEPER_GAS_LIMIT, config.getString("keeper.gasLimit"));
-        properties.put(OceanConfig.KEEPER_GAS_PRICE, config.getString("keeper.gasPrice"));
-        properties.put(OceanConfig.KEEPER_TX_ATTEMPTS, config.getString("keeper.tx.attempts"));
-        properties.put(OceanConfig.KEEPER_TX_SLEEPDURATION, config.getString("keeper.tx.sleepDuration"));
-        properties.put(OceanConfig.METADATA_URL, config.getString("metadata.url"));
-        properties.put(OceanConfig.SECRETSTORE_URL, config.getString("secretstore.url"));
-        properties.put(OceanConfig.CONSUME_BASE_PATH, config.getString("consume.basePath"));
-        properties.put(OceanConfig.MAIN_ACCOUNT_ADDRESS, config.getString("account.parity.address2"));
-        properties.put(OceanConfig.MAIN_ACCOUNT_PASSWORD, config.getString("account.parity.password2"));
-        properties.put(OceanConfig.MAIN_ACCOUNT_CREDENTIALS_FILE, config.getString("account.parity.file2"));
-        properties.put(OceanConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
-        properties.put(OceanConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
-        properties.put(OceanConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
-        properties.put(OceanConfig.LOCKREWARD_CONDITIONS_ADDRESS, config.getString("contract.LockRewardCondition.address"));
-        properties.put(OceanConfig.ESCROWREWARD_CONDITIONS_ADDRESS, config.getString("contract.EscrowReward.address"));
-        properties.put(OceanConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
-        properties.put(OceanConfig.ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.AccessSecretStoreCondition.address"));
-        properties.put(OceanConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
-        properties.put(OceanConfig.TOKEN_ADDRESS, config.getString("contract.OceanToken.address"));
-        properties.put(OceanConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
-        properties.put(OceanConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
+        properties.put(NevermindConfig.KEEPER_URL, config.getString("keeper.url"));
+        properties.put(NevermindConfig.KEEPER_GAS_LIMIT, config.getString("keeper.gasLimit"));
+        properties.put(NevermindConfig.KEEPER_GAS_PRICE, config.getString("keeper.gasPrice"));
+        properties.put(NevermindConfig.KEEPER_TX_ATTEMPTS, config.getString("keeper.tx.attempts"));
+        properties.put(NevermindConfig.KEEPER_TX_SLEEPDURATION, config.getString("keeper.tx.sleepDuration"));
+        properties.put(NevermindConfig.METADATA_URL, config.getString("metadata.url"));
+        properties.put(NevermindConfig.SECRETSTORE_URL, config.getString("secretstore.url"));
+        properties.put(NevermindConfig.CONSUME_BASE_PATH, config.getString("consume.basePath"));
+        properties.put(NevermindConfig.MAIN_ACCOUNT_ADDRESS, config.getString("account.parity.address2"));
+        properties.put(NevermindConfig.MAIN_ACCOUNT_PASSWORD, config.getString("account.parity.password2"));
+        properties.put(NevermindConfig.MAIN_ACCOUNT_CREDENTIALS_FILE, config.getString("account.parity.file2"));
+        properties.put(NevermindConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
+        properties.put(NevermindConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
+        properties.put(NevermindConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
+        properties.put(NevermindConfig.LOCKREWARD_CONDITIONS_ADDRESS, config.getString("contract.LockRewardCondition.address"));
+        properties.put(NevermindConfig.ESCROWREWARD_CONDITIONS_ADDRESS, config.getString("contract.EscrowReward.address"));
+        properties.put(NevermindConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
+        properties.put(NevermindConfig.ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.AccessSecretStoreCondition.address"));
+        properties.put(NevermindConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
+        properties.put(NevermindConfig.TOKEN_ADDRESS, config.getString("contract.OceanToken.address"));
+        properties.put(NevermindConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
+        properties.put(NevermindConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
 
-        properties.put(OceanConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.ComputeExecutionCondition.address"));
-        properties.put(OceanConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.EscrowComputeExecutionTemplate.address"));
+        properties.put(NevermindConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.ComputeExecutionCondition.address"));
+        properties.put(NevermindConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.EscrowComputeExecutionTemplate.address"));
 
-        oceanAPIConsumer = OceanAPI.getInstance(properties);
+        nevermindAPIConsumer = NevermindAPI.getInstance(properties);
 
-        oceanAPIConsumer.getTokensAPI().request(BigInteger.TEN);
-        Balance balance = oceanAPIConsumer.getAccountsAPI().balance(oceanAPIConsumer.getMainAccount());
-        log.debug("Account " + oceanAPIConsumer.getMainAccount().address + " balance is: " + balance.toString());
+        nevermindAPIConsumer.getTokensAPI().request(BigInteger.TEN);
+        Balance balance = nevermindAPIConsumer.getAccountsAPI().balance(nevermindAPIConsumer.getMainAccount());
+        log.debug("Account " + nevermindAPIConsumer.getMainAccount().address + " balance is: " + balance.toString());
 
     }
 
@@ -98,19 +98,19 @@ public class PermissionsIT {
 
         metadataBase.attributes.main.dateCreated = new Date();
 
-        DDO ddo = oceanAPI.getAssetsAPI().create(metadataBase, providerConfig);
-        String ownerAddress = oceanAPI.getAssetsAPI().owner(ddo.getDid());
-        assertEquals(oceanAPI.getMainAccount().address, ownerAddress);
+        DDO ddo = nevermindAPI.getAssetsAPI().create(metadataBase, providerConfig);
+        String ownerAddress = nevermindAPI.getAssetsAPI().owner(ddo.getDid());
+        assertEquals(nevermindAPI.getMainAccount().address, ownerAddress);
 
-        Boolean consumerPermission = oceanAPI.getAssetsAPI().getPermissions(ddo.getDid(), oceanAPIConsumer.getMainAccount().address);
+        Boolean consumerPermission = nevermindAPI.getAssetsAPI().getPermissions(ddo.getDid(), nevermindAPIConsumer.getMainAccount().address);
         assertEquals(false, consumerPermission);
 
-        oceanAPI.getAssetsAPI().delegatePermissions(ddo.getDid(), oceanAPIConsumer.getMainAccount().address);
-        consumerPermission = oceanAPI.getAssetsAPI().getPermissions(ddo.getDid(), oceanAPIConsumer.getMainAccount().address);
+        nevermindAPI.getAssetsAPI().delegatePermissions(ddo.getDid(), nevermindAPIConsumer.getMainAccount().address);
+        consumerPermission = nevermindAPI.getAssetsAPI().getPermissions(ddo.getDid(), nevermindAPIConsumer.getMainAccount().address);
         assertEquals(true, consumerPermission);
 
-        oceanAPI.getAssetsAPI().revokePermissions(ddo.getDid(), oceanAPIConsumer.getMainAccount().address);
-        consumerPermission = oceanAPI.getAssetsAPI().getPermissions(ddo.getDid(), oceanAPIConsumer.getMainAccount().address);
+        nevermindAPI.getAssetsAPI().revokePermissions(ddo.getDid(), nevermindAPIConsumer.getMainAccount().address);
+        consumerPermission = nevermindAPI.getAssetsAPI().getPermissions(ddo.getDid(), nevermindAPIConsumer.getMainAccount().address);
         assertEquals(false, consumerPermission);
 
     }
@@ -121,20 +121,20 @@ public class PermissionsIT {
 
         metadataBase.attributes.main.dateCreated = new Date();
 
-        DDO ddo = oceanAPI.getAssetsAPI().create(metadataBase, providerConfig);
-        String ownerAddress = oceanAPI.getAssetsAPI().owner(ddo.getDid());
-        assertEquals(oceanAPI.getMainAccount().address, ownerAddress);
+        DDO ddo = nevermindAPI.getAssetsAPI().create(metadataBase, providerConfig);
+        String ownerAddress = nevermindAPI.getAssetsAPI().owner(ddo.getDid());
+        assertEquals(nevermindAPI.getMainAccount().address, ownerAddress);
 
-        Boolean consumerPermission = oceanAPI.getAssetsAPI().getPermissions(ddo.getDid(), oceanAPIConsumer.getMainAccount().address);
+        Boolean consumerPermission = nevermindAPI.getAssetsAPI().getPermissions(ddo.getDid(), nevermindAPIConsumer.getMainAccount().address);
         assertEquals(false, consumerPermission);
 
-        oceanAPI.getAssetsAPI().transferOwnership(ddo.getDid(), oceanAPIConsumer.getMainAccount().address);
-        ownerAddress = oceanAPI.getAssetsAPI().owner(ddo.getDid());
-        assertEquals(oceanAPIConsumer.getMainAccount().address, ownerAddress);
+        nevermindAPI.getAssetsAPI().transferOwnership(ddo.getDid(), nevermindAPIConsumer.getMainAccount().address);
+        ownerAddress = nevermindAPI.getAssetsAPI().owner(ddo.getDid());
+        assertEquals(nevermindAPIConsumer.getMainAccount().address, ownerAddress);
 
-        oceanAPIConsumer.getAssetsAPI().transferOwnership(ddo.getDid(), oceanAPI.getMainAccount().address);
-        ownerAddress = oceanAPIConsumer.getAssetsAPI().owner(ddo.getDid());
-        assertEquals(oceanAPI.getMainAccount().address, ownerAddress);
+        nevermindAPIConsumer.getAssetsAPI().transferOwnership(ddo.getDid(), nevermindAPI.getMainAccount().address);
+        ownerAddress = nevermindAPIConsumer.getAssetsAPI().owner(ddo.getDid());
+        assertEquals(nevermindAPI.getMainAccount().address, ownerAddress);
 
 
     }

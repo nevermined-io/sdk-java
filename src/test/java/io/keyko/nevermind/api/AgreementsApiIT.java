@@ -18,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 
 public class AgreementsApiIT {
 
-    private static OceanAPI oceanAPI;
+    private static NevermindAPI nevermindAPI;
     private static AssetMetadata metadataBase;
     private static DDO ddoBase;
     private static ProviderConfig providerConfig;
@@ -50,18 +50,18 @@ public class AgreementsApiIT {
         String providerAddress = config.getString("provider.address");
 
         providerConfig = new ProviderConfig(consumeUrl, metadataUrl, provenanceUrl, secretStoreEndpoint, providerAddress);
-        oceanAPI = OceanAPI.getInstance(config);
+        nevermindAPI = NevermindAPI.getInstance(config);
 
-        assertNotNull(oceanAPI.getAssetsAPI());
-        assertNotNull(oceanAPI.getMainAccount());
+        assertNotNull(nevermindAPI.getAssetsAPI());
+        assertNotNull(nevermindAPI.getMainAccount());
 
     }
 
     @Test
     public void create() throws Exception {
-        DDO ddo = oceanAPI.getAssetsAPI().create(metadataBase, providerConfig);
+        DDO ddo = nevermindAPI.getAssetsAPI().create(metadataBase, providerConfig);
         String agreementId = ServiceAgreementHandler.generateSlaId();
-        assertTrue(oceanAPI.getAgreementsAPI().create(ddo.getDid(), agreementId, 3, oceanAPI.getMainAccount().address));
-        oceanAPI.getAgreementsAPI().status(agreementId);
+        assertTrue(nevermindAPI.getAgreementsAPI().create(ddo.getDid(), agreementId, 3, nevermindAPI.getMainAccount().address));
+        nevermindAPI.getAgreementsAPI().status(agreementId);
     }
 }

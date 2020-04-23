@@ -1,7 +1,7 @@
 package io.keyko.nevermind.request.executors;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.keyko.nevermind.api.OceanAPI;
+import io.keyko.nevermind.api.NevermindAPI;
 import io.keyko.nevermind.exceptions.InitializationException;
 import io.keyko.nevermind.exceptions.InvalidConfiguration;
 import io.keyko.nevermind.models.DDO;
@@ -25,10 +25,10 @@ public abstract class BaseOceanExecutor implements Executor {
     protected static String METADATA_JSON_CONTENT;
     protected static AssetMetadata metadataBase;
     protected static ProviderConfig providerConfig;
-    protected static OceanAPI oceanAPI;
+    protected static NevermindAPI nevermindAPI;
 
-    protected static List<OceanAPI> oceanAPIList = new ArrayList<>();
-    protected static OceanAPI oceanAPIPublisher;
+    protected static List<NevermindAPI> nevermindAPIList = new ArrayList<>();
+    protected static NevermindAPI nevermindAPIPublisher;
 
     protected volatile Integer apiIndex;
 
@@ -57,22 +57,22 @@ public abstract class BaseOceanExecutor implements Executor {
 
         try {
 
-            oceanAPIPublisher =  OceanAPI.getInstance(config);
+            nevermindAPIPublisher =  NevermindAPI.getInstance(config);
 
             config = config.withValue("account.main.address", ConfigValueFactory.fromAnyRef(config.getString("account.parity.address2")))
                     .withValue("account.main.password", ConfigValueFactory.fromAnyRef(config.getString("account.parity.password2")))
                     .withValue("account.main.credentialsFile", ConfigValueFactory.fromAnyRef(config.getString("account.parity.file2")));
-            oceanAPIList.add(OceanAPI.getInstance(config));
+            nevermindAPIList.add(NevermindAPI.getInstance(config));
 
             config = config.withValue("account.main.address", ConfigValueFactory.fromAnyRef(config.getString("account.parity.address3")))
                     .withValue("account.main.password", ConfigValueFactory.fromAnyRef(config.getString("account.parity.password3")))
                     .withValue("account.main.credentialsFile", ConfigValueFactory.fromAnyRef(config.getString("account.parity.file3")));
-            oceanAPIList.add(OceanAPI.getInstance(config));
+            nevermindAPIList.add(NevermindAPI.getInstance(config));
 
             config = config.withValue("account.main.address", ConfigValueFactory.fromAnyRef(config.getString("account.parity.address4")))
                     .withValue("account.main.password", ConfigValueFactory.fromAnyRef(config.getString("account.parity.password4")))
                     .withValue("account.main.credentialsFile", ConfigValueFactory.fromAnyRef(config.getString("account.parity.file4")));
-            oceanAPIList.add(OceanAPI.getInstance(config));
+            nevermindAPIList.add(NevermindAPI.getInstance(config));
 
 
         }
@@ -85,13 +85,13 @@ public abstract class BaseOceanExecutor implements Executor {
 
     }
 
-    protected synchronized OceanAPI getNextOceanApi() {
+    protected synchronized NevermindAPI getNextOceanApi() {
 
-        if (apiIndex == oceanAPIList.size()) {
+        if (apiIndex == nevermindAPIList.size()) {
             apiIndex = 0;
-            return oceanAPIList.get(apiIndex);
+            return nevermindAPIList.get(apiIndex);
         }
 
-        return oceanAPIList.get(apiIndex++);
+        return nevermindAPIList.get(apiIndex++);
     }
 }

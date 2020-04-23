@@ -25,7 +25,7 @@ public interface TemplatesAPI {
 
     /**
      * Approve (whitelist) an already proposed template. Once a template is approved
-     * it can be used for creating agreements in Ocean Protocol keeper network
+     * it can be used for creating agreements in Nevermind network
      *
      * @param templateId Hex str, typically the Ethereum address of the deployed template (smart contract address)
      * @return TransactionReceipt tx receipt

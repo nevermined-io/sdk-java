@@ -19,7 +19,7 @@ public class TokensApiIT {
 
     private static final Logger log = LogManager.getLogger(TokensApiIT.class);
 
-    private static OceanAPI oceanAPI;
+    private static NevermindAPI nevermindAPI;
     private static Config config;
 
     @BeforeClass
@@ -27,10 +27,10 @@ public class TokensApiIT {
 
 
         config = ConfigFactory.load();
-        oceanAPI = OceanAPI.getInstance(config);
+        nevermindAPI = NevermindAPI.getInstance(config);
 
-        assertNotNull(oceanAPI.getAccountsAPI());
-        assertNotNull(oceanAPI.getMainAccount());
+        assertNotNull(nevermindAPI.getAccountsAPI());
+        assertNotNull(nevermindAPI.getMainAccount());
 
     }
 
@@ -42,13 +42,13 @@ public class TokensApiIT {
 
         Account receiverAccount= new Account(receiverAddress, receiverPasswd);
 
-        oceanAPI.getTokensAPI().request(BigInteger.ONE);
-        Balance balanceBefore = oceanAPI.getAccountsAPI().balance(receiverAccount);
+        nevermindAPI.getTokensAPI().request(BigInteger.ONE);
+        Balance balanceBefore = nevermindAPI.getAccountsAPI().balance(receiverAccount);
         assertNotNull(balanceBefore);
 
-        oceanAPI.getTokensAPI().transfer(receiverAddress, BigInteger.ONE);
+        nevermindAPI.getTokensAPI().transfer(receiverAddress, BigInteger.ONE);
 
-        Balance balanceAfter = oceanAPI.getAccountsAPI().balance(receiverAccount);
+        Balance balanceAfter = nevermindAPI.getAccountsAPI().balance(receiverAccount);
 
         log.debug("Balance Before is: " + balanceBefore);
         log.debug("Balance After is: " + balanceAfter);
@@ -62,14 +62,14 @@ public class TokensApiIT {
 
         BigInteger tokens = BigInteger.ONE;
 
-        Balance balanceBefore = oceanAPI.getAccountsAPI().balance(oceanAPI.getMainAccount());
+        Balance balanceBefore = nevermindAPI.getAccountsAPI().balance(nevermindAPI.getMainAccount());
         log.debug("Balance before: " + balanceBefore.toString());
 
-        TransactionReceipt receipt = oceanAPI.getTokensAPI().request(tokens);
+        TransactionReceipt receipt = nevermindAPI.getTokensAPI().request(tokens);
 
         assertTrue(receipt.isStatusOK());
 
-        Balance balanceAfter = oceanAPI.getAccountsAPI().balance(oceanAPI.getMainAccount());
+        Balance balanceAfter = nevermindAPI.getAccountsAPI().balance(nevermindAPI.getMainAccount());
 
         log.debug("Balance after: " + balanceAfter.toString());
 

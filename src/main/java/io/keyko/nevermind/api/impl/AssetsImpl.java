@@ -4,7 +4,7 @@ import io.keyko.nevermind.api.AssetsAPI;
 import io.keyko.nevermind.exceptions.*;
 import io.keyko.nevermind.manager.AgreementsManager;
 import io.keyko.nevermind.manager.AssetsManager;
-import io.keyko.nevermind.manager.OceanManager;
+import io.keyko.nevermind.manager.NevermindManager;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.DID;
 import io.keyko.nevermind.models.metadata.SearchResult;
@@ -23,7 +23,7 @@ import java.util.Map;
  */
 public class AssetsImpl implements AssetsAPI {
 
-    private OceanManager oceanManager;
+    private NevermindManager nevermindManager;
     private AssetsManager assetsManager;
     private AgreementsManager agreementsManager;
 
@@ -33,13 +33,13 @@ public class AssetsImpl implements AssetsAPI {
     /**
      * Constructor
      *
-     * @param oceanManager  the oceanManager
+     * @param nevermindManager  the oceanManager
      * @param assetsManager the assetsManager
      * @param agreementsManager the agreements Manager
      */
-    public AssetsImpl(OceanManager oceanManager, AssetsManager assetsManager, AgreementsManager agreementsManager) {
+    public AssetsImpl(NevermindManager nevermindManager, AssetsManager assetsManager, AgreementsManager agreementsManager) {
 
-        this.oceanManager = oceanManager;
+        this.nevermindManager = nevermindManager;
         this.assetsManager = assetsManager;
         this.agreementsManager = agreementsManager;
     }
@@ -47,7 +47,7 @@ public class AssetsImpl implements AssetsAPI {
 
     @Override
     public DDO create(AssetMetadata metadata, ProviderConfig providerConfig, int threshold) throws DDOException {
-        return oceanManager.registerAccessServiceAsset(metadata, providerConfig, threshold);
+        return nevermindManager.registerAccessServiceAsset(metadata, providerConfig, threshold);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class AssetsImpl implements AssetsAPI {
 
     @Override
     public DDO createComputingService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider, int threshold) throws DDOException {
-        return oceanManager.registerComputingServiceAsset(metadata, providerConfig, computingProvider, threshold);
+        return nevermindManager.registerComputingServiceAsset(metadata, providerConfig, computingProvider, threshold);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class AssetsImpl implements AssetsAPI {
 
     @Override
     public DDO resolve(DID did) throws EthereumException, DDOException {
-        return oceanManager.resolveDID(did);
+        return nevermindManager.resolveDID(did);
     }
 
     @Override
@@ -76,7 +76,7 @@ public class AssetsImpl implements AssetsAPI {
         try {
 
             DDO ddo = this.resolve(did);
-            return oceanManager.getMetadataFiles(ddo);
+            return nevermindManager.getMetadataFiles(ddo);
 
         }catch (Exception e){
             throw new DDOException("Error trying to get the files of the DDO", e);
@@ -107,7 +107,7 @@ public class AssetsImpl implements AssetsAPI {
 
     @Override
     public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, String basePath, int threshold) throws ConsumeServiceException {
-        return oceanManager.consume(serviceAgreementId, did, serviceDefinitionId, false, -1, basePath, threshold);
+        return nevermindManager.consume(serviceAgreementId, did, serviceDefinitionId, false, -1, basePath, threshold);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class AssetsImpl implements AssetsAPI {
 
     @Override
     public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, String basePath, int threshold) throws ConsumeServiceException {
-        return oceanManager.consume(serviceAgreementId, did, serviceDefinitionId, true, index, basePath, threshold);
+        return nevermindManager.consume(serviceAgreementId, did, serviceDefinitionId, true, index, basePath, threshold);
     }
 
 
@@ -133,7 +133,7 @@ public class AssetsImpl implements AssetsAPI {
 
     @Override
     public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, int threshold) throws ConsumeServiceException{
-        return oceanManager.consumeBinary(serviceAgreementId, did, serviceDefinitionId,  index, threshold);
+        return nevermindManager.consumeBinary(serviceAgreementId, did, serviceDefinitionId,  index, threshold);
     }
 
     @Override
@@ -143,12 +143,12 @@ public class AssetsImpl implements AssetsAPI {
 
     @Override
     public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, Integer rangeStart, Integer rangeEnd, int threshold) throws ConsumeServiceException{
-        return oceanManager.consumeBinary(serviceAgreementId, did, serviceDefinitionId, index, true, rangeStart, rangeEnd, threshold);
+        return nevermindManager.consumeBinary(serviceAgreementId, did, serviceDefinitionId, index, true, rangeStart, rangeEnd, threshold);
     }
 
     @Override
     public Flowable<OrderResult> order(DID did, int serviceDefinitionId) throws OrderException {
-        return oceanManager.purchaseAsset(did, serviceDefinitionId);
+        return nevermindManager.purchaseAsset(did, serviceDefinitionId);
     }
 
     @Override
@@ -168,7 +168,7 @@ public class AssetsImpl implements AssetsAPI {
 
     @Override
     public String execute(String agreementId, DID did, int index, String workflowDID) throws ServiceException {
-        return oceanManager.executeComputeService(agreementId, did, index, workflowDID);
+        return nevermindManager.executeComputeService(agreementId, did, index, workflowDID);
     }
 
     @Override

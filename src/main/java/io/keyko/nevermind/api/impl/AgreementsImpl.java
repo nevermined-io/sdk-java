@@ -4,7 +4,7 @@ import io.keyko.nevermind.api.AgreementsAPI;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.exceptions.ServiceAgreementException;
 import io.keyko.nevermind.manager.AgreementsManager;
-import io.keyko.nevermind.manager.OceanManager;
+import io.keyko.nevermind.manager.NevermindManager;
 import io.keyko.nevermind.models.Account;
 import io.keyko.nevermind.models.DID;
 import io.keyko.nevermind.models.service.AgreementStatus;
@@ -23,17 +23,17 @@ import static io.keyko.nevermind.core.sla.handlers.ServiceAgreementHandler.gener
 public class AgreementsImpl implements AgreementsAPI {
 
     private AgreementsManager agreementsManager;
-    private OceanManager oceanManager;
+    private NevermindManager nevermindManager;
 
 
     /**
      * Constructor
      *
      * @param agreementsManager the accountsManager
-     * @param oceanManager an instance of oceanManager
+     * @param nevermindManager an instance of oceanManager
      */
-    public AgreementsImpl(AgreementsManager agreementsManager, OceanManager oceanManager) {
-        this.oceanManager = oceanManager;
+    public AgreementsImpl(AgreementsManager agreementsManager, NevermindManager nevermindManager) {
+        this.nevermindManager = nevermindManager;
         this.agreementsManager = agreementsManager;
     }
 
@@ -56,10 +56,10 @@ public class AgreementsImpl implements AgreementsAPI {
     public boolean create(DID did, String agreementId, int index, String consumerAddress) throws ServiceAgreementException {
 
         try {
-            DDO ddo = oceanManager.resolveDID(did);
+            DDO ddo = nevermindManager.resolveDID(did);
             Service service = ddo.getService(index);
 
-            List<byte[]> conditionsId = oceanManager.generateServiceConditionsId(agreementId, Keys.toChecksumAddress(consumerAddress), ddo, index);
+            List<byte[]> conditionsId = nevermindManager.generateServiceConditionsId(agreementId, Keys.toChecksumAddress(consumerAddress), ddo, index);
 
             if (service.type.equals(Service.ServiceTypes.access.name()))
                 return agreementsManager.createAccessAgreement(agreementId,
@@ -94,7 +94,7 @@ public class AgreementsImpl implements AgreementsAPI {
 
     public String sign(String agreementId, DID did, int serviceDefinitionId, Account consumerAccount) throws Exception {
 
-        DDO ddo = oceanManager.resolveDID(did);
+        DDO ddo = nevermindManager.resolveDID(did);
         Service service = ddo.getService(serviceDefinitionId);
 
         Map<String, String> conditionsAddresses = new HashMap<>();

@@ -8,7 +8,7 @@ import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.nevermind.models.AbstractModel;
 import io.keyko.nevermind.models.FromJsonToModel;
-import io.keyko.nevermind.exceptions.OceanRuntimeException;
+import io.keyko.nevermind.exceptions.NevermindRuntimeException;
 import io.keyko.nevermind.exceptions.ServiceAgreementException;
 import io.keyko.nevermind.models.service.attributes.ServiceAdditionalInformation;
 import io.keyko.nevermind.models.service.attributes.ServiceCuration;
@@ -250,7 +250,7 @@ public class Service extends AbstractModel implements FromJsonToModel {
             return EncodingHelper.hexStringToBytes(s);
         }
         catch(UnsupportedEncodingException e) {
-            throw new OceanRuntimeException("There was a problem enconding a string ", e);
+            throw new NevermindRuntimeException("There was a problem enconding a string ", e);
         }
     }
 
