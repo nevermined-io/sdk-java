@@ -17,13 +17,8 @@ jobs:
       run: |
         git clone https://github.com/keyko-io/nevermind-tools
         cd nevermind-tools
-#       export CONTRACTS_VERSION=v0.1.2
-#       export GATEWAY_VERSION=v0.7.2
-#       export METADATA_VERSION=v1.0.7
-#       export EVENTS_HANDLER_VERSION=v0.3.0
         sudo bash -x start_nevermind.sh --no-commons --local-spree-node 2>&1 > start_nevermind.log &
         cd ..
         sleep 60
         /bin/bash src/test/resources/scripts/updateConfAddresses.sh
         mvn clean verify -P all-test
-
