@@ -4,12 +4,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.keyko.common.web3.KeeperService;
 import com.oceanprotocol.secretstore.core.EvmDto;
 import io.keyko.nevermind.exceptions.DDOException;
-import io.keyko.nevermind.external.AquariusService;
+import io.keyko.nevermind.external.MetadataService;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.asset.AssetMetadata;
 import io.keyko.nevermind.models.service.Service;
 import io.keyko.nevermind.models.service.types.AuthorizationService;
-import io.keyko.nevermind.models.service.types.MetadataService;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.logging.log4j.LogManager;
@@ -33,12 +32,12 @@ public class BaseManagerTest {
     private static final String METADATA_JSON_SAMPLE = "src/test/resources/examples/metadata.json";
     private static String METADATA_JSON_CONTENT;
 
-    private static MetadataService metadataService;
+    private static io.keyko.nevermind.models.service.types.MetadataService metadataService;
     private static AssetMetadata assetMetadata;
 
     private static KeeperService keeperService;
 
-    private static AquariusService aquarius;
+    private static MetadataService metadata;
     private static SecretStoreManager secretStore;
 
     private static BaseManagerImplementation baseManager;
@@ -51,8 +50,8 @@ public class BaseManagerTest {
     public static class BaseManagerImplementation extends BaseManager {
 
 
-        public BaseManagerImplementation(KeeperService keeperService, AquariusService aquariusService) throws IOException, CipherException {
-            super(keeperService, aquariusService);
+        public BaseManagerImplementation(KeeperService keeperService, MetadataService metadataService) throws IOException, CipherException {
+            super(keeperService, metadataService);
         }
 
     }
@@ -64,18 +63,18 @@ public class BaseManagerTest {
         log.debug("Setting Up...");
 
         keeperService = ManagerHelper.getKeeper(config, ManagerHelper.VmClient.parity, "");
-        aquarius= ManagerHelper.getAquarius(config);
+        metadata = ManagerHelper.getMetadataService(config);
 
         EvmDto evmDto = ManagerHelper.getEvmDto(config, ManagerHelper.VmClient.parity);
         secretStore= ManagerHelper.getSecretStoreController(config, evmDto);
 
-        baseManager = new BaseManagerImplementation(keeperService, aquarius);
+        baseManager = new BaseManagerImplementation(keeperService, metadata);
         baseManager.setSecretStoreManager(secretStore)
         .setEvmDto(evmDto);
 
         METADATA_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(METADATA_JSON_SAMPLE)));
         assetMetadata = DDO.fromJSON(new TypeReference<AssetMetadata>() {}, METADATA_JSON_CONTENT);
-        metadataService = new MetadataService(assetMetadata, "http://localhost:5000/api/v1/aquarius/assets/ddo/{did}");
+        metadataService = new io.keyko.nevermind.models.service.types.MetadataService(assetMetadata, "http://localhost:5000/api/v1/aquarius/assets/ddo/{did}");
 
     }
 

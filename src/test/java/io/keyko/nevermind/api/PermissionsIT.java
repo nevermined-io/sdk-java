@@ -10,7 +10,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -46,8 +45,8 @@ public class PermissionsIT {
         metadataBase = DDO.fromJSON(new TypeReference<AssetMetadata>() {
         }, METADATA_JSON_CONTENT);
 
-        String metadataUrl = config.getString("aquarius-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
-        String provenanceUrl = config.getString("aquarius-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
+        String metadataUrl = config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
+        String provenanceUrl = config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
         String consumeUrl = config.getString("brizo.url") + "/api/v1/brizo/services/consume";
         String secretStoreEndpoint = config.getString("secretstore.url");
         String providerAddress = config.getString("provider.address");
@@ -65,7 +64,7 @@ public class PermissionsIT {
         properties.put(OceanConfig.KEEPER_GAS_PRICE, config.getString("keeper.gasPrice"));
         properties.put(OceanConfig.KEEPER_TX_ATTEMPTS, config.getString("keeper.tx.attempts"));
         properties.put(OceanConfig.KEEPER_TX_SLEEPDURATION, config.getString("keeper.tx.sleepDuration"));
-        properties.put(OceanConfig.AQUARIUS_URL, config.getString("aquarius.url"));
+        properties.put(OceanConfig.METADATA_URL, config.getString("metadata.url"));
         properties.put(OceanConfig.SECRETSTORE_URL, config.getString("secretstore.url"));
         properties.put(OceanConfig.CONSUME_BASE_PATH, config.getString("consume.basePath"));
         properties.put(OceanConfig.MAIN_ACCOUNT_ADDRESS, config.getString("account.parity.address2"));

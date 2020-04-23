@@ -26,7 +26,7 @@ import io.keyko.nevermind.exceptions.LockRewardFulfillException;
 import io.keyko.nevermind.exceptions.EscrowRewardException;
 import io.keyko.nevermind.exceptions.ConsumeServiceException;
 import io.keyko.nevermind.exceptions.EncryptionException;
-import io.keyko.nevermind.external.AquariusService;
+import io.keyko.nevermind.external.MetadataService;
 import io.keyko.nevermind.external.BrizoService;
 import io.keyko.nevermind.models.service.ProviderConfig;
 import io.keyko.nevermind.models.service.Service;
@@ -34,7 +34,6 @@ import io.keyko.nevermind.models.service.ServiceBuilder;
 import io.keyko.nevermind.models.service.Condition;
 import io.keyko.nevermind.models.service.Agreement;
 import io.keyko.nevermind.models.service.types.ComputingService;
-import io.keyko.nevermind.models.service.types.MetadataService;
 import io.keyko.nevermind.models.service.types.ProvenanceService;
 import io.keyko.nevermind.models.service.types.AuthorizationService;
 import io.keyko.nevermind.models.service.types.AccessService;
@@ -64,20 +63,20 @@ public class OceanManager extends BaseManager {
     private AgreementsManager agreementsManager;
     private TemplatesManager templatesManager;
 
-    protected OceanManager(KeeperService keeperService, AquariusService aquariusService) {
-        super(keeperService, aquariusService);
+    protected OceanManager(KeeperService keeperService, MetadataService metadataService) {
+        super(keeperService, metadataService);
     }
 
     /**
-     * Given the KeeperService and AquariusService, returns a new instance of OceanManager
+     * Given the KeeperService and MetadataService, returns a new instance of OceanManager
      * using them as attributes
      *
      * @param keeperService   Keeper Dto
-     * @param aquariusService Provider Dto
+     * @param metadataService Provider Dto
      * @return OceanManager
      */
-    public static OceanManager getInstance(KeeperService keeperService, AquariusService aquariusService) {
-        return new OceanManager(keeperService, aquariusService);
+    public static OceanManager getInstance(KeeperService keeperService, MetadataService metadataService) {
+        return new OceanManager(keeperService, metadataService);
     }
 
     public OceanManager setAgreementManager(AgreementsManager agreementManager){
@@ -221,7 +220,7 @@ public class OceanManager extends BaseManager {
     }
 
     /**
-     * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Aquarius
+     * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata Api
      *
      * @param metadata       the metadata
      * @param providerConfig the service Endpoints
@@ -237,12 +236,12 @@ public class OceanManager extends BaseManager {
             // Definition of service endpoints
             String metadataEndpoint;
             if (providerConfig.getMetadataEndpoint() == null)
-                metadataEndpoint = getAquariusService().getDdoEndpoint() + "/{did}";
+                metadataEndpoint = getMetadataService().getDdoEndpoint() + "/{did}";
             else
                 metadataEndpoint = providerConfig.getMetadataEndpoint();
 
             // Initialization of services supported for this asset
-            MetadataService metadataService = new MetadataService(metadata, metadataEndpoint, Service.DEFAULT_METADATA_INDEX);
+            io.keyko.nevermind.models.service.types.MetadataService metadataService = new io.keyko.nevermind.models.service.types.MetadataService(metadata, metadataEndpoint, Service.DEFAULT_METADATA_INDEX);
 
             ProvenanceService provenanceService= new ProvenanceService(providerConfig.getMetadataEndpoint(), Service.DEFAULT_PROVENANCE_INDEX);
             AuthorizationService authorizationService = null;
@@ -305,7 +304,7 @@ public class OceanManager extends BaseManager {
             registerDID(ddo.getDid(), metadataEndpoint, ddo.getDid().getHash(), providerConfig.getProviderAddresses());
 
             // Storing DDO
-            return getAquariusService().createDDO(ddo);
+            return getMetadataService().createDDO(ddo);
 
         } catch (DDOException | DIDRegisterException | IOException | CipherException | ServiceException e) {
             throw new DDOException("Error registering Asset.", e);

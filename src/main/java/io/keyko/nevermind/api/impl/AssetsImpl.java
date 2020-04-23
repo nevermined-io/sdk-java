@@ -2,13 +2,12 @@ package io.keyko.nevermind.api.impl;
 
 import io.keyko.nevermind.api.AssetsAPI;
 import io.keyko.nevermind.exceptions.*;
-import io.keyko.nevermind.exceptions.*;
 import io.keyko.nevermind.manager.AgreementsManager;
 import io.keyko.nevermind.manager.AssetsManager;
 import io.keyko.nevermind.manager.OceanManager;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.DID;
-import io.keyko.nevermind.models.aquarius.SearchResult;
+import io.keyko.nevermind.models.metadata.SearchResult;
 import io.keyko.nevermind.models.asset.AssetMetadata;
 import io.keyko.nevermind.models.asset.OrderResult;
 import io.keyko.nevermind.models.service.ProviderConfig;

@@ -111,7 +111,7 @@
                 "id": "did:op:999999"
               },
               "output": {
-                "metadataUrl": "https://aquarius.net:5000/api/v1/aquarius/assets/ddo/",
+                "metadataUrl": "https://metadata.net:5000/api/v1/aquarius/assets/ddo/",
                 "secretStoreUrl": "http://secretstore.org:12001",
                 "accessProxyUrl": "https://brizo.net:8030/api/v1/brizo/",
                 "metadata": {}

@@ -6,8 +6,7 @@ import io.keyko.nevermind.contracts.*;
 import com.oceanprotocol.secretstore.core.EvmDto;
 import com.oceanprotocol.secretstore.core.SecretStoreDto;
 import io.keyko.nevermind.api.config.OceanConfig;
-import io.keyko.nevermind.external.AquariusService;
-import io.keyko.nevermind.manager.*;
+import io.keyko.nevermind.external.MetadataService;
 import org.web3j.crypto.CipherException;
 
 import java.io.IOException;
@@ -53,12 +52,12 @@ public class OceanInitializationHelper {
     }
 
     /**
-     * Initialize an instance of AquariusService
+     * Initialize an instance of MetadataService
      *
-     * @return an initialized AquariusService object
+     * @return an initialized MetadataService object
      */
-    public AquariusService getAquarius() {
-        return AquariusService.getInstance(oceanConfig.getAquariusUrl());
+    public MetadataService getMetadataService() {
+        return MetadataService.getInstance(oceanConfig.getMetadataUrl());
     }
 
     /**
@@ -98,78 +97,78 @@ public class OceanInitializationHelper {
      * Initialize an instance of OceanManager
      *
      * @param keeperService   the keeperService
-     * @param aquariusService the aquariusService
+     * @param metadataService the MetadataService
      * @return an initialized OceanManager object
      * @throws IOException     IOException
      * @throws CipherException CipherException
      */
-    public OceanManager getOceanManager(KeeperService keeperService, AquariusService aquariusService) throws IOException, CipherException {
-        return OceanManager.getInstance(keeperService, aquariusService);
+    public OceanManager getOceanManager(KeeperService keeperService, MetadataService metadataService) throws IOException, CipherException {
+        return OceanManager.getInstance(keeperService, metadataService);
     }
 
     /**
      * Initialize an instance of AccountsManager
      *
      * @param keeperService   the keeperService
-     * @param aquariusService the AquariusService
+     * @param metadataService the MetadataService
      * @return an initialized AccountsManager object
      * @throws IOException     IOException
      * @throws CipherException CipherException
      */
-    public AccountsManager getAccountsManager(KeeperService keeperService, AquariusService aquariusService) throws IOException, CipherException {
-        return AccountsManager.getInstance(keeperService, aquariusService);
+    public AccountsManager getAccountsManager(KeeperService keeperService, MetadataService metadataService) throws IOException, CipherException {
+        return AccountsManager.getInstance(keeperService, metadataService);
     }
 
     /**
      * Initialize an instance of AgreementsManager
      *
      * @param keeperService   the keeperService
-     * @param aquariusService the AquariusService
+     * @param metadataService the MetadataService
      * @return an initialized AgreementsManager object
      * @throws IOException     IOException
      * @throws CipherException CipherException
      */
-    public AgreementsManager getAgreementsManager(KeeperService keeperService, AquariusService aquariusService) throws IOException, CipherException {
-        return AgreementsManager.getInstance(keeperService, aquariusService);
+    public AgreementsManager getAgreementsManager(KeeperService keeperService, MetadataService metadataService) throws IOException, CipherException {
+        return AgreementsManager.getInstance(keeperService, metadataService);
     }
 
     /**
      * Initialize an instance of ConditionsManager
      *
      * @param keeperService   the keeperService
-     * @param aquariusService the AquariusService
+     * @param metadataService the MetadataService
      * @return an initialized ConditionsManager object
      * @throws IOException     IOException
      * @throws CipherException CipherException
      */
-    public ConditionsManager getConditionsManager(KeeperService keeperService, AquariusService aquariusService) throws IOException, CipherException {
-        return ConditionsManager.getInstance(keeperService, aquariusService);
+    public ConditionsManager getConditionsManager(KeeperService keeperService, MetadataService metadataService) throws IOException, CipherException {
+        return ConditionsManager.getInstance(keeperService, metadataService);
     }
 
     /**
      * Initialize an instance of TemplatesManager
      *
      * @param keeperService   the keeperService
-     * @param aquariusService the AquariusService
+     * @param metadataService the MetadataService
      * @return an initialized TemplatesManager object
      * @throws IOException     IOException
      * @throws CipherException CipherException
      */
-    public TemplatesManager getTemplatesManager(KeeperService keeperService, AquariusService aquariusService) throws IOException, CipherException {
-        return TemplatesManager.getInstance(keeperService, aquariusService);
+    public TemplatesManager getTemplatesManager(KeeperService keeperService, MetadataService metadataService) throws IOException, CipherException {
+        return TemplatesManager.getInstance(keeperService, metadataService);
     }
 
     /**
      * Initialize an instance of AssetsManager
      *
      * @param keeperService   the KeeperService
-     * @param aquariusService the AquariusService
+     * @param metadataService the MetadataService
      * @return an initialized AssetsManager object
      * @throws IOException     IOException
      * @throws CipherException CipherException
      */
-    public AssetsManager getAssetsManager(KeeperService keeperService, AquariusService aquariusService) throws IOException, CipherException {
-        return AssetsManager.getInstance(keeperService, aquariusService);
+    public AssetsManager getAssetsManager(KeeperService keeperService, MetadataService metadataService) throws IOException, CipherException {
+        return AssetsManager.getInstance(keeperService, metadataService);
     }
 
     /**

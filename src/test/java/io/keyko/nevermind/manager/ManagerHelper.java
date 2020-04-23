@@ -1,13 +1,7 @@
 package io.keyko.nevermind.manager;
 
-import io.keyko.common.helpers.CryptoHelper;
-import io.keyko.common.helpers.EncodingHelper;
-import io.keyko.common.helpers.EthereumHelper;
-import io.keyko.nevermind.api.OceanAPI;
 import io.keyko.nevermind.api.config.OceanConfig;
-import io.keyko.nevermind.exceptions.EthereumException;
-import io.keyko.nevermind.external.AquariusService;
-import io.keyko.nevermind.models.service.template.TemplateSEA;
+import io.keyko.nevermind.external.MetadataService;
 import io.keyko.nevermind.contracts.*;
 import com.oceanprotocol.secretstore.core.EvmDto;
 import com.oceanprotocol.secretstore.core.SecretStoreDto;
@@ -19,7 +13,6 @@ import org.web3j.crypto.CipherException;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
@@ -76,8 +69,8 @@ public abstract class ManagerHelper {
         return keeper;
     }
 
-    public static AquariusService getAquarius(Config config) {
-        return AquariusService.getInstance(config.getString("aquarius.url"));
+    public static MetadataService getMetadataService(Config config) {
+        return MetadataService.getInstance(config.getString("metadata.url"));
     }
 
     public static SecretStoreDto getSecretStoreDto(Config config) {
@@ -162,7 +155,7 @@ public abstract class ManagerHelper {
         properties.put(OceanConfig.KEEPER_GAS_PRICE, config.getString("keeper.gasPrice"));
         properties.put(OceanConfig.KEEPER_TX_ATTEMPTS, config.getString("keeper.tx.attempts"));
         properties.put(OceanConfig.KEEPER_TX_SLEEPDURATION, config.getString("keeper.tx.sleepDuration"));
-        properties.put(OceanConfig.AQUARIUS_URL, config.getString("aquarius.url"));
+        properties.put(OceanConfig.METADATA_URL, config.getString("metadata.url"));
         properties.put(OceanConfig.SECRETSTORE_URL, config.getString("secretstore.url"));
         properties.put(OceanConfig.CONSUME_BASE_PATH, config.getString("consume.basePath"));
         properties.put(OceanConfig.MAIN_ACCOUNT_ADDRESS, config.getString("account.parity.address" + numAddress));

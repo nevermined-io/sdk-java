@@ -1,10 +1,9 @@
 package io.keyko.nevermind.api;
 
 import io.keyko.nevermind.exceptions.*;
-import io.keyko.nevermind.exceptions.*;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.DID;
-import io.keyko.nevermind.models.aquarius.SearchResult;
+import io.keyko.nevermind.models.metadata.SearchResult;
 import io.keyko.nevermind.models.asset.AssetMetadata;
 import io.keyko.nevermind.models.asset.OrderResult;
 import io.keyko.nevermind.models.service.ProviderConfig;
@@ -21,7 +20,7 @@ import java.util.Map;
 public interface AssetsAPI {
 
     /**
-     * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Aquarius
+     * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
      *
      * @param metadata       the metadata of the DDO
      * @param providerConfig the endpoints of the DDO's services
@@ -32,7 +31,7 @@ public interface AssetsAPI {
     public DDO create(AssetMetadata metadata, ProviderConfig providerConfig, int threshold) throws DDOException;
 
     /**
-     * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Aquarius
+     * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
      *
      * @param metadata       the metadata of the DDO
      * @param providerConfig the endpoints of the DDO's services
@@ -44,7 +43,7 @@ public interface AssetsAPI {
 
 
     /**
-     * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Aquarius
+     * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
      *
      * @param metadata       the metadata of the DDO
      * @param providerConfig the endpoints of the DDO's services
@@ -56,7 +55,7 @@ public interface AssetsAPI {
     public DDO createComputingService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider, int threshold) throws DDOException;
 
     /**
-     * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Aquarius
+     * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
      *
      * @param metadata       the metadata of the DDO
      * @param providerConfig the endpoints of the DDO's services
@@ -279,7 +278,7 @@ public interface AssetsAPI {
     public List<DID> consumerAssets(String consumerAddress) throws ServiceException;
 
     /**
-     * Retire this did of Aquarius
+     * Retire this did of Metadata
      *
      * @param did the did
      * @return a flag that indicates if the action was executed correctly

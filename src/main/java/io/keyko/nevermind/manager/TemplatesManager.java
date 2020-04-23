@@ -1,18 +1,15 @@
 package io.keyko.nevermind.manager;
 
-import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermind.models.service.template.TemplateSEA;
 import io.keyko.nevermind.exceptions.EthereumException;
-import io.keyko.nevermind.external.AquariusService;
+import io.keyko.nevermind.external.MetadataService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple4;
-import org.web3j.tuples.generated.Tuple6;
 
 import java.math.BigInteger;
-import java.util.List;
 
 /**
  * Controller class to manage the SEA Template functions
@@ -22,20 +19,20 @@ public class TemplatesManager extends BaseManager {
     private static final Logger log = LogManager.getLogger(TemplatesManager.class);
 
 
-    private TemplatesManager(KeeperService keeperService, AquariusService aquariusService) {
-        super(keeperService, aquariusService);
+    private TemplatesManager(KeeperService keeperService, MetadataService metadataService) {
+        super(keeperService, metadataService);
     }
 
     /**
-     * Given the KeeperService and AquariusService, returns a new instance of AccountsManager
+     * Given the KeeperService and MetadataService, returns a new instance of AccountsManager
      * using them as attributes
      *
      * @param keeperService   Keeper Dto
-     * @param aquariusService Provider Dto
+     * @param metadataService Provider Dto
      * @return AccountsManager AccountsManager instance
      */
-    public static TemplatesManager getInstance(KeeperService keeperService, AquariusService aquariusService) {
-        return new TemplatesManager(keeperService, aquariusService);
+    public static TemplatesManager getInstance(KeeperService keeperService, MetadataService metadataService) {
+        return new TemplatesManager(keeperService, metadataService);
     }
 
 

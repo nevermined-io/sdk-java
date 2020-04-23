@@ -25,7 +25,7 @@ declare -a contracts=(
 
 for c in "${contracts[@]}"
 do
-   address=$(jq -r .address "${HOME}/.ocean/keeper-contracts/artifacts/$c.$network.json")
+   address=$(jq -r .address "${HOME}/.nevermind/nevermind-contracts/artifacts/$c.$network.json")
    echo "Setting up $c address to $address"
    sed -i  "s/contract.$c.address=.*/contract.$c.address=\"$address\"/g" src/test/resources/application.conf
 

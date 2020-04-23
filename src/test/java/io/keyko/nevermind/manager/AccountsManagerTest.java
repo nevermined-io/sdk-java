@@ -1,7 +1,7 @@
 package io.keyko.nevermind.manager;
 
 import io.keyko.nevermind.exceptions.EthereumException;
-import io.keyko.nevermind.external.AquariusService;
+import io.keyko.nevermind.external.MetadataService;
 import io.keyko.nevermind.models.Account;
 import io.keyko.common.web3.KeeperService;
 import com.typesafe.config.Config;
@@ -31,14 +31,14 @@ public class AccountsManagerTest {
 
     private static final Logger log = LogManager.getLogger(AccountsManagerTest.class);
 
-    private static AquariusService aquarius;
+    private static MetadataService metadataService;
     private static final Config config = ConfigFactory.load();
 
     @BeforeClass
     public static void setUp() throws Exception {
         log.debug("Setting Up DTO's");
 
-        aquarius= ManagerHelper.getAquarius(config);
+        metadataService = ManagerHelper.getMetadataService(config);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class AccountsManagerTest {
         when(_keeper.getWeb3()).thenReturn(_web3j);
         when(_keeper.getCredentials()).thenReturn(_credentials);
 
-        AccountsManager fakeManager= AccountsManager.getInstance(_keeper, aquarius);
+        AccountsManager fakeManager= AccountsManager.getInstance(_keeper, metadataService);
 
         List<Account> accounts= fakeManager.getAccounts();
 

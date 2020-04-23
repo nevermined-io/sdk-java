@@ -1,7 +1,7 @@
 package io.keyko.nevermind.manager;
 
 import io.keyko.nevermind.exceptions.EthereumException;
-import io.keyko.nevermind.external.AquariusService;
+import io.keyko.nevermind.external.MetadataService;
 import io.keyko.nevermind.models.Account;
 import io.keyko.nevermind.models.Balance;
 import io.keyko.nevermind.contracts.Dispenser;
@@ -32,7 +32,7 @@ public class AccountsManagerIT {
     private static AccountsManager managerError;
     private static KeeperService keeper;
     private static KeeperService keeperError;
-    private static AquariusService aquarius;
+    private static MetadataService metadataService;
 
     private static OceanToken oceanToken;
     private static Dispenser dispenser;
@@ -45,8 +45,8 @@ public class AccountsManagerIT {
         log.debug("Setting Up DTO's");
 
         keeper= ManagerHelper.getKeeper(config, ManagerHelper.VmClient.parity);
-        aquarius= ManagerHelper.getAquarius(config);
-        manager= AccountsManager.getInstance(keeper, aquarius);
+        metadataService = ManagerHelper.getMetadataService(config);
+        manager= AccountsManager.getInstance(keeper, metadataService);
 
         // Loading Smart Contracts required
         oceanToken= ManagerHelper.loadOceanTokenContract(keeper, config.getString("contract.OceanToken.address"));
@@ -60,7 +60,7 @@ public class AccountsManagerIT {
                 "keeper.url", ConfigValueFactory.fromAnyRef("http://fdasdfsa.dasx:8545"));
 
         keeperError= ManagerHelper.getKeeper(badConfig, ManagerHelper.VmClient.parity);
-        managerError= AccountsManager.getInstance(keeperError, aquarius);
+        managerError= AccountsManager.getInstance(keeperError, metadataService);
         managerError.setTokenContract(
                 ManagerHelper.loadOceanTokenContract(keeperError, config.getString("contract.OceanToken.address"))
         );
@@ -75,7 +75,7 @@ public class AccountsManagerIT {
         assertTrue(
                 manager.getKeeperService().getWeb3().getClass().isAssignableFrom(JsonRpcSquidAdmin.class));
         assertTrue(
-                manager.getAquariusService().getClass().isAssignableFrom(AquariusService.class));
+                manager.getMetadataService().getClass().isAssignableFrom(MetadataService.class));
     }
 
     @Test

@@ -3,7 +3,7 @@ package io.keyko.nevermind.manager;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.keyko.nevermind.api.OceanAPI;
 import io.keyko.nevermind.api.config.OceanConfig;
-import io.keyko.nevermind.external.AquariusService;
+import io.keyko.nevermind.external.MetadataService;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.DID;
 import io.keyko.nevermind.models.asset.AssetMetadata;
@@ -33,7 +33,7 @@ public class AgreementsManagerIT {
     private static final Logger log = LogManager.getLogger(AgreementsManagerIT.class);
     private static AgreementsManager agreementsManager;
     private static KeeperService keeper;
-    private static AquariusService aquarius;
+    private static MetadataService metadataService;
     private static final Config config = ConfigFactory.load();
     private static AccessSecretStoreCondition accessSecretStoreCondition;
     private static EscrowAccessSecretStoreTemplate escrowAccessSecretStoreTemplate;
@@ -55,9 +55,9 @@ public class AgreementsManagerIT {
         METADATA_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(METADATA_JSON_SAMPLE)));
 
         keeper = ManagerHelper.getKeeper(config, ManagerHelper.VmClient.parity, "2");
-        aquarius = ManagerHelper.getAquarius(config);
-        String metadataUrl = config.getString("aquarius-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
-        String provenanceUrl = config.getString("aquarius-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
+        metadataService = ManagerHelper.getMetadataService(config);
+        String metadataUrl = config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
+        String provenanceUrl = config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
         String consumeUrl = config.getString("brizo.url") + "/api/v1/brizo/services/consume";
         String secretStoreEndpoint = config.getString("secretstore.url");
         String providerAddress = config.getString("provider.address");
@@ -69,7 +69,7 @@ public class AgreementsManagerIT {
         properties.put(OceanConfig.KEEPER_GAS_PRICE, config.getString("keeper.gasPrice"));
         properties.put(OceanConfig.KEEPER_TX_ATTEMPTS, config.getString("keeper.tx.attempts"));
         properties.put(OceanConfig.KEEPER_TX_SLEEPDURATION, config.getString("keeper.tx.sleepDuration"));
-        properties.put(OceanConfig.AQUARIUS_URL, config.getString("aquarius.url"));
+        properties.put(OceanConfig.METADATA_URL, config.getString("metadata.url"));
         properties.put(OceanConfig.SECRETSTORE_URL, config.getString("secretstore.url"));
         properties.put(OceanConfig.CONSUME_BASE_PATH, config.getString("consume.basePath"));
         properties.put(OceanConfig.MAIN_ACCOUNT_ADDRESS, config.getString("account.parity.address2"));
@@ -90,7 +90,7 @@ public class AgreementsManagerIT {
         properties.put(OceanConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
         oceanAPIConsumer = OceanAPI.getInstance(properties);
         oceanAPIConsumer.getTokensAPI().request(BigInteger.TEN);
-        agreementsManager = AgreementsManager.getInstance(keeper, aquarius);
+        agreementsManager = AgreementsManager.getInstance(keeper, metadataService);
         accessSecretStoreCondition = ManagerHelper.loadAccessSecretStoreConditionContract(keeper, config.getString("contract.AccessSecretStoreCondition.address"));
         escrowAccessSecretStoreTemplate = ManagerHelper.loadEscrowAccessSecretStoreTemplate(keeper, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
         escrowReward = ManagerHelper.loadEscrowRewardContract(keeper, config.getString("contract.EscrowReward.address"));

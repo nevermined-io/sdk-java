@@ -5,8 +5,8 @@ import io.keyko.common.helpers.HttpHelper;
 import io.keyko.common.models.HttpResponse;
 import io.keyko.nevermind.models.AbstractModel;
 import io.keyko.nevermind.models.DDO;
-import io.keyko.nevermind.models.aquarius.SearchQuery;
-import io.keyko.nevermind.models.aquarius.SearchResult;
+import io.keyko.nevermind.models.metadata.SearchQuery;
+import io.keyko.nevermind.models.metadata.SearchResult;
 import io.keyko.nevermind.models.asset.AssetMetadata;
 import io.keyko.nevermind.exceptions.DDOException;
 import org.apache.commons.httpclient.HttpException;
@@ -17,32 +17,32 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * Service for Aquarius's Integration
+ * Service for Metadata Integration
  */
-public class AquariusService {
+public class MetadataService {
 
-    private static final Logger log = LogManager.getLogger(AquariusService.class);
+    private static final Logger log = LogManager.getLogger(MetadataService.class);
 
     private static final String DDO_URI = "/api/v1/aquarius/assets/ddo";
     private String ddoEndpoint;
 
     /**
-     * Builds an instance of AquariusService
+     * Builds an instance of MetadataService
      *
-     * @param url url of aquarius
-     * @return AquariusService instance
+     * @param url url of metadata api
+     * @return MetadataService instance
      */
-    public static AquariusService getInstance(String url) {
-        log.debug("Getting Aquarius instance: " + url);
-        return new AquariusService(url);
+    public static MetadataService getInstance(String url) {
+        log.debug("Getting Metadata API instance: " + url);
+        return new MetadataService(url);
     }
 
     /**
      * Constructor
      *
-     * @param url the url of aquarius
+     * @param url the url of Metadata Api
      */
-    private AquariusService(String url) {
+    private MetadataService(String url) {
         String url1 = url.replaceAll("/$", "");
         this.ddoEndpoint = url1 + DDO_URI;
     }
@@ -52,7 +52,7 @@ public class AquariusService {
     }
 
     /**
-     * Registers a new DDO in Aquarius
+     * Registers a new DDO in Metadata Api
      *
      * @param ddo the ddo
      * @return the created DDO
@@ -209,7 +209,7 @@ public class AquariusService {
     }
 
     /**
-     * Retire the asset ddo from Aquarius.
+     * Retire the asset ddo from Metadata Api.
      *
      * @param id the did
      * @return a flag that indicates if the retire operation was executed correctly

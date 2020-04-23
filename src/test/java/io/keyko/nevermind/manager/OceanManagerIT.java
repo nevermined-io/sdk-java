@@ -8,7 +8,7 @@ import io.keyko.common.web3.KeeperService;
 import io.keyko.common.web3.parity.JsonRpcSquidAdmin;
 import io.keyko.nevermind.contracts.*;
 import io.keyko.nevermind.exceptions.DDOException;
-import io.keyko.nevermind.external.AquariusService;
+import io.keyko.nevermind.external.MetadataService;
 import io.keyko.nevermind.models.Account;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.DID;
@@ -47,7 +47,7 @@ public class OceanManagerIT {
     private static KeeperService keeperPublisher;
     private static KeeperService keeperConsumer;
 
-    private static AquariusService aquarius;
+    private static MetadataService metadataService;
     private static SecretStoreManager secretStore;
     private static String providerAddress;
 
@@ -97,7 +97,7 @@ public class OceanManagerIT {
         keeperPublisher = ManagerHelper.getKeeper(config, ManagerHelper.VmClient.parity, "");
         keeperConsumer = ManagerHelper.getKeeper(config, ManagerHelper.VmClient.parity, "2");
 
-        aquarius= ManagerHelper.getAquarius(config);
+        metadataService = ManagerHelper.getMetadataService(config);
         EvmDto evmDto = ManagerHelper.getEvmDto(config, ManagerHelper.VmClient.parity);
         secretStore= ManagerHelper.getSecretStoreController(config, evmDto);
 
@@ -111,7 +111,7 @@ public class OceanManagerIT {
 
 
         // Initializing the OceanManager for the Publisher
-        managerPublisher = OceanManager.getInstance(keeperPublisher, aquarius);
+        managerPublisher = OceanManager.getInstance(keeperPublisher, metadataService);
         managerPublisher.setSecretStoreManager(secretStore)
                 .setDidRegistryContract(didRegistry)
                 .setEscrowReward(escrowReward)
@@ -122,7 +122,7 @@ public class OceanManagerIT {
                 .setEvmDto(evmDto);
 
         // Initializing the OceanManager for the Consumer
-        managerConsumer = OceanManager.getInstance(keeperConsumer, aquarius);
+        managerConsumer = OceanManager.getInstance(keeperConsumer, metadataService);
         managerConsumer.setSecretStoreManager(secretStore)
                 .setDidRegistryContract(didRegistry)
                 .setEscrowReward(escrowReward)
@@ -147,7 +147,7 @@ public class OceanManagerIT {
         assertTrue(
                 managerPublisher.getKeeperService().getWeb3().getClass().isAssignableFrom(JsonRpcSquidAdmin.class));
         assertTrue(
-                managerPublisher.getAquariusService().getClass().isAssignableFrom(AquariusService.class));
+                managerPublisher.getMetadataService().getClass().isAssignableFrom(MetadataService.class));
     }
 
 
@@ -162,8 +162,8 @@ public class OceanManagerIT {
 
         metadataBase = DDO.fromJSON(new TypeReference<AssetMetadata>() {}, completeDDO.services.get(0).toJson());
 */
-        String metadataUrl= config.getString("aquarius-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
-        String provenanceUrl= config.getString("aquarius-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
+        String metadataUrl= config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
+        String provenanceUrl= config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
         String consumeUrl= config.getString("brizo.url") + "/api/v1/brizo/services/consume";
         String secretStoreEndpoint= config.getString("secretstore.url");
         String providerAddress= config.getString("provider.address");
@@ -179,8 +179,8 @@ public class OceanManagerIT {
     @Test
     public void registerAsset() throws Exception {
 
-        String metadataUrl= config.getString("aquarius-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
-        String provenanceUrl= config.getString("aquarius-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
+        String metadataUrl= config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
+        String provenanceUrl= config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/provenance/{did}";
         String consumeUrl= config.getString("brizo.url") + "/api/v1/brizo/services/consume";
         String secretStoreEndpoint= config.getString("secretstore.url");
         String providerAddress= config.getString("provider.address");
@@ -206,14 +206,14 @@ public class OceanManagerIT {
 
         DID did= DID.builder();
         String oldUrl= "http://mymetadata.io/api";
-        String newUrl= config.getString("aquarius-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
+        String newUrl= config.getString("metadata-internal.url") + "/api/v1/aquarius/assets/ddo/{did}";
 
         String checksum = "0xd190bc85ee50643baffe7afe84ec6a9dd5212b67223523cd8e4d88f9069255fb";
 
         ddoBase.id = did.toString();
 
         ddoBase.services.get(0).serviceEndpoint = newUrl;
-        aquarius.createDDO(ddoBase);
+        metadataService.createDDO(ddoBase);
 
         boolean didRegistered= managerPublisher.registerDID(did, oldUrl, checksum, Arrays.asList(providerAddress));
         assertTrue(didRegistered);
@@ -235,7 +235,7 @@ public class OceanManagerIT {
         ddoBase.id = did.toString();
 
         ddoBase.services.get(0).serviceEndpoint = url;
-        aquarius.createDDO(ddoBase);
+        metadataService.createDDO(ddoBase);
 
         boolean didRegistered= managerPublisher.registerDID(did, url, checksum, Arrays.asList(providerAddress));
         assertTrue(didRegistered);

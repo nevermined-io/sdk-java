@@ -4,7 +4,7 @@ import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermind.models.Account;
 import io.keyko.nevermind.models.Balance;
 import io.keyko.nevermind.exceptions.EthereumException;
-import io.keyko.nevermind.external.AquariusService;
+import io.keyko.nevermind.external.MetadataService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.protocol.core.DefaultBlockParameterName;
@@ -23,20 +23,20 @@ public class AccountsManager extends BaseManager {
 
     private static final Logger log = LogManager.getLogger(AccountsManager.class);
 
-    private AccountsManager(KeeperService keeperService, AquariusService aquariusService) {
-        super(keeperService, aquariusService);
+    private AccountsManager(KeeperService keeperService, MetadataService metadataService) {
+        super(keeperService, metadataService);
     }
 
     /**
-     * Given the KeeperService and AquariusService, returns a new instance of AccountsManager
+     * Given the KeeperService and MetadataService, returns a new instance of AccountsManager
      * using them as attributes
      *
      * @param keeperService   Keeper Dto
-     * @param aquariusService Provider Dto
+     * @param metadataService Provider Dto
      * @return AccountsManager
      */
-    public static AccountsManager getInstance(KeeperService keeperService, AquariusService aquariusService) {
-        return new AccountsManager(keeperService, aquariusService);
+    public static AccountsManager getInstance(KeeperService keeperService, MetadataService metadataService) {
+        return new AccountsManager(keeperService, metadataService);
     }
 
 

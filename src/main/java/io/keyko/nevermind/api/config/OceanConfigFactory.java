@@ -16,7 +16,7 @@ public class OceanConfigFactory {
     private static final String DEFAULT_KEEPER_URL = "http://localhost:8545";
     private static final BigInteger DEFAULT_KEEPER_GAS_LIMIT = BigInteger.valueOf(4712388l);
     private static final BigInteger DEFAULT_KEEPER_GAS_PRICE = BigInteger.valueOf(100000000000l);
-    private static final String DEFAULT_AQUARIUS_URL = "http://localhost:5000";
+    private static final String DEFAULT_METADATA_URL = "http://localhost:5000";
     private static final String DEFAULT_SECRET_STORE_URL = "http://localhost:12001";
     private static final String DEFAULT_CONSUME_PATH = "/tmp";
 
@@ -45,7 +45,7 @@ public class OceanConfigFactory {
                         (String) properties.getOrDefault(OceanConfig.KEEPER_TX_SLEEPDURATION, String.valueOf(TransactionManager.DEFAULT_POLLING_FREQUENCY))
                 ));
 
-        oceanConfig.setAquariusUrl((String) properties.getOrDefault(OceanConfig.AQUARIUS_URL, DEFAULT_AQUARIUS_URL));
+        oceanConfig.setMetadataUrl((String) properties.getOrDefault(OceanConfig.METADATA_URL, DEFAULT_METADATA_URL));
         oceanConfig.setSecretStoreUrl((String) properties.getOrDefault(OceanConfig.SECRETSTORE_URL, DEFAULT_SECRET_STORE_URL));
         oceanConfig.setProviderAddress((String) properties.getOrDefault(OceanConfig.PROVIDER_ADDRESS, ""));
         oceanConfig.setDidRegistryAddress((String) properties.getOrDefault(OceanConfig.DID_REGISTRY_ADDRESS, ""));

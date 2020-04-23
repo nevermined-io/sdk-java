@@ -6,36 +6,34 @@ import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.DID;
 import io.keyko.nevermind.models.service.Agreement;
 import io.keyko.nevermind.models.service.Service;
-import io.keyko.nevermind.external.AquariusService;
+import io.keyko.nevermind.external.MetadataService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.crypto.Keys;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.exceptions.TransactionException;
 import org.web3j.tuples.generated.Tuple2;
-import org.web3j.tuples.generated.Tuple6;
 
 import java.math.BigInteger;
-import java.util.List;
 
 public class ConditionsManager extends BaseManager {
 
     private static final Logger log = LogManager.getLogger(ConditionsManager.class);
 
-    public ConditionsManager(KeeperService keeperService, AquariusService aquariusService) {
-        super(keeperService, aquariusService);
+    public ConditionsManager(KeeperService keeperService, MetadataService metadataService) {
+        super(keeperService, metadataService);
     }
 
     /**
-     * Given the KeeperService and AquariusService, returns a new instance of ConditionsManager
+     * Given the KeeperService and MetadataService, returns a new instance of ConditionsManager
      * using them as attributes
      *
      * @param keeperService   Keeper Dto
-     * @param aquariusService Provider Dto
+     * @param metadataService Provider Dto
      * @return ConditionsManager
      */
-    public static ConditionsManager getInstance(KeeperService keeperService, AquariusService aquariusService) {
-        return new ConditionsManager(keeperService, aquariusService);
+    public static ConditionsManager getInstance(KeeperService keeperService, MetadataService metadataService) {
+        return new ConditionsManager(keeperService, metadataService);
     }
 
     /**

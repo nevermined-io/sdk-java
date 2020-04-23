@@ -1,4 +1,4 @@
-package io.keyko.nevermind.models.aquarius;
+package io.keyko.nevermind.models.metadata;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

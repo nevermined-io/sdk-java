@@ -1,7 +1,7 @@
 package io.keyko.nevermind.manager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.keyko.nevermind.external.AquariusService;
+import io.keyko.nevermind.external.MetadataService;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.DID;
 import io.keyko.common.web3.KeeperService;
@@ -26,7 +26,7 @@ public class AssetsManagerIT {
 
     private static AssetsManager manager;
     private static KeeperService keeper;
-    private static AquariusService aquarius;
+    private static MetadataService metadataService;
 
     private static final String DDO_JSON_SAMPLE = "src/test/resources/examples/ddo-example.json";
     private static String DDO_JSON_CONTENT;
@@ -39,8 +39,8 @@ public class AssetsManagerIT {
         log.debug("Setting Up DTO's");
 
         keeper = ManagerHelper.getKeeper(config);
-        aquarius = ManagerHelper.getAquarius(config);
-        manager = AssetsManager.getInstance(keeper, aquarius);
+        metadataService = ManagerHelper.getMetadataService(config);
+        manager = AssetsManager.getInstance(keeper, metadataService);
 
         SecretStoreManager secretStore= ManagerHelper.getSecretStoreController(config, ManagerHelper.VmClient.parity);
         manager.setSecretStoreManager(secretStore);
@@ -79,11 +79,11 @@ public class AssetsManagerIT {
         ddo2.getMetadataService().attributes.main.type= randomParam;
         ddo1.getMetadataService().attributes.main.name = "random name";
 
-        aquarius.createDDO(ddo1);
-        aquarius.createDDO(ddo2);
-        aquarius.createDDO(ddo3);
-        aquarius.createDDO(ddo4);
-        aquarius.createDDO(ddo5);
+        metadataService.createDDO(ddo1);
+        metadataService.createDDO(ddo2);
+        metadataService.createDDO(ddo3);
+        metadataService.createDDO(ddo4);
+        metadataService.createDDO(ddo5);
 
         List<DDO> result1= manager.searchAssets(randomParam, 10, 1).getResults();
 

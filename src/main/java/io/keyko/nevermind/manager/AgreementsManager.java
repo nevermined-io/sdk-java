@@ -7,11 +7,10 @@ import io.keyko.nevermind.models.DID;
 import io.keyko.nevermind.models.service.Agreement;
 import io.keyko.nevermind.models.service.AgreementStatus;
 import io.keyko.nevermind.models.service.Service;
-import io.keyko.nevermind.models.service.types.AccessService;
 import io.keyko.nevermind.exceptions.ConditionNotFoundException;
 import io.keyko.nevermind.exceptions.EthereumException;
 import io.keyko.nevermind.exceptions.ServiceException;
-import io.keyko.nevermind.external.AquariusService;
+import io.keyko.nevermind.external.MetadataService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.abi.EventEncoder;
@@ -27,7 +26,6 @@ import org.web3j.utils.Numeric;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,20 +34,20 @@ public class AgreementsManager extends BaseManager {
 
     private static final Logger log = LogManager.getLogger(AgreementsManager.class);
 
-    public AgreementsManager(KeeperService keeperService, AquariusService aquariusService) {
-        super(keeperService, aquariusService);
+    public AgreementsManager(KeeperService keeperService, MetadataService metadataService) {
+        super(keeperService, metadataService);
     }
 
     /**
-     * Given the KeeperService and AquariusService, returns a new instance of AgreementsManager
+     * Given the KeeperService and MetadataService, returns a new instance of AgreementsManager
      * using them as attributes
      *
      * @param keeperService   Keeper Dto
-     * @param aquariusService Provider Dto
+     * @param metadataService Provider Dto
      * @return AgreementsManager
      */
-    public static AgreementsManager getInstance(KeeperService keeperService, AquariusService aquariusService) {
-        return new AgreementsManager(keeperService, aquariusService);
+    public static AgreementsManager getInstance(KeeperService keeperService, MetadataService metadataService) {
+        return new AgreementsManager(keeperService, metadataService);
     }
 
     /**

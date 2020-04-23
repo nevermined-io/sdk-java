@@ -15,7 +15,7 @@ public class OceanConfig {
     public static final String KEEPER_GAS_PRICE = "keeper.gasPrice";
     public static final String KEEPER_TX_ATTEMPTS = "keeper.tx.attempts";
     public static final String KEEPER_TX_SLEEPDURATION = "keeper.tx.sleepDuration";
-    public static final String AQUARIUS_URL = "aquarius.url";
+    public static final String METADATA_URL = "metadata.url";
     public static final String SECRETSTORE_URL = "secretstore.url";
     public static final String PROVIDER_ADDRESS = "provider.address";
     public static final String MAIN_ACCOUNT_ADDRESS = "account.main.address";
@@ -40,7 +40,7 @@ public class OceanConfig {
     private BigInteger keeperGasPrice;
     private int keeperTxAttempts;
     private long keeperTxSleepDuration;
-    private String aquariusUrl;
+    private String metadataUrl;
     private String secretStoreUrl;
     private String providerAddress;
     private String mainAccountAddress;
@@ -233,12 +233,12 @@ public class OceanConfig {
         return this;
     }
 
-    public String getAquariusUrl() {
-        return aquariusUrl;
+    public String getMetadataUrl() {
+        return metadataUrl;
     }
 
-    public OceanConfig setAquariusUrl(String address) {
-        this.aquariusUrl = address;
+    public OceanConfig setMetadataUrl(String address) {
+        this.metadataUrl = address;
         return this;
     }
 

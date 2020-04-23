@@ -4,13 +4,13 @@ import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.DID;
-import io.keyko.nevermind.models.aquarius.SearchQuery;
-import io.keyko.nevermind.models.aquarius.SearchResult;
+import io.keyko.nevermind.models.metadata.SearchQuery;
+import io.keyko.nevermind.models.metadata.SearchResult;
 import io.keyko.nevermind.models.asset.AssetMetadata;
 import io.keyko.nevermind.exceptions.DDOException;
 import io.keyko.nevermind.exceptions.EthereumException;
 import io.keyko.nevermind.exceptions.ServiceException;
-import io.keyko.nevermind.external.AquariusService;
+import io.keyko.nevermind.external.MetadataService;
 import org.web3j.abi.EventEncoder;
 import org.web3j.abi.datatypes.Event;
 import org.web3j.crypto.Keys;
@@ -30,30 +30,30 @@ import java.util.Map;
  */
 public class AssetsManager extends BaseManager {
 
-    public AssetsManager(KeeperService keeperService, AquariusService aquariusService) {
-        super(keeperService, aquariusService);
+    public AssetsManager(KeeperService keeperService, MetadataService metadataService) {
+        super(keeperService, metadataService);
     }
 
     /**
      * Gets an instance of AssetManager
      *
      * @param keeperService   instance of keeperService
-     * @param aquariusService instance of aquariusService
+     * @param metadataService instance of MetadataService
      * @return an initialized instance of AssetManager
      */
-    public static AssetsManager getInstance(KeeperService keeperService, AquariusService aquariusService) {
-        return new AssetsManager(keeperService, aquariusService);
+    public static AssetsManager getInstance(KeeperService keeperService, MetadataService metadataService) {
+        return new AssetsManager(keeperService, metadataService);
     }
 
     /**
-     * Publishes in Aquarius the metadata of a DDO
+     * Publishes in Metadata Api the metadata of a DDO
      *
      * @param ddo the DDO to publish
      * @return the published DDO
-     * @throws Exception if Aquarius service fails publishing the DDO
+     * @throws Exception if Metadata Api service fails publishing the DDO
      */
     public DDO publishMetadata(DDO ddo) throws Exception {
-        return getAquariusService().createDDO(ddo);
+        return getMetadataService().createDDO(ddo);
     }
 
 
@@ -62,10 +62,10 @@ public class AssetsManager extends BaseManager {
      *
      * @param id the did of the DDO
      * @return an instance of the DDO represented by the DID
-     * @throws Exception if Aquarius service fails publishing the metadata
+     * @throws Exception if Metadata Api service fails publishing the metadata
      */
     public DDO getByDID(String id) throws Exception {
-        return getAquariusService().getDDOUsingId(id);
+        return getMetadataService().getDDOUsingId(id);
     }
 
     /**
@@ -74,10 +74,10 @@ public class AssetsManager extends BaseManager {
      * @param id  the did of the DDO
      * @param ddo the DDO
      * @return A flag that indicates if the update was executed correctly
-     * @throws Exception if Aquarius service fails updating the metadata
+     * @throws Exception if Metadata Api service fails updating the metadata
      */
     public boolean updateMetadata(String id, DDO ddo) throws Exception {
-        return getAquariusService().updateDDO(id, ddo);
+        return getMetadataService().updateDDO(id, ddo);
     }
 
     /**
@@ -90,7 +90,7 @@ public class AssetsManager extends BaseManager {
      * @throws DDOException if Aquairus fails searching the assets
      */
     public SearchResult searchAssets(String text, int offset, int page) throws DDOException {
-        return getAquariusService().searchDDO(text, offset, page);
+        return getMetadataService().searchDDO(text, offset, page);
     }
 
     /**
@@ -105,18 +105,18 @@ public class AssetsManager extends BaseManager {
      */
     public SearchResult searchAssets(Map<String, Object> params, int offset, int page, int sort) throws DDOException {
         SearchQuery searchQuery = new SearchQuery(params, offset, page, sort);
-        return getAquariusService().searchDDO(searchQuery);
+        return getMetadataService().searchDDO(searchQuery);
     }
 
     /**
-     * Retire the asset ddo from Aquarius.
+     * Retire the asset ddo from Metadata Api.
      *
      * @param did the did
      * @return a flag that indicates if the retire operation was executed correctly
      * @throws DDOException DDOException
      */
     public Boolean deleteAsset(DID did) throws DDOException {
-        return getAquariusService().retireAssetDDO(did.getDid());
+        return getMetadataService().retireAssetDDO(did.getDid());
 
     }
 
@@ -128,7 +128,7 @@ public class AssetsManager extends BaseManager {
      * @throws DDOException DDOException
      */
     public Boolean validateMetadata(AssetMetadata metadata) throws DDOException {
-        return getAquariusService().validateMetadata(metadata);
+        return getMetadataService().validateMetadata(metadata);
 
     }
 

@@ -8,11 +8,10 @@ import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.DID;
 import io.keyko.nevermind.models.asset.AssetMetadata;
 import io.keyko.nevermind.models.service.types.AuthorizationService;
-import io.keyko.nevermind.models.service.types.MetadataService;
 import io.keyko.nevermind.contracts.*;
 import com.oceanprotocol.secretstore.core.EvmDto;
 import com.oceanprotocol.secretstore.core.SecretStoreDto;
-import io.keyko.nevermind.external.AquariusService;
+import io.keyko.nevermind.external.MetadataService;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.logging.log4j.LogManager;
@@ -46,7 +45,7 @@ public abstract class BaseManager {
     protected static final Logger log = LogManager.getLogger(BaseManager.class);
 
     private KeeperService keeperService;
-    private AquariusService aquariusService;
+    private MetadataService metadataService;
     private SecretStoreDto secretStoreDto;
     private EvmDto evmDto;
     private SecretStoreManager secretStoreManager;
@@ -98,11 +97,11 @@ public abstract class BaseManager {
      * Constructor
      *
      * @param keeperService   KeeperService
-     * @param aquariusService AquariusService
+     * @param metadataService MetadataService
      */
-    public BaseManager(KeeperService keeperService, AquariusService aquariusService) {
+    public BaseManager(KeeperService keeperService, MetadataService metadataService) {
         this.keeperService = keeperService;
-        this.aquariusService = aquariusService;
+        this.metadataService = metadataService;
     }
 
     private SecretStoreManager getSecretStoreInstance(AuthorizationService authorizationService) {
@@ -114,7 +113,7 @@ public abstract class BaseManager {
     }
 
 
-    protected DDO buildDDO(MetadataService metadataService, AuthorizationService authorizationService, String address, int threshold) throws DDOException {
+    protected DDO buildDDO(io.keyko.nevermind.models.service.types.MetadataService metadataService, AuthorizationService authorizationService, String address, int threshold) throws DDOException {
 
         try {
             String signature = "";
@@ -125,7 +124,7 @@ public abstract class BaseManager {
 
     }
 
-    protected DDO buildDDO(MetadataService metadataService, AuthorizationService authorizationService, String address) throws DDOException {
+    protected DDO buildDDO(io.keyko.nevermind.models.service.types.MetadataService metadataService, AuthorizationService authorizationService, String address) throws DDOException {
         return this.buildDDO(metadataService, authorizationService, address, 0);
     }
 
@@ -213,7 +212,7 @@ public abstract class BaseManager {
             String ddoUrl = nonIndexed.get(0).getValue().toString();
             String didUrl = UrlHelper.parseDDOUrl(ddoUrl, did.toString());
 
-            AquariusService ddoAquariosDto = AquariusService.getInstance(UrlHelper.getBaseUrl(didUrl));
+            MetadataService ddoAquariosDto = MetadataService.getInstance(UrlHelper.getBaseUrl(didUrl));
             return ddoAquariosDto.getDDO(didUrl);
 
         } catch (Exception ex) {
@@ -248,22 +247,22 @@ public abstract class BaseManager {
     }
 
     /**
-     * Get the AquariusService
+     * Get the MetadataService
      *
-     * @return AquariusService
+     * @return MetadataService
      */
-    public AquariusService getAquariusService() {
-        return aquariusService;
+    public MetadataService getMetadataService() {
+        return metadataService;
     }
 
     /**
-     * Set the AquariusService
+     * Set the MetadataService
      *
-     * @param aquariusService AquariusService
+     * @param metadataService MetadataService
      * @return this
      */
-    public BaseManager setAquariusService(AquariusService aquariusService) {
-        this.aquariusService = aquariusService;
+    public BaseManager setMetadataService(MetadataService metadataService) {
+        this.metadataService = metadataService;
         return this;
     }
 
@@ -534,7 +533,7 @@ public abstract class BaseManager {
     public String toString() {
         return "BaseManager{" +
                 "keeperService=" + keeperService +
-                ", aquariusService=" + aquariusService +
+                ", metadataService=" + metadataService +
                 '}';
     }
 }
