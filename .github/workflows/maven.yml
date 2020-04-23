@@ -20,8 +20,8 @@ jobs:
         run: |
           git clone https://github.com/keyko-io/nevermind-tools
           cd nevermind-tools
-          sudo bash -x start_nevermind.sh --no-commons --local-spree-node 2>&1 > start_nevermind.log &
+          sudo bash -x start_nevermind.sh --no-commons --no-faucet --no-dashboard --latest 2>&1 > start_nevermind.log &
           cd ..
           sleep 60
           /bin/bash src/test/resources/scripts/updateConfAddresses.sh
-          mvn clean verify -P all-test 
+          mvn clean verify -P all-tests
