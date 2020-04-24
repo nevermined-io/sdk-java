@@ -6,7 +6,7 @@
 > [keyko.io](https://keyko.io)
 
 ![Java Maven CI](https://github.com/keyko-io/nevermind-sdk-java/workflows/Java%20Maven%20CI/badge.svg)
-[![javadoc](https://javadoc.io/badge2/io.keyko.nevermind/nevermind-sdk-java/javadoc.svg)](https://javadoc.io/doc/io.keyko.ocean/ocean-api-java)
+[![javadoc](https://javadoc.io/badge2/io.keyko.nevermind/api/javadoc.svg)](https://javadoc.io/doc/io.keyko.nevermind/api)
 
 ---
 
