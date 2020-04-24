@@ -19,9 +19,10 @@ jobs:
       - name: Run tests
         run: |
           git clone https://github.com/keyko-io/nevermind-tools
+          rm -rf ~/.nevermind/nevermind-contracts/artifacts
           cd nevermind-tools
           sudo bash -x start_nevermind.sh --no-commons --no-faucet --no-dashboard --latest 2>&1 > start_nevermind.log &
           cd ..
-          sleep 60
-          /bin/bash src/test/resources/scripts/updateConfAddresses.sh
+          ls -la ~/.nevermind/nevermind-contracts/artifacts/
+          bash src/test/resources/scripts/updateConfAddresses.sh
           mvn clean verify -P all-tests
