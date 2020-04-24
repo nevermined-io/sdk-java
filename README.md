@@ -273,12 +273,14 @@ The `bumpversion.sh` script helps to bump the project version. You can execute t
 ## Attribution
 
 This library is based in the [Ocean Protocol](https://oceanprotocol.com) [Squid Java](https://github.com/oceanprotocol/squid-java) library.
-It keeps the same Apache v2 License and adds some improvements.
+It keeps the same Apache v2 License and adds some improvements. See [NOTICE file](NOTICE).
 
 ## License
 
 ```
-Copyright 2020 Keyko GmbH.
+Copyright 2020 Keyko GmbH
+This product includes software developed at
+BigchainDB GmbH and Ocean Protocol (https://www.oceanprotocol.com/)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
