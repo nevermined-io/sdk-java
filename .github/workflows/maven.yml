@@ -26,6 +26,5 @@ jobs:
 
       - name: Run tests
         run: |
-          ls -la ~/.nevermind/nevermind-contracts/artifacts/
           bash src/test/resources/scripts/updateConfAddresses.sh
           mvn clean verify -P all-tests
