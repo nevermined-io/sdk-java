@@ -1,5 +1,7 @@
 package io.keyko.nevermind.models.asset;
 
+import io.keyko.common.helpers.EncodingHelper;
+import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.nevermind.models.AbstractModel;
 import io.keyko.nevermind.models.FromJsonToModel;
 
@@ -11,7 +13,7 @@ public class OrderResult extends AbstractModel implements FromJsonToModel {
 
     public OrderResult(String serviceAgreementId, Boolean accessFullfilled, Boolean refund) {
 
-        this.serviceAgreementId = serviceAgreementId;
+        setServiceAgreementId(serviceAgreementId);
         this.accessFullfilled = accessFullfilled;
         this.refund = refund;
     }
@@ -21,7 +23,7 @@ public class OrderResult extends AbstractModel implements FromJsonToModel {
     }
 
     public void setServiceAgreementId(String serviceAgreementId) {
-        this.serviceAgreementId = serviceAgreementId;
+        this.serviceAgreementId = EthereumHelper.remove0x(serviceAgreementId);
     }
 
     public Boolean isAccessGranted() {

@@ -1,6 +1,8 @@
 package io.keyko.nevermind.manager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.keyko.common.helpers.EncodingHelper;
+import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.nevermind.api.NevermindAPI;
 import io.keyko.nevermind.api.config.NevermindConfig;
 import io.keyko.nevermind.external.MetadataService;
@@ -8,6 +10,7 @@ import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.DID;
 import io.keyko.nevermind.models.asset.AssetMetadata;
 import io.keyko.nevermind.models.asset.OrderResult;
+import io.keyko.nevermind.models.service.Agreement;
 import io.keyko.nevermind.models.service.AgreementStatus;
 import io.keyko.nevermind.models.service.ProviderConfig;
 import io.keyko.nevermind.models.service.Service;
@@ -32,6 +35,7 @@ import static org.junit.Assert.assertEquals;
 public class AgreementsManagerIT {
     private static final Logger log = LogManager.getLogger(AgreementsManagerIT.class);
     private static AgreementsManager agreementsManager;
+    private static ConditionsManager conditionsManager;
     private static KeeperService keeper;
     private static MetadataService metadataService;
     private static final Config config = ConfigFactory.load();
@@ -91,6 +95,7 @@ public class AgreementsManagerIT {
         nevermindAPIConsumer = NevermindAPI.getInstance(properties);
         nevermindAPIConsumer.getTokensAPI().request(BigInteger.TEN);
         agreementsManager = AgreementsManager.getInstance(keeper, metadataService);
+        conditionsManager = ConditionsManager.getInstance(keeper, metadataService);
         accessSecretStoreCondition = ManagerHelper.loadAccessSecretStoreConditionContract(keeper, config.getString("contract.AccessSecretStoreCondition.address"));
         escrowAccessSecretStoreTemplate = ManagerHelper.loadEscrowAccessSecretStoreTemplate(keeper, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
         escrowReward = ManagerHelper.loadEscrowRewardContract(keeper, config.getString("contract.EscrowReward.address"));
@@ -113,7 +118,7 @@ public class AgreementsManagerIT {
         }, METADATA_JSON_CONTENT);
         DDO ddo = nevermindAPI.getAssetsAPI().create(metadata, providerConfig);
         DID did = new DID(ddo.id);
-
+        String price = ddo.getMetadataService().attributes.main.price;
 
         log.debug("DDO registered!");
         nevermindAPIConsumer.getAccountsAPI().requestTokens(BigInteger.valueOf(9000000));
@@ -122,11 +127,21 @@ public class AgreementsManagerIT {
 
         OrderResult orderResult = response.blockingFirst();
         TimeUnit.SECONDS.sleep(5l);
-        agreementsManager.getAgreement(orderResult.getServiceAgreementId());
-        AgreementStatus status = agreementsManager.getStatus(orderResult.getServiceAgreementId());
+
+        final String serviceAgreementId = orderResult.getServiceAgreementId();
+        final Agreement agreement = agreementsManager.getAgreement(serviceAgreementId);
+        AgreementStatus status = agreementsManager.getStatus(serviceAgreementId);
         assertEquals(orderResult.getServiceAgreementId(), status.agreementId);
         assertEquals(BigInteger.TWO, status.conditions.get(0).conditions.get("lockReward"));
         assertEquals(BigInteger.TWO, status.conditions.get(0).conditions.get("accessSecretStore"));
         assertEquals(BigInteger.TWO, status.conditions.get(0).conditions.get("escrowReward"));
+
+/*        final byte[] saBytes = EncodingHelper.hexStringToBytes(EthereumHelper.remove0x(serviceAgreementId));
+        final byte[] hashValues = lockRewardCondition.hashValues(
+                ddo.proof.creator, new BigInteger(price)).send();
+        final byte[] lockRewardConditionId = lockRewardCondition.generateId(saBytes, hashValues).send();
+
+        log.debug("Generated ConditionId: " + lockRewardConditionId);
+        agreement.conditions.forEach( c -> log.debug("ConditionId: " + c));*/
     }
 }

@@ -234,6 +234,29 @@ public class AssetsApiIT {
 
     }
 
+    @Test
+    public void consumeBinaryDirectly() throws Exception {
+
+        metadataBase.attributes.main.dateCreated = new Date();
+        DDO ddo = nevermindAPI.getAssetsAPI().create(metadataBase, providerConfig);
+        DID did = new DID(ddo.id);
+
+        nevermindAPIConsumer.getAccountsAPI().requestTokens(BigInteger.TEN);
+        Balance balance = nevermindAPIConsumer.getAccountsAPI().balance(nevermindAPIConsumer.getMainAccount());
+        log.debug("Account " + nevermindAPIConsumer.getMainAccount().address + " balance is: " + balance.toString());
+
+        OrderResult orderResult = nevermindAPIConsumer.getAssetsAPI().orderDirect(did, Service.DEFAULT_ACCESS_INDEX);
+        assertTrue(orderResult.isAccessGranted());
+
+//        Thread.sleep(5000l);
+        InputStream result = nevermindAPIConsumer.getAssetsAPI().consumeBinary(
+                orderResult.getServiceAgreementId(),
+                did,
+                Service.DEFAULT_ACCESS_INDEX,
+                0);
+
+        assertNotNull(result);
+    }
 
     @Test
     public void consumeBinary() throws Exception {
@@ -259,7 +282,6 @@ public class AssetsApiIT {
                 0);
 
         assertNotNull(result);
-
     }
 
 

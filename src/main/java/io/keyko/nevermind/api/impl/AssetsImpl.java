@@ -148,7 +148,11 @@ public class AssetsImpl implements AssetsAPI {
 
     @Override
     public Flowable<OrderResult> order(DID did, int serviceDefinitionId) throws OrderException {
-        return nevermindManager.purchaseAsset(did, serviceDefinitionId);
+        return nevermindManager.purchaseAssetFlowable(did, serviceDefinitionId);
+    }
+
+    public OrderResult orderDirect(DID did, int serviceDefinitionId) throws OrderException, ServiceException, EscrowRewardException {
+        return nevermindManager.purchaseAssetDirect(did, serviceDefinitionId);
     }
 
     @Override

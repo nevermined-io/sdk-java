@@ -1,7 +1,12 @@
 package io.keyko.nevermind.manager;
 
+import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.common.helpers.EncodingHelper;
+import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.common.web3.KeeperService;
+import io.keyko.nevermind.contracts.Condition;
+import io.keyko.nevermind.contracts.LockRewardCondition;
+import io.keyko.nevermind.exceptions.LockRewardFulfillException;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.DID;
 import io.keyko.nevermind.models.service.Agreement;
@@ -34,6 +39,35 @@ public class ConditionsManager extends BaseManager {
      */
     public static ConditionsManager getInstance(KeeperService keeperService, MetadataService metadataService) {
         return new ConditionsManager(keeperService, metadataService);
+    }
+
+    public static byte[] generateId(final String serviceAgreementId,
+                                    final String conditionAddress,
+                                    final String... hashValues) throws LockRewardFulfillException {
+
+
+        try {
+//            String valueHash = EthereumHelper.encodeParameterValue("bytes32", serviceAgreementId) +
+//                    EthereumHelper.encodeParameterValue("address", conditionAddress);
+            String valueHash = "";
+
+            for (String value: hashValues)  {
+                valueHash = valueHash + EthereumHelper.encodeParameterValue("bytes32", value);
+            }
+            //byte[] encryptedHash = CryptoHelper.keccak256(
+            String encryptedHash = CryptoHelper.sha3256(
+                    EthereumHelper.add0x(valueHash));
+
+            return CryptoHelper.keccak256(
+                    EthereumHelper.add0x(
+                    EthereumHelper.encodeParameterValue("bytes32", serviceAgreementId)
+                    + EthereumHelper.encodeParameterValue("address", conditionAddress)
+                    + encryptedHash));
+        } catch (Exception e) {
+            String msg = "Error generating conditionId " + serviceAgreementId;
+            log.error(msg + ": " + e.getMessage());
+            throw new LockRewardFulfillException(msg, e);
+        }
     }
 
     /**

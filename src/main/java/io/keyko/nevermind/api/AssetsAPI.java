@@ -185,7 +185,7 @@ public interface AssetsAPI {
      * @return the input stream wit the binary content of the file
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index) throws ConsumeServiceException;
+    InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index) throws ConsumeServiceException;
 
     /**
      * Gets the input stream of one file of the asset
@@ -226,7 +226,7 @@ public interface AssetsAPI {
      * @return                    the input stream wit the binary content of the specified range
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, Integer rangeStart, Integer rangeEnd, int threshold) throws ConsumeServiceException;
+    InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, Integer rangeStart, Integer rangeEnd, int threshold) throws ConsumeServiceException;
 
 
     /**
@@ -238,6 +238,16 @@ public interface AssetsAPI {
      * @throws OrderException OrderException
      */
     Flowable<OrderResult> order(DID did, int serviceDefinitionId) throws OrderException;
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did of the DDO
+     * @param serviceDefinitionId the service definition id
+     * @return OrderResult
+     * @throws OrderException OrderException
+     */
+    OrderResult orderDirect(DID did, int serviceDefinitionId) throws OrderException, ServiceException, EscrowRewardException;
 
     /**
      * Executes a remote service associated with an asset and serviceAgreementId

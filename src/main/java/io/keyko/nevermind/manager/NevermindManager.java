@@ -8,35 +8,20 @@ import io.keyko.nevermind.core.sla.functions.FulfillLockReward;
 import io.keyko.nevermind.core.sla.handlers.ServiceAccessAgreementHandler;
 import io.keyko.nevermind.core.sla.handlers.ServiceAgreementHandler;
 import io.keyko.nevermind.core.sla.handlers.ServiceComputingAgreementHandler;
+import io.keyko.nevermind.exceptions.*;
+import io.keyko.nevermind.external.GatewayService;
+import io.keyko.nevermind.external.MetadataService;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.DID;
 import io.keyko.nevermind.models.Order;
 import io.keyko.nevermind.models.asset.AssetMetadata;
 import io.keyko.nevermind.models.asset.OrderResult;
 import io.keyko.nevermind.models.gateway.ExecuteService;
-import io.keyko.nevermind.exceptions.DIDFormatException;
-import io.keyko.nevermind.exceptions.DIDRegisterException;
-import io.keyko.nevermind.exceptions.DDOException;
-import io.keyko.nevermind.exceptions.ServiceException;
-import io.keyko.nevermind.exceptions.InitializeConditionsException;
-import io.keyko.nevermind.exceptions.OrderException;
-import io.keyko.nevermind.exceptions.ServiceAgreementException;
-import io.keyko.nevermind.exceptions.EthereumException;
-import io.keyko.nevermind.exceptions.LockRewardFulfillException;
-import io.keyko.nevermind.exceptions.EscrowRewardException;
-import io.keyko.nevermind.exceptions.ConsumeServiceException;
-import io.keyko.nevermind.exceptions.EncryptionException;
-import io.keyko.nevermind.external.MetadataService;
-import io.keyko.nevermind.external.GatewayService;
-import io.keyko.nevermind.models.service.ProviderConfig;
-import io.keyko.nevermind.models.service.Service;
-import io.keyko.nevermind.models.service.ServiceBuilder;
-import io.keyko.nevermind.models.service.Condition;
-import io.keyko.nevermind.models.service.Agreement;
+import io.keyko.nevermind.models.service.*;
+import io.keyko.nevermind.models.service.types.AccessService;
+import io.keyko.nevermind.models.service.types.AuthorizationService;
 import io.keyko.nevermind.models.service.types.ComputingService;
 import io.keyko.nevermind.models.service.types.ProvenanceService;
-import io.keyko.nevermind.models.service.types.AuthorizationService;
-import io.keyko.nevermind.models.service.types.AccessService;
 import io.reactivex.Flowable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -178,8 +163,8 @@ public class NevermindManager extends BaseManager {
 
             //DID did = DDO.generateDID();
 
-             Map<String, Object> configuration = buildBasicAccessServiceConfiguration(providerConfig, metadata.attributes.main.price, getMainAccount().address);
-             Service accessService = ServiceBuilder
+            Map<String, Object> configuration = buildBasicAccessServiceConfiguration(providerConfig, metadata.attributes.main.price, getMainAccount().address);
+            Service accessService = ServiceBuilder
                     .getServiceBuilder(Service.ServiceTypes.access)
                     .buildService(configuration);
 
@@ -312,6 +297,96 @@ public class NevermindManager extends BaseManager {
 
     }
 
+    public boolean isConditionFulfilled(String serviceAgreementId, String conditionName) throws Exception {
+        final int maxRetries = 5;
+        final long sleepTime = 500l;
+        int iteration = 0;
+
+        while (iteration < maxRetries)  {
+            AgreementStatus status = agreementsManager.getStatus(serviceAgreementId);
+            BigInteger conditionStatus = status.conditions.get(0).conditions.get(conditionName);
+            log.debug("Condition check[" + conditionName + "] :" + conditionStatus);
+            if (conditionStatus.equals(BigInteger.TWO)) // Condition is fullfilled
+                return true;
+            iteration++;
+            Thread.sleep(sleepTime);
+        }
+        return false;
+    }
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did
+     * @param serviceIndex the index of the service
+     * @return true if the asset was purchased successfully, if not false
+     * @throws OrderException OrderException
+     */
+    public OrderResult purchaseAssetDirect(DID did, int serviceIndex)
+            throws OrderException, ServiceException, EscrowRewardException {
+
+        String serviceAgreementId = ServiceAgreementHandler.generateSlaId();
+        OrderResult orderResult;
+        DDO ddo;
+        // Checking if DDO is already there and serviceDefinitionId is included
+        try {
+            ddo = resolveDID(did);
+        } catch (DDOException  e) {
+            log.error("Error resolving did[" + did.getHash() + "]: " + e.getMessage());
+            throw new OrderException("Error processing Order with DID " + did.getDid(), e);
+        }
+
+        Service service = ddo.getService(serviceIndex);
+
+        try {
+            final boolean isInitialized = initializeServiceAgreementDirect(ddo, serviceIndex, serviceAgreementId);
+            if (!isInitialized)  {
+                throw new ServiceAgreementException(serviceAgreementId, "Service Agreement not Initialized");
+            }
+        } catch (ServiceAgreementException e) {
+            String msg = "Error processing Order with DID " + did.getDid() + "and ServiceAgreementID " + serviceAgreementId;
+            log.error(msg + ": " + e.getMessage());
+            throw new OrderException(msg, e);
+        }
+
+        final String eventServiceAgreementId = EthereumHelper.add0x(serviceAgreementId);
+
+        try {
+            log.debug("Service Agreement " + serviceAgreementId + " initialized successfully");
+            String price = ddo.getMetadataService().attributes.main.price;
+            tokenApprove(this.tokenContract, lockRewardCondition.getContractAddress(), price);
+            BigInteger balance = this.tokenContract.balanceOf(getMainAccount().address).send();
+            if (balance.compareTo(new BigInteger(price)) < 0) {
+                log.warn("Consumer account does not have sufficient token balance to fulfill the " +
+                        "LockRewardCondition. Do `requestTokens` using the `dispenser` contract then try this again.");
+                log.warn("token balance is: " + balance + " price is: " + price);
+                throw new LockRewardFulfillException("LockRewardCondition.fulfill will fail due to insufficient token balance in the consumer account.");
+            }
+        } catch (TokenApproveException | LockRewardFulfillException e) {
+            String msg = "Error approving token";
+            log.error(msg + ": " + e.getMessage());
+            throw new OrderException(msg, e);
+        } catch (Exception e) {
+            String msg = "Token Transaction error";
+            log.error(msg + ": " + e.getMessage());
+            throw new OrderException(msg, e);        }
+
+        try {
+            this.fulfillLockReward(ddo, serviceIndex, eventServiceAgreementId);
+            final boolean isFulfilled = isConditionFulfilled(serviceAgreementId, "lockReward");
+            orderResult = new OrderResult(serviceAgreementId, isFulfilled, false);
+
+        } catch (LockRewardFulfillException e) {
+            this.fulfillEscrowReward(ddo, serviceIndex, serviceAgreementId);
+            return new OrderResult(serviceAgreementId, false, true);
+        } catch (Exception e) {
+            this.fulfillEscrowReward(ddo, serviceIndex, serviceAgreementId);
+            return new OrderResult(serviceAgreementId, false, true);
+        }
+        return orderResult;
+
+    }
+
     /**
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
      *
@@ -320,7 +395,7 @@ public class NevermindManager extends BaseManager {
      * @return a Flowable instance over an OrderResult to get the result of the flow in an asynchronous fashion
      * @throws OrderException OrderException
      */
-    public Flowable<OrderResult> purchaseAsset(DID did, int serviceIndex)
+    public Flowable<OrderResult> purchaseAssetFlowable(DID did, int serviceIndex)
             throws OrderException {
 
         String serviceAgreementId = ServiceAgreementHandler.generateSlaId();
@@ -339,7 +414,7 @@ public class NevermindManager extends BaseManager {
 
             Service service = ddo.getService(serviceIndex);
 
-            return this.initializeServiceAgreement(ddo, serviceIndex, serviceAgreementId)
+            return this.initializeServiceAgreementFlowable(ddo, serviceIndex, serviceAgreementId)
                     .firstOrError()
                     .toFlowable()
                     .switchMap(eventServiceAgreementId -> {
@@ -432,11 +507,11 @@ public class NevermindManager extends BaseManager {
      * @param ddo                 the ddi
      * @param serviceIndex      the service index
      * @param serviceAgreementId  the service agreement id
-     * @return a Flowable over an AgreementInitializedEventResponse
+     * @return true if the agreement was initialized correctly, if not false
      * @throws ServiceException          ServiceException
      * @throws ServiceAgreementException ServiceAgreementException
      */
-    private Flowable<String> initializeServiceAgreement(DDO ddo, int serviceIndex, String serviceAgreementId)
+    private boolean initializeServiceAgreement(DDO ddo, int serviceIndex, String serviceAgreementId)
             throws  ServiceException, ServiceAgreementException {
 
         Service service = ddo.getService(serviceIndex);
@@ -456,7 +531,6 @@ public class NevermindManager extends BaseManager {
         Boolean result = false;
 
         try {
-
             List<byte[]> conditionsId = generateServiceConditionsId(serviceAgreementId, Keys.toChecksumAddress(getMainAccount().getAddress()), ddo, serviceIndex);
 
             if (service.type.equals(Service.ServiceTypes.access.name()))
@@ -477,13 +551,58 @@ public class NevermindManager extends BaseManager {
                 throw new ServiceAgreementException(serviceAgreementId, "Service type not supported");
 
             if (!result)
-                checkAgreementStatus(serviceAgreementId);
+                return checkAgreementStatus(serviceAgreementId);
 
         } catch (Exception e) {
             String msg = "Error creating Service Agreement: " + serviceAgreementId;
             log.error(msg + ": " + e.getMessage());
             throw new ServiceAgreementException(serviceAgreementId, msg, e);
         }
+        return false;
+    }
+
+    /**
+     * Initialize a new ServiceExecutionAgreement between a publisher and a consumer
+     *
+     * @param ddo                 the ddi
+     * @param serviceIndex      the service index
+     * @param serviceAgreementId  the service agreement id
+     * @return true if the agreement was initialized correctly, if not false
+     * @throws ServiceException          ServiceException
+     * @throws ServiceAgreementException ServiceAgreementException
+     */
+    protected boolean initializeServiceAgreementDirect(DDO ddo, int serviceIndex, String serviceAgreementId)
+            throws  ServiceException, ServiceAgreementException {
+
+        boolean initializationStatus = initializeServiceAgreement(ddo, serviceIndex, serviceAgreementId);
+        if (!initializationStatus)
+            return checkAgreementStatus(serviceAgreementId);
+        return false;
+    }
+
+    /**
+     * Initialize a new ServiceExecutionAgreement between a publisher and a consumer return a
+     * flowable to listen contract initialization events
+     *
+     * @param ddo                 the ddi
+     * @param serviceIndex      the service index
+     * @param serviceAgreementId  the service agreement id
+     * @return a Flowable over an AgreementInitializedEventResponse
+     * @throws ServiceException          ServiceException
+     * @throws ServiceAgreementException ServiceAgreementException
+     */
+    protected Flowable<String> initializeServiceAgreementFlowable(DDO ddo, int serviceIndex, String serviceAgreementId)
+            throws  ServiceException, ServiceAgreementException {
+
+        boolean initializationStatus = initializeServiceAgreement(ddo, serviceIndex, serviceAgreementId);
+        boolean isInitialized = false;
+        if (!initializationStatus)
+            isInitialized = checkAgreementStatus(serviceAgreementId);
+
+        if (!isInitialized)
+            throw new ServiceAgreementException(serviceAgreementId, "Service Agreement not initialized correctly");
+
+        Service service = ddo.getService(serviceIndex);
 
         // 4. Listening of events
         Flowable<String> executeAgreementFlowable = null;
@@ -496,10 +615,9 @@ public class NevermindManager extends BaseManager {
             throw new ServiceAgreementException(serviceAgreementId, "Service type not supported");
 
         return executeAgreementFlowable;
-
     }
 
-    private Boolean checkAgreementStatus(String serviceAgreementId) throws ServiceAgreementException{
+    private boolean checkAgreementStatus(String serviceAgreementId) throws ServiceAgreementException{
 
         Boolean result = false;
         try {
@@ -510,8 +628,7 @@ public class NevermindManager extends BaseManager {
                     log.debug("Checking if the agreement is on-chain...");
                     Agreement agreement = agreementsManager.getAgreement(serviceAgreementId);
                     if (!agreement.templateId.equals("0x0000000000000000000000000000000000000000")) {
-                        result = true;
-                        break;
+                        return true;
                     }
                     Thread.sleep(sleepTime);
                 }
@@ -523,7 +640,7 @@ public class NevermindManager extends BaseManager {
         if (!result)
             throw new ServiceAgreementException(serviceAgreementId, "The create Agreement Transaction has failed");
 
-        return true;
+        return false;
     }
 
     /**
@@ -633,8 +750,8 @@ public class NevermindManager extends BaseManager {
             data.put("serviceEndpoint", serviceEndpoint);
             data.put("files", files);
 
-        } catch (DDOException | ServiceException | EncryptionException | IOException e) {
-            String msg = "Error getting the data form the  asset with DID " + did.toString();
+        } catch (DDOException | ServiceException | EncryptionException | IOException | InterruptedException e) {
+            String msg = "Error getting the data from asset with DID " + did.toString();
             log.error(msg + ": " + e.getMessage());
             throw new ConsumeServiceException(msg, e);
         }
