@@ -245,15 +245,21 @@ public class AssetsApiIT {
         Balance balance = nevermindAPIConsumer.getAccountsAPI().balance(nevermindAPIConsumer.getMainAccount());
         log.debug("Account " + nevermindAPIConsumer.getMainAccount().address + " balance is: " + balance.toString());
 
+        final long startTime = System.currentTimeMillis();
         OrderResult orderResult = nevermindAPIConsumer.getAssetsAPI().orderDirect(did, Service.DEFAULT_ACCESS_INDEX);
+        final long orderTime = System.currentTimeMillis();
+
         assertTrue(orderResult.isAccessGranted());
 
-//        Thread.sleep(5000l);
         InputStream result = nevermindAPIConsumer.getAssetsAPI().consumeBinary(
                 orderResult.getServiceAgreementId(),
                 did,
                 Service.DEFAULT_ACCESS_INDEX,
                 0);
+
+        final long endTime = System.currentTimeMillis();
+        log.debug("Order method took " + (orderTime - startTime) + " milliseconds");
+        log.debug("Full consumption took " + (endTime - startTime) + " milliseconds");
 
         assertNotNull(result);
     }
@@ -269,7 +275,10 @@ public class AssetsApiIT {
         Balance balance = nevermindAPIConsumer.getAccountsAPI().balance(nevermindAPIConsumer.getMainAccount());
         log.debug("Account " + nevermindAPIConsumer.getMainAccount().address + " balance is: " + balance.toString());
 
+        final long startTime = System.currentTimeMillis();
         Flowable<OrderResult> response = nevermindAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_ACCESS_INDEX);
+        final long orderTime = System.currentTimeMillis();
+
         OrderResult orderResult = response.blockingFirst();
         assertNotNull(orderResult.getServiceAgreementId());
         assertEquals(true, orderResult.isAccessGranted());
@@ -280,6 +289,10 @@ public class AssetsApiIT {
                 did,
                 Service.DEFAULT_ACCESS_INDEX,
                 0);
+
+        final long endTime = System.currentTimeMillis();
+        log.debug("Order method took " + (orderTime - startTime) + " milliseconds");
+        log.debug("Full consumption took " + (endTime - startTime) + " milliseconds");
 
         assertNotNull(result);
     }

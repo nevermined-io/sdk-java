@@ -531,7 +531,11 @@ public class NevermindManager extends BaseManager {
         Boolean result = false;
 
         try {
-            List<byte[]> conditionsId = generateServiceConditionsId(serviceAgreementId, Keys.toChecksumAddress(getMainAccount().getAddress()), ddo, serviceIndex);
+            List<byte[]> conditionsId = generateServiceConditionsId(
+                    serviceAgreementId,
+                    Keys.toChecksumAddress(getMainAccount().getAddress()),
+                    ddo,
+                    serviceIndex);
 
             if (service.type.equals(Service.ServiceTypes.access.name()))
                 result = this.agreementsManager.createAccessAgreement(serviceAgreementId,
@@ -622,8 +626,8 @@ public class NevermindManager extends BaseManager {
         Boolean result = false;
         try {
             if (!result) {
-                int retries = 5;
-                int sleepTime = 2000;
+                int retries = 10;
+                int sleepTime = 1000;
                 for (int i = 0; i < retries && !result; i++) {
                     log.debug("Checking if the agreement is on-chain...");
                     Agreement agreement = agreementsManager.getAgreement(serviceAgreementId);
