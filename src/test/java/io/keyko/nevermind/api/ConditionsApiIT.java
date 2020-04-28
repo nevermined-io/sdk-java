@@ -6,6 +6,7 @@ import io.keyko.nevermind.core.sla.handlers.ServiceAgreementHandler;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.asset.AssetMetadata;
 import io.keyko.nevermind.models.service.AgreementStatus;
+import io.keyko.nevermind.models.service.Condition;
 import io.keyko.nevermind.models.service.ProviderConfig;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -97,9 +98,11 @@ public class ConditionsApiIT {
 
         nevermindAPI.getConditionsAPI().lockReward(agreementId, BigInteger.TEN);
         AgreementStatus statusAfterLockReward = nevermindAPI.getAgreementsAPI().status(agreementId);
-        assertEquals(BigInteger.TWO, statusAfterLockReward.conditions.get(0).conditions.get("lockReward"));
+        assertEquals(BigInteger.TWO, statusAfterLockReward.conditions.get(0).conditions.get(
+                Condition.ConditionTypes.lockReward.toString()));
       //  assertEquals(BigInteger.TWO, statusAfterLockReward.conditions.get(0).conditions.get("accessSecretStore"));
-        assertEquals(BigInteger.ONE, statusAfterLockReward.conditions.get(0).conditions.get("escrowReward"));
+        assertEquals(BigInteger.ONE, statusAfterLockReward.conditions.get(0).conditions.get(
+                Condition.ConditionTypes.escrowReward.toString()));
 
         int retries= 10;
         long sleepSeconds= 1l;
@@ -114,16 +117,16 @@ public class ConditionsApiIT {
         }
 
         AgreementStatus statusAfterAccessGranted = nevermindAPI.getAgreementsAPI().status(agreementId);
-        assertEquals(BigInteger.TWO, statusAfterAccessGranted.conditions.get(0).conditions.get("lockReward"));
-        assertEquals(BigInteger.TWO, statusAfterAccessGranted.conditions.get(0).conditions.get("accessSecretStore"));
-        assertEquals(BigInteger.ONE, statusAfterAccessGranted.conditions.get(0).conditions.get("escrowReward"));
+        assertEquals(BigInteger.TWO, statusAfterAccessGranted.conditions.get(0).conditions.get(Condition.ConditionTypes.lockReward.toString()));
+        assertEquals(BigInteger.TWO, statusAfterAccessGranted.conditions.get(0).conditions.get(Condition.ConditionTypes.accessSecretStore.toString()));
+        assertEquals(BigInteger.ONE, statusAfterAccessGranted.conditions.get(0).conditions.get(Condition.ConditionTypes.escrowReward.toString()));
 
 
         nevermindAPI.getConditionsAPI().releaseReward(agreementId, BigInteger.TEN);
         AgreementStatus statusAfterReleaseReward = nevermindAPI.getAgreementsAPI().status(agreementId);
-        assertEquals(BigInteger.TWO, statusAfterReleaseReward.conditions.get(0).conditions.get("lockReward"));
-        assertEquals(BigInteger.TWO, statusAfterReleaseReward.conditions.get(0).conditions.get("accessSecretStore"));
-        assertEquals(BigInteger.TWO, statusAfterReleaseReward.conditions.get(0).conditions.get("escrowReward"));
+        assertEquals(BigInteger.TWO, statusAfterReleaseReward.conditions.get(0).conditions.get(Condition.ConditionTypes.lockReward.toString()));
+        assertEquals(BigInteger.TWO, statusAfterReleaseReward.conditions.get(0).conditions.get(Condition.ConditionTypes.accessSecretStore.toString()));
+        assertEquals(BigInteger.TWO, statusAfterReleaseReward.conditions.get(0).conditions.get(Condition.ConditionTypes.escrowReward.toString()));
 
 
 

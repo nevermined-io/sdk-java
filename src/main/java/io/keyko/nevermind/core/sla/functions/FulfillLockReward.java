@@ -1,10 +1,13 @@
 package io.keyko.nevermind.core.sla.functions;
 
+import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.common.helpers.EncodingHelper;
+import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.nevermind.contracts.LockRewardCondition;
 import io.keyko.nevermind.exceptions.LockRewardFulfillException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.web3j.crypto.Hash;
 import org.web3j.crypto.Keys;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 

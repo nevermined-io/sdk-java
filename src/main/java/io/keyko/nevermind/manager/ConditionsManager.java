@@ -2,11 +2,11 @@ package io.keyko.nevermind.manager;
 
 import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.web3.KeeperService;
+import io.keyko.nevermind.external.MetadataService;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.DID;
 import io.keyko.nevermind.models.service.Agreement;
 import io.keyko.nevermind.models.service.Service;
-import io.keyko.nevermind.external.MetadataService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.crypto.Keys;

@@ -138,7 +138,9 @@ public class Service extends AbstractModel implements FromJsonToModel {
         public List<String> accessSecretStore = Arrays.asList();
 
         @JsonProperty
-        public List<String> escrowReward = Arrays.asList("lockReward", "accessSecretStore");
+        public List<String> escrowReward = Arrays.asList(
+                Condition.ConditionTypes.lockReward.toString(),
+                Condition.ConditionTypes.accessSecretStore.toString());
 
     }
 
@@ -266,7 +268,7 @@ public class Service extends AbstractModel implements FromJsonToModel {
 
     public String generateLockRewardId(String serviceAgreementId, String escrowRewardAddress, String lockRewardConditionAddress) throws UnsupportedEncodingException {
 
-        Condition lockRewardCondition = this.getConditionbyName("lockReward");
+        Condition lockRewardCondition = this.getConditionbyName(Condition.ConditionTypes.lockReward.toString());
 
         Condition.ConditionParameter rewardAddress = lockRewardCondition.getParameterByName("_rewardAddress");
         Condition.ConditionParameter amount = lockRewardCondition.getParameterByName("_amount");

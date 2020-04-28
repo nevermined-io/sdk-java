@@ -1,19 +1,20 @@
 package io.keyko.nevermind.manager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.oceanprotocol.secretstore.core.EvmDto;
+import com.oceanprotocol.secretstore.core.SecretStoreDto;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import io.keyko.common.helpers.UrlHelper;
 import io.keyko.common.web3.KeeperService;
+import io.keyko.nevermind.contracts.*;
+import io.keyko.nevermind.exceptions.*;
+import io.keyko.nevermind.external.MetadataService;
 import io.keyko.nevermind.models.Account;
 import io.keyko.nevermind.models.DDO;
 import io.keyko.nevermind.models.DID;
 import io.keyko.nevermind.models.asset.AssetMetadata;
 import io.keyko.nevermind.models.service.types.AuthorizationService;
-import io.keyko.nevermind.contracts.*;
-import com.oceanprotocol.secretstore.core.EvmDto;
-import com.oceanprotocol.secretstore.core.SecretStoreDto;
-import io.keyko.nevermind.external.MetadataService;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.abi.EventEncoder;
@@ -26,11 +27,6 @@ import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import io.keyko.nevermind.exceptions.DDOException;
-import io.keyko.nevermind.exceptions.DIDFormatException;
-import io.keyko.nevermind.exceptions.EncryptionException;
-import io.keyko.nevermind.exceptions.TokenApproveException;
-import io.keyko.nevermind.exceptions.EthereumException;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -43,6 +39,8 @@ import java.util.List;
 public abstract class BaseManager {
 
     protected static final Logger log = LogManager.getLogger(BaseManager.class);
+    private static final int MAX_SS_RETRIES = 10;
+    private static final long SS_DECRYPTION_SLEEP = 1000l;
 
     private KeeperService keeperService;
     private MetadataService metadataService;
@@ -61,6 +59,7 @@ public abstract class BaseManager {
     protected ConditionStoreManager conditionStoreManager;
     protected ComputeExecutionCondition computeExecutionCondition;
     protected EscrowComputeExecutionTemplate escrowComputeExecutionTemplate;
+    protected Condition condition;
     protected ContractAddresses contractAddresses = new ContractAddresses();
     protected Config config = ConfigFactory.load();
 
@@ -128,14 +127,28 @@ public abstract class BaseManager {
         return this.buildDDO(metadataService, authorizationService, address, 0);
     }
 
-    public List<AssetMetadata.File> getMetadataFiles(DDO ddo) throws IOException, EncryptionException {
+    public List<AssetMetadata.File> getMetadataFiles(DDO ddo) throws IOException, EncryptionException, InterruptedException {
+        return getMetadataFiles(ddo, MAX_SS_RETRIES);
+    }
 
+    public List<AssetMetadata.File> getMetadataFiles(DDO ddo, int retries) throws IOException, EncryptionException, InterruptedException {
+        int counter = 0;
         AuthorizationService authorizationService = ddo.getAuthorizationService();
         SecretStoreManager secretStoreManager = getSecretStoreInstance(authorizationService);
 
-        String jsonFiles = secretStoreManager.decryptDocument(ddo.getDid().getHash(), ddo.getMetadataService().attributes.encryptedFiles);
-        return DDO.fromJSON(new TypeReference<ArrayList<AssetMetadata.File>>() {
-        }, jsonFiles);
+        String jsonFiles= null;
+        while (counter < retries) {
+            try {
+                jsonFiles = secretStoreManager.decryptDocument(ddo.getDid().getHash(), ddo.getMetadataService().attributes.encryptedFiles);
+                return DDO.fromJSON(new TypeReference<ArrayList<AssetMetadata.File>>() {}, jsonFiles);
+            } catch (EncryptionException e) {
+                log.warn("Unable to decrypt [" + counter + "]");
+                counter++;
+                Thread.sleep(SS_DECRYPTION_SLEEP);
+            }
+        }
+        throw new EncryptionException("Unable to decrypt document after " + retries + " retries");
+
     }
 
     public boolean tokenApprove(OceanToken tokenContract, String spenderAddress, String price) throws TokenApproveException {

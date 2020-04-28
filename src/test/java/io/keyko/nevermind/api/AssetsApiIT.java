@@ -234,6 +234,35 @@ public class AssetsApiIT {
 
     }
 
+    @Test
+    public void consumeBinaryDirectly() throws Exception {
+
+        metadataBase.attributes.main.dateCreated = new Date();
+        DDO ddo = nevermindAPI.getAssetsAPI().create(metadataBase, providerConfig);
+        DID did = new DID(ddo.id);
+
+        nevermindAPIConsumer.getAccountsAPI().requestTokens(BigInteger.TEN);
+        Balance balance = nevermindAPIConsumer.getAccountsAPI().balance(nevermindAPIConsumer.getMainAccount());
+        log.debug("Account " + nevermindAPIConsumer.getMainAccount().address + " balance is: " + balance.toString());
+
+        final long startTime = System.currentTimeMillis();
+        OrderResult orderResult = nevermindAPIConsumer.getAssetsAPI().orderDirect(did, Service.DEFAULT_ACCESS_INDEX);
+        final long orderTime = System.currentTimeMillis();
+
+        assertTrue(orderResult.isAccessGranted());
+
+        InputStream result = nevermindAPIConsumer.getAssetsAPI().consumeBinary(
+                orderResult.getServiceAgreementId(),
+                did,
+                Service.DEFAULT_ACCESS_INDEX,
+                0);
+
+        final long endTime = System.currentTimeMillis();
+        log.debug("Order method took " + (orderTime - startTime) + " milliseconds");
+        log.debug("Full consumption took " + (endTime - startTime) + " milliseconds");
+
+        assertNotNull(result);
+    }
 
     @Test
     public void consumeBinary() throws Exception {
@@ -246,7 +275,10 @@ public class AssetsApiIT {
         Balance balance = nevermindAPIConsumer.getAccountsAPI().balance(nevermindAPIConsumer.getMainAccount());
         log.debug("Account " + nevermindAPIConsumer.getMainAccount().address + " balance is: " + balance.toString());
 
+        final long startTime = System.currentTimeMillis();
         Flowable<OrderResult> response = nevermindAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_ACCESS_INDEX);
+        final long orderTime = System.currentTimeMillis();
+
         OrderResult orderResult = response.blockingFirst();
         assertNotNull(orderResult.getServiceAgreementId());
         assertEquals(true, orderResult.isAccessGranted());
@@ -258,8 +290,11 @@ public class AssetsApiIT {
                 Service.DEFAULT_ACCESS_INDEX,
                 0);
 
-        assertNotNull(result);
+        final long endTime = System.currentTimeMillis();
+        log.debug("Order method took " + (orderTime - startTime) + " milliseconds");
+        log.debug("Full consumption took " + (endTime - startTime) + " milliseconds");
 
+        assertNotNull(result);
     }
 
 

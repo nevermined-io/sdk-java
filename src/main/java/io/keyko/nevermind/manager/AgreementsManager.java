@@ -2,15 +2,16 @@ package io.keyko.nevermind.manager;
 
 import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.web3.KeeperService;
-import io.keyko.nevermind.models.DDO;
-import io.keyko.nevermind.models.DID;
-import io.keyko.nevermind.models.service.Agreement;
-import io.keyko.nevermind.models.service.AgreementStatus;
-import io.keyko.nevermind.models.service.Service;
 import io.keyko.nevermind.exceptions.ConditionNotFoundException;
 import io.keyko.nevermind.exceptions.EthereumException;
 import io.keyko.nevermind.exceptions.ServiceException;
 import io.keyko.nevermind.external.MetadataService;
+import io.keyko.nevermind.models.DDO;
+import io.keyko.nevermind.models.DID;
+import io.keyko.nevermind.models.service.Agreement;
+import io.keyko.nevermind.models.service.AgreementStatus;
+import io.keyko.nevermind.models.service.Condition;
+import io.keyko.nevermind.models.service.Service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.abi.EventEncoder;
@@ -120,7 +121,7 @@ public class AgreementsManager extends BaseManager {
      */
     public AgreementStatus getStatus(String agreementId) throws Exception {
 
-        List<byte[]> condition_ids = agreementStoreManager.getAgreement(EncodingHelper.hexStringToBytes(agreementId)).send().getValue4();
+        List<byte[]> condition_ids = agreementStoreManager.getAgreement(EncodingHelper.hexStringToBytes(agreementId)).send().component4();
         AgreementStatus agreementStatus = new AgreementStatus();
         agreementStatus.agreementId = agreementId;
         AgreementStatus.ConditionStatusMap condition = new AgreementStatus.ConditionStatusMap();
@@ -130,9 +131,9 @@ public class AgreementsManager extends BaseManager {
             Tuple7<String, BigInteger, BigInteger, BigInteger, BigInteger, String, BigInteger> agreementCondition =
                     conditionStoreManager.getCondition(condition_ids.get(i)).send();
 
-            String address = agreementCondition.getValue1();
+            String address = agreementCondition.component1();
             String conditionName = getConditionNameByAddress(Keys.toChecksumAddress(address));
-            BigInteger state = agreementCondition.getValue2();
+            BigInteger state = agreementCondition.component2();
             condition.conditions.put(conditionName, state);
 
         }
@@ -148,10 +149,10 @@ public class AgreementsManager extends BaseManager {
      * @throws Exception exception
      */
     private String getConditionNameByAddress(String address) throws Exception {
-        if (this.lockRewardCondition.getContractAddress().equals(address)) return "lockReward";
-        else if (this.accessSecretStoreCondition.getContractAddress().equals(address)) return "accessSecretStore";
-        else if (this.escrowReward.getContractAddress().equals(address)) return "escrowReward";
-        else if (this.computeExecutionCondition.getContractAddress().equals(address)) return "computeExecution";
+        if (this.lockRewardCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.lockReward.toString();
+        else if (this.accessSecretStoreCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.accessSecretStore.toString();
+        else if (this.escrowReward.getContractAddress().equals(address)) return Condition.ConditionTypes.escrowReward.toString();
+        else if (this.computeExecutionCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.computeExecution.toString();
         else log.error("The current address" + address + "is not a condition address.");
         throw new ConditionNotFoundException("The current address" + address + "is not a condition address.");
     }
@@ -245,7 +246,7 @@ public class AgreementsManager extends BaseManager {
     public List<DID> getConsumerAssets(String consumerAddress) throws ServiceException {
 
         return Stream.concat(getAccessAgreementsFulfilledByConsumer(consumerAddress).stream(),
-                             getComputeAgreementsFulfilledByConsumer(consumerAddress).stream())
+                getComputeAgreementsFulfilledByConsumer(consumerAddress).stream())
                 .collect(Collectors.toList());
     }
 
