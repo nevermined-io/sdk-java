@@ -1,9 +1,9 @@
 package io.keyko.nevermind.api;
 
-import io.keyko.nevermind.models.Account;
-import io.keyko.nevermind.models.Balance;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import io.keyko.nevermind.models.Account;
+import io.keyko.nevermind.models.Balance;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;

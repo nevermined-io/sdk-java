@@ -127,9 +127,9 @@ public class AgreementsManagerIT {
         Flowable<OrderResult> response = nevermindAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_ACCESS_INDEX);
 
         OrderResult orderResult = response.blockingFirst();
-        TimeUnit.SECONDS.sleep(5l);
 
         final String serviceAgreementId = orderResult.getServiceAgreementId();
+        TimeUnit.SECONDS.sleep(6l);
         final Agreement agreement = agreementsManager.getAgreement(serviceAgreementId);
         AgreementStatus status = agreementsManager.getStatus(serviceAgreementId);
         assertEquals(orderResult.getServiceAgreementId(), status.agreementId);
