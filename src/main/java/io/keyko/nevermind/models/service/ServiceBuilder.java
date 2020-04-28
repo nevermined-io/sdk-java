@@ -160,7 +160,7 @@ public interface ServiceBuilder {
         params.put("contract.LockRewardCondition.address", lockRewardConditionAddress);
         params.put("contract.AccessSecretStoreCondition.address", accessSecretStoreConditionAddress);
 
-        params.put("parameter.assetId", did.replace("did:op:", ""));
+        params.put("parameter.assetId", did.replace("did:nv:", ""));
 
         return params;
     }
@@ -184,7 +184,7 @@ public interface ServiceBuilder {
         params.put("contract.LockRewardCondition.address", lockRewardConditionAddress);
         params.put("contract.ExecComputeCondition.address", execComputeConditionAddress);
 
-        params.put("parameter.assetId", did.replace("did:op:", ""));
+        params.put("parameter.assetId", did.replace("did:nv:", ""));
 
         return params;
     }

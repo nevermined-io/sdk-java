@@ -14,7 +14,7 @@ public class DID {
     @JsonProperty
     public String did;
 
-    public static final String PREFIX = "did:op:";
+    public static final String PREFIX = "did:nv:";
 
     public DID() {
         this.setEmptyDID();

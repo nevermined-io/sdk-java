@@ -128,8 +128,8 @@ public class ConditionsManager extends BaseManager {
         try {
             txReceipt = escrowReward.fulfill(EncodingHelper.hexStringToBytes(agreementId),
                     amount,
-                    agreementData.getValue2(),
-                    agreementData.getValue1(),
+                    agreementData.component2(),
+                    agreementData.component1(),
                     agreement.conditions.get(1),
                     agreement.conditions.get(0)).send();
 
