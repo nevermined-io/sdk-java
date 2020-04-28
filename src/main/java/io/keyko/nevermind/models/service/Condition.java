@@ -13,6 +13,8 @@ import java.util.List;
 @JsonPropertyOrder(alphabetic = true)
 public class Condition extends AbstractModel implements FromJsonToModel {
 
+    public enum ConditionTypes {lockReward, accessSecretStore, escrowReward, hashLock, whitelisting, threshold, sign, computeExecution}
+
     @JsonProperty
     public String name;
 

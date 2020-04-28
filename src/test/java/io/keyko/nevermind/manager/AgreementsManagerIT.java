@@ -12,6 +12,7 @@ import io.keyko.nevermind.models.asset.AssetMetadata;
 import io.keyko.nevermind.models.asset.OrderResult;
 import io.keyko.nevermind.models.service.Agreement;
 import io.keyko.nevermind.models.service.AgreementStatus;
+import io.keyko.nevermind.models.service.Condition;
 import io.keyko.nevermind.models.service.ProviderConfig;
 import io.keyko.nevermind.models.service.Service;
 import io.keyko.nevermind.contracts.*;
@@ -132,16 +133,9 @@ public class AgreementsManagerIT {
         final Agreement agreement = agreementsManager.getAgreement(serviceAgreementId);
         AgreementStatus status = agreementsManager.getStatus(serviceAgreementId);
         assertEquals(orderResult.getServiceAgreementId(), status.agreementId);
-        assertEquals(BigInteger.TWO, status.conditions.get(0).conditions.get("lockReward"));
-        assertEquals(BigInteger.TWO, status.conditions.get(0).conditions.get("accessSecretStore"));
-        assertEquals(BigInteger.TWO, status.conditions.get(0).conditions.get("escrowReward"));
+        assertEquals(BigInteger.TWO, status.conditions.get(0).conditions.get(Condition.ConditionTypes.lockReward.toString()));
+        assertEquals(BigInteger.TWO, status.conditions.get(0).conditions.get(Condition.ConditionTypes.accessSecretStore.toString()));
+        assertEquals(BigInteger.TWO, status.conditions.get(0).conditions.get(Condition.ConditionTypes.escrowReward.toString()));
 
-/*        final byte[] saBytes = EncodingHelper.hexStringToBytes(EthereumHelper.remove0x(serviceAgreementId));
-        final byte[] hashValues = lockRewardCondition.hashValues(
-                ddo.proof.creator, new BigInteger(price)).send();
-        final byte[] lockRewardConditionId = lockRewardCondition.generateId(saBytes, hashValues).send();
-
-        log.debug("Generated ConditionId: " + lockRewardConditionId);
-        agreement.conditions.forEach( c -> log.debug("ConditionId: " + c));*/
     }
 }

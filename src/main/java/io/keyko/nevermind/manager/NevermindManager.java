@@ -297,15 +297,16 @@ public class NevermindManager extends BaseManager {
 
     }
 
-    public boolean isConditionFulfilled(String serviceAgreementId, String conditionName) throws Exception {
+
+    public boolean isConditionFulfilled(String serviceAgreementId, Condition.ConditionTypes conditionType) throws Exception {
         final int maxRetries = 5;
         final long sleepTime = 500l;
         int iteration = 0;
 
         while (iteration < maxRetries)  {
             AgreementStatus status = agreementsManager.getStatus(serviceAgreementId);
-            BigInteger conditionStatus = status.conditions.get(0).conditions.get(conditionName);
-            log.debug("Condition check[" + conditionName + "] :" + conditionStatus);
+            BigInteger conditionStatus = status.conditions.get(0).conditions.get(conditionType.toString());
+            log.debug("Condition check[" + conditionType.toString() + "] :" + conditionStatus);
             if (conditionStatus.equals(BigInteger.TWO)) // Condition is fullfilled
                 return true;
             iteration++;
@@ -373,7 +374,7 @@ public class NevermindManager extends BaseManager {
 
         try {
             this.fulfillLockReward(ddo, serviceIndex, eventServiceAgreementId);
-            final boolean isFulfilled = isConditionFulfilled(serviceAgreementId, "lockReward");
+            final boolean isFulfilled = isConditionFulfilled(serviceAgreementId, Condition.ConditionTypes.lockReward);
             orderResult = new OrderResult(serviceAgreementId, isFulfilled, false);
 
         } catch (LockRewardFulfillException e) {
