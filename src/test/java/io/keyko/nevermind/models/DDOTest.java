@@ -64,7 +64,7 @@ public class DDOTest {
     public void testDID() throws Exception {
         assertEquals(0, new DID().toString().length());
         assertEquals(0, new DID().setEmptyDID().toString().length());
-        assertEquals("did:op:123", DID.getFromHash("123").toString());
+        assertEquals("did:nv:123", DID.getFromHash("123").toString());
     }
 
     @Test(expected = DIDFormatException.class)
@@ -137,8 +137,8 @@ public class DDOTest {
 
         assertEquals(2,  metadataService.attributes.main.workflow.stages.get(0).input.size());
         assertEquals(0,  metadataService.attributes.main.workflow.stages.get(0).input.get(0).index.intValue());
-        assertEquals("did:op:12345",  metadataService.attributes.main.workflow.stages.get(0).input.get(0).id.toString());
-        assertEquals("did:op:abcde",  metadataService.attributes.main.workflow.stages.get(0).transformation.id.toString());
+        assertEquals("did:nv:12345",  metadataService.attributes.main.workflow.stages.get(0).input.get(0).id.toString());
+        assertEquals("did:nv:abcde",  metadataService.attributes.main.workflow.stages.get(0).transformation.id.toString());
         assertEquals("https://localhost:5000/api/v1/metadata/assets/ddo/",
                 metadataService.attributes.main.workflow.stages.get(0).output.metadataUrl);
     }
@@ -221,12 +221,12 @@ public class DDOTest {
         }, DDO_JSON_CONTENT);
 
         assertEquals("https://w3id.org/did/v1", ddo.context);
-        assertEquals("did:op:0bc278fee025464f8012b811d1bce8e22094d0984e4e49139df5d5ff7a028bdf", ddo.id.toString());
+        assertEquals("did:nv:0bc278fee025464f8012b811d1bce8e22094d0984e4e49139df5d5ff7a028bdf", ddo.id.toString());
         assertEquals(3, ddo.publicKeys.size());
-        assertTrue(ddo.publicKeys.get(0).id.startsWith("did:op:b6e2eb5eff1a093ced9826315d5a4ef6c5b5c8bd3c49890ee284231d7e1d0aaa"));
+        assertTrue(ddo.publicKeys.get(0).id.startsWith("did:nv:b6e2eb5eff1a093ced9826315d5a4ef6c5b5c8bd3c49890ee284231d7e1d0aaa"));
 
         assertEquals(1, ddo.authentication.size());
-        assertTrue(ddo.authentication.get(0).publicKey.startsWith("did:op:0ebed8226ada17fde24b6bf2b95d27f8f05fcce09139ff5cec31f6d81a7cd2ea"));
+        assertTrue(ddo.authentication.get(0).publicKey.startsWith("did:nv:0ebed8226ada17fde24b6bf2b95d27f8f05fcce09139ff5cec31f6d81a7cd2ea"));
 
         assertEquals(2, ddo.services.size());
         assertTrue(ddo.services.get(1).serviceEndpoint.startsWith("http"));
@@ -240,12 +240,12 @@ public class DDOTest {
         }, DDO_JSON_AUTH_CONTENT);
 
         assertEquals("https://w3id.org/did/v1", ddo.context);
-        assertEquals("did:op:0bc278fee025464f8012b811d1bce8e22094d0984e4e49139df5d5ff7a028bdf", ddo.id.toString());
+        assertEquals("did:nv:0bc278fee025464f8012b811d1bce8e22094d0984e4e49139df5d5ff7a028bdf", ddo.id.toString());
         assertEquals(3, ddo.publicKeys.size());
-        assertTrue(ddo.publicKeys.get(0).id.startsWith("did:op:b6e2eb5eff1a093ced9826315d5a4ef6c5b5c8bd3c49890ee284231d7e1d0aaa"));
+        assertTrue(ddo.publicKeys.get(0).id.startsWith("did:nv:b6e2eb5eff1a093ced9826315d5a4ef6c5b5c8bd3c49890ee284231d7e1d0aaa"));
 
         assertEquals(1, ddo.authentication.size());
-        assertTrue(ddo.authentication.get(0).publicKey.startsWith("did:op:0ebed8226ada17fde24b6bf2b95d27f8f05fcce09139ff5cec31f6d81a7cd2ea"));
+        assertTrue(ddo.authentication.get(0).publicKey.startsWith("did:nv:0ebed8226ada17fde24b6bf2b95d27f8f05fcce09139ff5cec31f6d81a7cd2ea"));
 
         assertEquals(3, ddo.services.size());
 
@@ -256,7 +256,7 @@ public class DDOTest {
 
     @Test
     public void modelToJson() throws Exception {
-        String did = "did:op:12345";
+        String did = "did:nv:12345";
         DDO ddo = new DDO();
 
         DDO.PublicKey pk = new DDO.PublicKey();
