@@ -69,7 +69,7 @@
             "language": "scala",
             "format": "jar",
             "version": "0.1",
-            "entrypoint": "nevermind-entrypoint.sh",
+            "entrypoint": "nevermined-entrypoint.sh",
             "requirements": [
               {
                 "requirement": "scala",

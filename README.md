@@ -1,12 +1,13 @@
 [![banner](https://raw.githubusercontent.com/keyko-io/assets/master/images/logo/small/keyko_logo@2x-100.jpg)](https://keyko.io)
 
-# Java API for Nevermind Data platform
+# Java API for Nevermined Data platform
 
-> 🦑 Java SDK for connecting with Nevermind Data Platform
+> 🦑 Java SDK for connecting with Nevermined Data Platform
 > [keyko.io](https://keyko.io)
 
-![Java Maven CI](https://github.com/keyko-io/nevermind-sdk-java/workflows/Java%20Maven%20CI/badge.svg)
-[![javadoc](https://javadoc.io/badge2/io.keyko.nevermind/api/javadoc.svg)](https://javadoc.io/doc/io.keyko.nevermind/api)
+![Java Maven CI](https://github.com/keyko-io/nevermined-sdk-java/workflows/Java%20Maven%20CI/badge.svg)
+![Release](https://github.com/keyko-io/nevermined-sdk-java/workflows/Release/badge.svg)
+[![javadoc](https://javadoc.io/badge2/io.keyko.nevermined/api/javadoc.svg)](https://javadoc.io/doc/io.keyko.nevermined/api)
 
 ---
 
@@ -34,21 +35,21 @@
 
 ## Features
 
-This library enables to integrate the Nevermind Data Platform based in Ocean Protocol.
+This library enables to integrate the Nevermined Data Platform based in Ocean Protocol.
 
 ## Installation
 
-Typically in Maven you can add nevermind sdk as a dependency:
+Typically in Maven you can add nevermined sdk as a dependency:
 
 ```xml
 <dependency>
-  <groupId>io.keyko.nevermind</groupId>
+  <groupId>io.keyko.nevermined</groupId>
   <artifactId>api</artifactId>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
 </dependency>
 ```
 
-Nevermind SDK requires Java 11 and Maven >= 3.5.2
+Nevermined SDK requires Java 11 and Maven >= 3.5.2
 
 ## Configuration
 
@@ -66,7 +67,7 @@ keeper.tx.sleepDuration=2000
 
 metadata.url="http://localhost:5000"
 # Used in the internal communications between Docker containers (Spree network)
-metadata-internal.url="http://172.15.0.15:5000" # Running Nevermind tools
+metadata-internal.url="http://172.15.0.15:5000" # Running Nevermined tools
 # metadata-internal.url="http://localhost:5000" # Running local metadata
 gateway.url="http://localhost:8030"
 secretstore.url="http://localhost:12001"
@@ -103,7 +104,7 @@ And you can instantiate the API with the following lines:
 
 ```java
  Config config = ConfigFactory.load();
- OceanAPI nevermindAPI = OceanAPI.getInstance(config);
+ OceanAPI neverminedAPI = OceanAPI.getInstance(config);
 ```
 
 Remember that TypeSafe Config allows you to overwrite the values using environment variables or arguments passed to 
@@ -114,7 +115,7 @@ If you want to use Java's Properties, you just need to create a Properties objec
 in your code:
 
 ```java
-// Default values for KEEPER_URL, KEEPER_GAS_LIMIT, KEEPER_GAS_PRICE, NEVERMIND_URL, SECRETSTORE_URL, CONSUME_BASE_PATH
+// Default values for KEEPER_URL, KEEPER_GAS_LIMIT, KEEPER_GAS_PRICE, Nevermined_URL, SECRETSTORE_URL, CONSUME_BASE_PATH
 Properties properties = new Properties();
 properties.put(OceanConfig.MAIN_ACCOUNT_ADDRESS, "0x0207cb2f99eb2e005893d6108e2633641ca9dd3e");
 properties.put(OceanConfig.MAIN_ACCOUNT_PASSWORD,"pass");
@@ -135,19 +136,19 @@ OceanAPI oceanAPIFromProperties = OceanAPI.getInstance(properties);
 Once you have initialized the API you can call the methods through their corresponding API class. For instance:
 
 ```java
- Balance balance = nevermindAPI.getAccountsAPI().balance(nevermindAPI.getMainAccount());
+ Balance balance = neverminedAPI.getAccountsAPI().balance(neverminedAPI.getMainAccount());
 
  String filesJson = metadataBase.toJson(metadataBase.base.files);
  String did = DID.builder().getHash();
- String encryptedDocument = nevermindAPI.getSecretStoreAPI().encrypt(did, filesJson, 0);
+ String encryptedDocument = neverminedAPI.getSecretStoreAPI().encrypt(did, filesJson, 0);
 
- Flowable<OrderResult> response = nevermindAPI.getAssetsAPI().order(did, SERVICE_DEFINITION_ID);
- boolean result = nevermindAPI.getAssetsAPI().consume(orderResult.getServiceAgreementId(), did, SERVICE_DEFINITION_ID, "/tmp");
+ Flowable<OrderResult> response = neverminedAPI.getAssetsAPI().order(did, SERVICE_DEFINITION_ID);
+ boolean result = neverminedAPI.getAssetsAPI().consume(orderResult.getServiceAgreementId(), did, SERVICE_DEFINITION_ID, "/tmp");
 ```
 
-### Using the SDK with the Nevermind Tools
+### Using the SDK with the Nevermined Tools
 
-If you are using [Nevermind Tools](https://github.com/keyko-io/nevermind-tools/) for playing with the Nevermind stack, 
+If you are using [Nevermined Tools](https://github.com/keyko-io/nevermined-tools/) for playing with the Nevermined stack, 
 you can use the following command to run the components necessary to have a fully functional environment:
 
 `KEEPER_VERSION=v0.12.7 GATEWAY_VERSION=v0.3.0 METADATA_VERSION=v1.0.3 bash start_ocean.sh --no-commons --local-spree-node`
@@ -171,7 +172,7 @@ If you prefer to deal with this method in a synchronous way, you will need to bl
 a response:
 
 ```java
- Flowable<OrderResult> response = nevermindAPI.getAssetsAPI().order(did, SERVICE_DEFINITION_ID);
+ Flowable<OrderResult> response = neverminedAPI.getAssetsAPI().order(did, SERVICE_DEFINITION_ID);
  OrderResult orderResult = response.blockingFirst();
 ```
 
@@ -222,12 +223,12 @@ mvn clean test
 ### Integration Tests
 
 The execution of the integration tests require to have running the complete Ocean stack using 
-[Nevermind Tools](https://github.com/keyko-io/nevermind-tools/).
+[Nevermined Tools](https://github.com/keyko-io/nevermined-tools/).
 
 After having the tools in your environment, you can run the components needed running:
 
 ```bash
-KEEPER_VERSION=v0.13.2 bash start_nevermind.sh --latest --no-commons --force-pull
+KEEPER_VERSION=v0.13.2 bash start_nevermined.sh --latest --no-commons --force-pull
 ```
 
 If you have older versions of the docker images is recommended to delete all them to be sure you are running the 
