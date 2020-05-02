@@ -14,7 +14,7 @@ public class CreateExecutor extends BaseOceanExecutor {
     @Override
     public Boolean executeRequest()  throws Exception {
 
-        NeverminedAPI neverminedAPI = getNextOceanApi();
+        NeverminedAPI neverminedAPI = getNextNeverminedAPI();
 
         log.debug("index:" + this.apiIndex);
         log.debug("Main Account: " + neverminedAPI.getMainAccount().address);

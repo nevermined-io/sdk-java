@@ -33,7 +33,7 @@ public class AssetsImpl implements AssetsAPI {
     /**
      * Constructor
      *
-     * @param neverminedManager  the oceanManager
+     * @param neverminedManager  the neverminedManager
      * @param assetsManager the assetsManager
      * @param agreementsManager the agreements Manager
      */

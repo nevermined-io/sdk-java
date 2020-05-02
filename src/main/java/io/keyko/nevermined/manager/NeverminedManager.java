@@ -55,7 +55,7 @@ public class NeverminedManager extends BaseManager {
      *
      * @param keeperService   Keeper Dto
      * @param metadataApiService Provider Dto
-     * @return OceanManager
+     * @return NeverminedManager
      */
     public static NeverminedManager getInstance(KeeperService keeperService, MetadataApiService metadataApiService) {
         return new NeverminedManager(keeperService, metadataApiService);
@@ -337,6 +337,8 @@ public class NeverminedManager extends BaseManager {
         Service service = ddo.getService(serviceIndex);
 
         try {
+            // Step 1. We initialize the Service Agreement
+
             final boolean isInitialized = initializeServiceAgreementDirect(ddo, serviceIndex, serviceAgreementId);
             if (!isInitialized)  {
                 throw new ServiceAgreementException(serviceAgreementId, "Service Agreement not Initialized");
@@ -370,6 +372,7 @@ public class NeverminedManager extends BaseManager {
             throw new OrderException(msg, e);        }
 
         try {
+            // Step 2. We fulfull the Lock Reward (we make the payment)
             this.fulfillLockReward(ddo, serviceIndex, eventServiceAgreementId);
             final boolean isFulfilled = isConditionFulfilled(serviceAgreementId, Condition.ConditionTypes.lockReward);
             orderResult = new OrderResult(serviceAgreementId, isFulfilled, false);

@@ -8,7 +8,7 @@ import org.web3j.crypto.Keys;
 
 import static org.junit.Assert.assertNotNull;
 
-public class OceanApiIT {
+public class NeverminedAPIIT {
 
     @Test
     public void buildAPIFromConfig() throws Exception {

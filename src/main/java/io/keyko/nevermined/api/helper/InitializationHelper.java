@@ -94,15 +94,15 @@ public class InitializationHelper {
     }
 
     /**
-     * Initialize an instance of OceanManager
+     * Initialize an instance of NeverminedManager
      *
      * @param keeperService   the keeperService
      * @param metadataApiService the MetadataApiService
-     * @return an initialized OceanManager object
+     * @return an initialized NeverminedManager object
      * @throws IOException     IOException
      * @throws CipherException CipherException
      */
-    public NeverminedManager getOceanManager(KeeperService keeperService, MetadataApiService metadataApiService) throws IOException, CipherException {
+    public NeverminedManager getNeverminedManager(KeeperService keeperService, MetadataApiService metadataApiService) throws IOException, CipherException {
         return NeverminedManager.getInstance(keeperService, metadataApiService);
     }
 

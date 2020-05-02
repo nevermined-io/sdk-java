@@ -39,7 +39,7 @@ public class OrderExecutor extends BaseOceanExecutor{
 
         log.info("Executing Request");
 
-        NeverminedAPI neverminedAPI = getNextOceanApi();
+        NeverminedAPI neverminedAPI = getNextNeverminedAPI();
         log.info("Using NeverminedAPI Instance with the main Address: " + neverminedAPI.getMainAccount().address);
 
         Flowable<OrderResult> result = neverminedAPI.getAssetsAPI().order(ddo.getDid(), 1);

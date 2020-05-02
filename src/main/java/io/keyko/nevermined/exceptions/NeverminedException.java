@@ -1,7 +1,7 @@
 package io.keyko.nevermined.exceptions;
 
 /**
- * Base Class to implement a hierarchy of Functional Ocean's Exceptions
+ * Base Class to implement a hierarchy of Functional Nevermined Exceptions
  */
 public abstract class NeverminedException extends Exception {
 

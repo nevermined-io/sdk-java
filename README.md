@@ -104,7 +104,7 @@ And you can instantiate the API with the following lines:
 
 ```java
  Config config = ConfigFactory.load();
- OceanAPI neverminedAPI = OceanAPI.getInstance(config);
+ NeverminedAPI neverminedAPI = NeverminedAPI.getInstance(config);
 ```
 
 Remember that TypeSafe Config allows you to overwrite the values using environment variables or arguments passed to 
@@ -117,20 +117,20 @@ in your code:
 ```java
 // Default values for KEEPER_URL, KEEPER_GAS_LIMIT, KEEPER_GAS_PRICE, Nevermined_URL, SECRETSTORE_URL, CONSUME_BASE_PATH
 Properties properties = new Properties();
-properties.put(OceanConfig.MAIN_ACCOUNT_ADDRESS, "0x0207cb2f99eb2e005893d6108e2633641ca9dd3e");
-properties.put(OceanConfig.MAIN_ACCOUNT_PASSWORD,"pass");
-properties.put(OceanConfig.MAIN_ACCOUNT_CREDENTIALS_FILE,"/accounts/parity/0x0207cb2f99eb2e005893d6108e2633641ca9dd3e.json.testaccount");
-properties.put(OceanConfig.DID_REGISTRY_ADDRESS,"0x4A0f7F763B1A7937aED21D63b2A78adc89c5Db23");
-properties.put(OceanConfig.AGREEMENT_STORE_MANAGER_ADDRESS, "0x62f84700b1A0ea6Bfb505aDC3c0286B7944D247C");
-properties.put(OceanConfig.LOCKREWARD_CONDITIONS_ADDRESS, "0xE30FC30c678437e0e8F78C52dE9db8E2752781a0");
-properties.put(OceanConfig.ESCROWREWARD_CONDITIONS_ADDRESS, "0xeD4Ef53376C6f103d2d7029D7E702e082767C6ff");
-properties.put(OceanConfig.ACCESS_SS_CONDITIONS_ADDRESS, "0x45DE141F8Efc355F1451a102FB6225F1EDd2921d");
-properties.put(OceanConfig.TEMPLATE_STORE_MANAGER_ADDRESS, "0x9768c8ae44f1dc81cAA98F48792aA5730cAd2F73");
-properties.put(OceanConfig.TOKEN_ADDRESS, "0x9861Da395d7da984D5E8C712c2EDE44b41F777Ad");
-properties.put(OceanConfig.DISPENSER_ADDRESS, "0x865396b7ddc58C693db7FCAD1168E3BD95Fe3368");
-properties.put(OceanConfig.PROVIDER_ADDRESS, "0x413c9ba0a05b8a600899b41b0c62dd661e689354");
+properties.put(NeverminedConfig.MAIN_ACCOUNT_ADDRESS, "0x0207cb2f99eb2e005893d6108e2633641ca9dd3e");
+properties.put(NeverminedConfig.MAIN_ACCOUNT_PASSWORD,"pass");
+properties.put(NeverminedConfig.MAIN_ACCOUNT_CREDENTIALS_FILE,"/accounts/parity/0x0207cb2f99eb2e005893d6108e2633641ca9dd3e.json.testaccount");
+properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS,"0x4A0f7F763B1A7937aED21D63b2A78adc89c5Db23");
+properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, "0x62f84700b1A0ea6Bfb505aDC3c0286B7944D247C");
+properties.put(NeverminedConfig.LOCKREWARD_CONDITIONS_ADDRESS, "0xE30FC30c678437e0e8F78C52dE9db8E2752781a0");
+properties.put(NeverminedConfig.ESCROWREWARD_CONDITIONS_ADDRESS, "0xeD4Ef53376C6f103d2d7029D7E702e082767C6ff");
+properties.put(NeverminedConfig.ACCESS_SS_CONDITIONS_ADDRESS, "0x45DE141F8Efc355F1451a102FB6225F1EDd2921d");
+properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, "0x9768c8ae44f1dc81cAA98F48792aA5730cAd2F73");
+properties.put(NeverminedConfig.TOKEN_ADDRESS, "0x9861Da395d7da984D5E8C712c2EDE44b41F777Ad");
+properties.put(NeverminedConfig.DISPENSER_ADDRESS, "0x865396b7ddc58C693db7FCAD1168E3BD95Fe3368");
+properties.put(NeverminedConfig.PROVIDER_ADDRESS, "0x413c9ba0a05b8a600899b41b0c62dd661e689354");
 
-OceanAPI oceanAPIFromProperties = OceanAPI.getInstance(properties);
+NeverminedAPI NeverminedAPIFromProperties = NeverminedAPI.getInstance(properties);
 ```
 
 Once you have initialized the API you can call the methods through their corresponding API class. For instance:
@@ -151,10 +151,10 @@ Once you have initialized the API you can call the methods through their corresp
 If you are using [Nevermined Tools](https://github.com/keyko-io/nevermined-tools/) for playing with the Nevermined stack, 
 you can use the following command to run the components necessary to have a fully functional environment:
 
-`KEEPER_VERSION=v0.12.7 GATEWAY_VERSION=v0.3.0 METADATA_VERSION=v1.0.3 bash start_ocean.sh --no-commons --local-spree-node`
+`bash start_nevermined.sh --no-commons --local-spree-node`
 
 After a few minutes, when Keeper has deployed the contracts, the ABI files describing the Smart Contracts can be found 
-in the `${HOME}/.ocean/keeper-contracts/artifacts/` folder. Depending on the network you are using, each ABI includes the 
+in the `${HOME}/.nevermined/nevermined-contracts/artifacts/` folder. Depending on the network you are using, each ABI includes the 
 address where the Smart Contract is deployed in each network.
 
 If you want to run the integration tests on your local machine, you can execute the Bash script `src/test/resources/scripts/updateConfAddresses.sh`
@@ -196,7 +196,7 @@ More information: [RxJava](https://github.com/ReactiveX/RxJava/wiki) , [Flowable
 
 All the API documentation is hosted on javadoc.io:
 
-- **[https://www.javadoc.io/doc/io.keyko.ocean/api](https://www.javadoc.io/doc/io.keyko.ocean/api)**
+- **[https://www.javadoc.io/doc/io.keyko.nevermined/api](https://www.javadoc.io/doc/io.keyko.nevermined/api)**
 
 You can also generate the Javadoc locally using the following command:
 
@@ -222,7 +222,7 @@ mvn clean test
 
 ### Integration Tests
 
-The execution of the integration tests require to have running the complete Ocean stack using 
+The execution of the integration tests require to have running the complete Nevermined stack using 
 [Nevermined Tools](https://github.com/keyko-io/nevermined-tools/).
 
 After having the tools in your environment, you can run the components needed running:

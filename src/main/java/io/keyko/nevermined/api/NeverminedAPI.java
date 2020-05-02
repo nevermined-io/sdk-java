@@ -130,7 +130,7 @@ public class NeverminedAPI {
     }
 
     /**
-     * Build an Instance of Ocean API from a Properties object
+     * Build an Instance of Nevermined API from a Properties object
      *
      * @param properties values of the configuration
      * @return an Initialized NeverminedAPI object
@@ -145,7 +145,7 @@ public class NeverminedAPI {
         NeverminedConfig.NeverminedConfigValidation validation = NeverminedConfig.validate(neverminedConfig);
 
         if (!validation.isValid()) {
-            String msg = "Error Initializing Ocean API. Configuration not valid " + validation.errorsToString();
+            String msg = "Error Initializing Nevermined API. Configuration not valid " + validation.errorsToString();
             log.error(msg);
             throw new InvalidConfiguration(msg);
         }
@@ -192,7 +192,7 @@ public class NeverminedAPI {
             neverminedAPI.templatesManager.setMainAccount(neverminedAPI.mainAccount);
             neverminedAPI.templatesManager.setTemplateStoreManagerContract(neverminedAPI.templateStoreManagerContract);
 
-            neverminedAPI.neverminedManager = initializationHelper.getOceanManager(neverminedAPI.keeperService, neverminedAPI.metadataApiService);
+            neverminedAPI.neverminedManager = initializationHelper.getNeverminedManager(neverminedAPI.keeperService, neverminedAPI.metadataApiService);
             neverminedAPI.neverminedManager
                     .setAgreementManager(neverminedAPI.agreementsManager)
                     .setTemplatesManager(neverminedAPI.templatesManager)
@@ -244,14 +244,14 @@ public class NeverminedAPI {
 
             return neverminedAPI;
         } catch (Exception e) {
-            String msg = "Error Initializing Ocean API";
+            String msg = "Error Initializing Nevermined API";
             log.error(msg + ": " + e.getMessage());
             throw new InitializationException(msg, e);
         }
     }
 
     /**
-     * Build an Instance of Ocean API from a TypeSafe Config object
+     * Build an Instance of Nevermined API from a TypeSafe Config object
      *
      * @param config the config object
      * @return an Initialized NeverminedAPI object

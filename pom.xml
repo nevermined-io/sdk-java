@@ -460,7 +460,7 @@
             <artifactId>utils</artifactId>
             <version>${web3j.version}</version>
         </dependency>
-        <!-- Ocean Keeper Contracts: Web3j stubs & ABI's -->
+        <!-- Nevermined Contracts: Web3j stubs & ABI's -->
         <dependency>
             <groupId>io.keyko.nevermined</groupId>
             <artifactId>contracts</artifactId>

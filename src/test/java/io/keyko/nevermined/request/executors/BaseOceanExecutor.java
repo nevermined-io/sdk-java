@@ -85,7 +85,7 @@ public abstract class BaseOceanExecutor implements Executor {
 
     }
 
-    protected synchronized NeverminedAPI getNextOceanApi() {
+    protected synchronized NeverminedAPI getNextNeverminedAPI() {
 
         if (apiIndex == neverminedAPIList.size()) {
             apiIndex = 0;
