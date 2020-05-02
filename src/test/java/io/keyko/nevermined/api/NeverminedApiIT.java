@@ -8,7 +8,7 @@ import org.web3j.crypto.Keys;
 
 import static org.junit.Assert.assertNotNull;
 
-public class NeverminedAPIIT {
+public class NeverminedApiIT {
 
     @Test
     public void buildAPIFromConfig() throws Exception {
