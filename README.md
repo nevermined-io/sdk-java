@@ -1,12 +1,13 @@
 [![banner](https://raw.githubusercontent.com/keyko-io/assets/master/images/logo/small/keyko_logo@2x-100.jpg)](https://keyko.io)
 
-# Java API for Nevermind Data platform
+# Java API for Nevermined Data platform
 
-> 🦑 Java SDK for connecting with Nevermind Data Platform
+> 🦑 Java SDK for connecting with Nevermined Data Platform
 > [keyko.io](https://keyko.io)
 
-![Java Maven CI](https://github.com/keyko-io/nevermind-sdk-java/workflows/Java%20Maven%20CI/badge.svg)
-[![javadoc](https://javadoc.io/badge2/io.keyko.nevermind/api/javadoc.svg)](https://javadoc.io/doc/io.keyko.nevermind/api)
+![Java Maven CI](https://github.com/keyko-io/nevermined-sdk-java/workflows/Java%20Maven%20CI/badge.svg)
+![Release](https://github.com/keyko-io/nevermined-sdk-java/workflows/Release/badge.svg)
+[![javadoc](https://javadoc.io/badge2/io.keyko.nevermined/api/javadoc.svg)](https://javadoc.io/doc/io.keyko.nevermined/api)
 
 ---
 
@@ -34,21 +35,21 @@
 
 ## Features
 
-This library enables to integrate the Nevermind Data Platform based in Ocean Protocol.
+This library enables to integrate the Nevermined Data Platform based in Ocean Protocol.
 
 ## Installation
 
-Typically in Maven you can add nevermind sdk as a dependency:
+Typically in Maven you can add nevermined sdk as a dependency:
 
 ```xml
 <dependency>
-  <groupId>io.keyko.nevermind</groupId>
+  <groupId>io.keyko.nevermined</groupId>
   <artifactId>api</artifactId>
-  <version>0.1.0</version>
+  <version>0.2.0</version>
 </dependency>
 ```
 
-Nevermind SDK requires Java 11 and Maven >= 3.5.2
+Nevermined SDK requires Java 11 and Maven >= 3.5.2
 
 ## Configuration
 
@@ -66,7 +67,7 @@ keeper.tx.sleepDuration=2000
 
 metadata.url="http://localhost:5000"
 # Used in the internal communications between Docker containers (Spree network)
-metadata-internal.url="http://172.15.0.15:5000" # Running Nevermind tools
+metadata-internal.url="http://172.15.0.15:5000" # Running Nevermined tools
 # metadata-internal.url="http://localhost:5000" # Running local metadata
 gateway.url="http://localhost:8030"
 secretstore.url="http://localhost:12001"
@@ -103,7 +104,7 @@ And you can instantiate the API with the following lines:
 
 ```java
  Config config = ConfigFactory.load();
- OceanAPI nevermindAPI = OceanAPI.getInstance(config);
+ NeverminedAPI neverminedAPI = NeverminedAPI.getInstance(config);
 ```
 
 Remember that TypeSafe Config allows you to overwrite the values using environment variables or arguments passed to 
@@ -114,46 +115,46 @@ If you want to use Java's Properties, you just need to create a Properties objec
 in your code:
 
 ```java
-// Default values for KEEPER_URL, KEEPER_GAS_LIMIT, KEEPER_GAS_PRICE, NEVERMIND_URL, SECRETSTORE_URL, CONSUME_BASE_PATH
+// Default values for KEEPER_URL, KEEPER_GAS_LIMIT, KEEPER_GAS_PRICE, Nevermined_URL, SECRETSTORE_URL, CONSUME_BASE_PATH
 Properties properties = new Properties();
-properties.put(OceanConfig.MAIN_ACCOUNT_ADDRESS, "0x0207cb2f99eb2e005893d6108e2633641ca9dd3e");
-properties.put(OceanConfig.MAIN_ACCOUNT_PASSWORD,"pass");
-properties.put(OceanConfig.MAIN_ACCOUNT_CREDENTIALS_FILE,"/accounts/parity/0x0207cb2f99eb2e005893d6108e2633641ca9dd3e.json.testaccount");
-properties.put(OceanConfig.DID_REGISTRY_ADDRESS,"0x4A0f7F763B1A7937aED21D63b2A78adc89c5Db23");
-properties.put(OceanConfig.AGREEMENT_STORE_MANAGER_ADDRESS, "0x62f84700b1A0ea6Bfb505aDC3c0286B7944D247C");
-properties.put(OceanConfig.LOCKREWARD_CONDITIONS_ADDRESS, "0xE30FC30c678437e0e8F78C52dE9db8E2752781a0");
-properties.put(OceanConfig.ESCROWREWARD_CONDITIONS_ADDRESS, "0xeD4Ef53376C6f103d2d7029D7E702e082767C6ff");
-properties.put(OceanConfig.ACCESS_SS_CONDITIONS_ADDRESS, "0x45DE141F8Efc355F1451a102FB6225F1EDd2921d");
-properties.put(OceanConfig.TEMPLATE_STORE_MANAGER_ADDRESS, "0x9768c8ae44f1dc81cAA98F48792aA5730cAd2F73");
-properties.put(OceanConfig.TOKEN_ADDRESS, "0x9861Da395d7da984D5E8C712c2EDE44b41F777Ad");
-properties.put(OceanConfig.DISPENSER_ADDRESS, "0x865396b7ddc58C693db7FCAD1168E3BD95Fe3368");
-properties.put(OceanConfig.PROVIDER_ADDRESS, "0x413c9ba0a05b8a600899b41b0c62dd661e689354");
+properties.put(NeverminedConfig.MAIN_ACCOUNT_ADDRESS, "0x0207cb2f99eb2e005893d6108e2633641ca9dd3e");
+properties.put(NeverminedConfig.MAIN_ACCOUNT_PASSWORD,"pass");
+properties.put(NeverminedConfig.MAIN_ACCOUNT_CREDENTIALS_FILE,"/accounts/parity/0x0207cb2f99eb2e005893d6108e2633641ca9dd3e.json.testaccount");
+properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS,"0x4A0f7F763B1A7937aED21D63b2A78adc89c5Db23");
+properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, "0x62f84700b1A0ea6Bfb505aDC3c0286B7944D247C");
+properties.put(NeverminedConfig.LOCKREWARD_CONDITIONS_ADDRESS, "0xE30FC30c678437e0e8F78C52dE9db8E2752781a0");
+properties.put(NeverminedConfig.ESCROWREWARD_CONDITIONS_ADDRESS, "0xeD4Ef53376C6f103d2d7029D7E702e082767C6ff");
+properties.put(NeverminedConfig.ACCESS_SS_CONDITIONS_ADDRESS, "0x45DE141F8Efc355F1451a102FB6225F1EDd2921d");
+properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, "0x9768c8ae44f1dc81cAA98F48792aA5730cAd2F73");
+properties.put(NeverminedConfig.TOKEN_ADDRESS, "0x9861Da395d7da984D5E8C712c2EDE44b41F777Ad");
+properties.put(NeverminedConfig.DISPENSER_ADDRESS, "0x865396b7ddc58C693db7FCAD1168E3BD95Fe3368");
+properties.put(NeverminedConfig.PROVIDER_ADDRESS, "0x413c9ba0a05b8a600899b41b0c62dd661e689354");
 
-OceanAPI oceanAPIFromProperties = OceanAPI.getInstance(properties);
+NeverminedAPI NeverminedAPIFromProperties = NeverminedAPI.getInstance(properties);
 ```
 
 Once you have initialized the API you can call the methods through their corresponding API class. For instance:
 
 ```java
- Balance balance = nevermindAPI.getAccountsAPI().balance(nevermindAPI.getMainAccount());
+ Balance balance = neverminedAPI.getAccountsAPI().balance(neverminedAPI.getMainAccount());
 
  String filesJson = metadataBase.toJson(metadataBase.base.files);
  String did = DID.builder().getHash();
- String encryptedDocument = nevermindAPI.getSecretStoreAPI().encrypt(did, filesJson, 0);
+ String encryptedDocument = neverminedAPI.getSecretStoreAPI().encrypt(did, filesJson, 0);
 
- Flowable<OrderResult> response = nevermindAPI.getAssetsAPI().order(did, SERVICE_DEFINITION_ID);
- boolean result = nevermindAPI.getAssetsAPI().consume(orderResult.getServiceAgreementId(), did, SERVICE_DEFINITION_ID, "/tmp");
+ Flowable<OrderResult> response = neverminedAPI.getAssetsAPI().order(did, SERVICE_DEFINITION_ID);
+ boolean result = neverminedAPI.getAssetsAPI().consume(orderResult.getServiceAgreementId(), did, SERVICE_DEFINITION_ID, "/tmp");
 ```
 
-### Using the SDK with the Nevermind Tools
+### Using the SDK with the Nevermined Tools
 
-If you are using [Nevermind Tools](https://github.com/keyko-io/nevermind-tools/) for playing with the Nevermind stack, 
+If you are using [Nevermined Tools](https://github.com/keyko-io/nevermined-tools/) for playing with the Nevermined stack, 
 you can use the following command to run the components necessary to have a fully functional environment:
 
-`KEEPER_VERSION=v0.12.7 GATEWAY_VERSION=v0.3.0 METADATA_VERSION=v1.0.3 bash start_ocean.sh --no-commons --local-spree-node`
+`bash start_nevermined.sh --no-commons --local-spree-node`
 
 After a few minutes, when Keeper has deployed the contracts, the ABI files describing the Smart Contracts can be found 
-in the `${HOME}/.ocean/keeper-contracts/artifacts/` folder. Depending on the network you are using, each ABI includes the 
+in the `${HOME}/.nevermined/nevermined-contracts/artifacts/` folder. Depending on the network you are using, each ABI includes the 
 address where the Smart Contract is deployed in each network.
 
 If you want to run the integration tests on your local machine, you can execute the Bash script `src/test/resources/scripts/updateConfAddresses.sh`
@@ -171,7 +172,7 @@ If you prefer to deal with this method in a synchronous way, you will need to bl
 a response:
 
 ```java
- Flowable<OrderResult> response = nevermindAPI.getAssetsAPI().order(did, SERVICE_DEFINITION_ID);
+ Flowable<OrderResult> response = neverminedAPI.getAssetsAPI().order(did, SERVICE_DEFINITION_ID);
  OrderResult orderResult = response.blockingFirst();
 ```
 
@@ -195,7 +196,7 @@ More information: [RxJava](https://github.com/ReactiveX/RxJava/wiki) , [Flowable
 
 All the API documentation is hosted on javadoc.io:
 
-- **[https://www.javadoc.io/doc/io.keyko.ocean/api](https://www.javadoc.io/doc/io.keyko.ocean/api)**
+- **[https://www.javadoc.io/doc/io.keyko.nevermined/api](https://www.javadoc.io/doc/io.keyko.nevermined/api)**
 
 You can also generate the Javadoc locally using the following command:
 
@@ -221,13 +222,13 @@ mvn clean test
 
 ### Integration Tests
 
-The execution of the integration tests require to have running the complete Ocean stack using 
-[Nevermind Tools](https://github.com/keyko-io/nevermind-tools/).
+The execution of the integration tests require to have running the complete Nevermined stack using 
+[Nevermined Tools](https://github.com/keyko-io/nevermined-tools/).
 
 After having the tools in your environment, you can run the components needed running:
 
 ```bash
-KEEPER_VERSION=v0.13.2 bash start_nevermind.sh --latest --no-commons --force-pull
+KEEPER_VERSION=v0.13.2 bash start_nevermined.sh --latest --no-commons --force-pull
 ```
 
 If you have older versions of the docker images is recommended to delete all them to be sure you are running the 

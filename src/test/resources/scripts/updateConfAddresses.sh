@@ -27,7 +27,7 @@ declare -a contracts=(
 )
 
 until [ $COMMAND_STATUS -eq 0 ] || [ $RETRY_COUNT -eq 120 ]; do
-  cat ~/.nevermind/nevermind-contracts/artifacts/ready
+  cat ~/.nevermined/nevermined-contracts/artifacts/ready
   COMMAND_STATUS=$?
   if [ $COMMAND_STATUS -eq 0 ]; then
     break
@@ -43,7 +43,7 @@ fi
 
 for c in "${contracts[@]}"
 do
-   address=$(jq -r .address "${HOME}/.nevermind/nevermind-contracts/artifacts/$c.$network.json")
+   address=$(jq -r .address "${HOME}/.nevermined/nevermined-contracts/artifacts/$c.$network.json")
    echo "Setting up $c address to $address"
    sed -i  "s/contract.$c.address=.*/contract.$c.address=\"$address\"/g" src/test/resources/application.conf
 

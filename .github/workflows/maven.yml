@@ -11,12 +11,12 @@ jobs:
       - name: Check out Git repository
         uses: actions/checkout@v2
 
-      - name: Starting Nevermind Tools
+      - name: Starting Nevermined Tools
         run: |
-          git clone https://github.com/keyko-io/nevermind-tools
-          rm -rf ~/.nevermind/nevermind-contracts/artifacts
-          cd nevermind-tools
-          sudo bash -x start_nevermind.sh --no-commons --no-faucet --no-dashboard --latest 2>&1 > start_nevermind.log &
+          git clone https://github.com/keyko-io/nevermined-tools
+          rm -rf ~/.nevermined/nevermined-contracts/artifacts
+          cd nevermined-tools
+          sudo bash -x start_nevermined.sh --no-commons --no-faucet --no-dashboard --latest 2>&1 > start_nevermined.log &
           cd ..
 
       - name: Install Java and Maven
