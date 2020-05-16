@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import io.keyko.common.helpers.CryptoHelper;
+import io.keyko.nevermined.models.service.types.AuthorizationService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -17,6 +20,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public abstract class AbstractModel {
+
+    protected static final Logger logger = LogManager.getLogger(AbstractModel.class);
 
     private static ObjectMapper objectMapper = null;
 

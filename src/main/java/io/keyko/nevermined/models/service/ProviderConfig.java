@@ -11,27 +11,29 @@ public class ProviderConfig {
     private String metadataEndpoint;
     private String provenanceEndpoint;
     private String secretStoreEndpoint;
+    private String gatewayUrl;
     private List<String> providerAddresses = new ArrayList<>();
 
-    public ProviderConfig(String accessEndpoint, String metadataEndpoint, String provenanceEndpoint) {
+    public ProviderConfig(String accessEndpoint, String metadataEndpoint, String gatewayUrl, String provenanceEndpoint) {
         this.accessEndpoint = accessEndpoint;
         this.metadataEndpoint = metadataEndpoint;
+        this.gatewayUrl= gatewayUrl;
         this.provenanceEndpoint= provenanceEndpoint;
     }
 
-    public ProviderConfig(String accessEndpoint, String metadataEndpoint, String provenanceEndpoint, String secretStoreEndpoint) {
-        this(accessEndpoint, metadataEndpoint, provenanceEndpoint);
+    public ProviderConfig(String accessEndpoint, String metadataEndpoint, String gatewayUrl, String provenanceEndpoint, String secretStoreEndpoint) {
+        this(accessEndpoint, metadataEndpoint, gatewayUrl, provenanceEndpoint);
         this.secretStoreEndpoint = secretStoreEndpoint;
     }
 
-    public ProviderConfig(String accessEndpoint, String purchaseEndpoint, String metadataEndpoint, String provenanceEndpoint, String secretStoreEndpoint, List<String> providers) {
-        this(accessEndpoint, purchaseEndpoint, metadataEndpoint, provenanceEndpoint);
+    public ProviderConfig(String accessEndpoint, String purchaseEndpoint, String metadataEndpoint, String gatewayUrl, String provenanceEndpoint, String secretStoreEndpoint, List<String> providers) {
+        this(accessEndpoint, purchaseEndpoint, metadataEndpoint, gatewayUrl, provenanceEndpoint);
         setSecretStoreEndpoint(secretStoreEndpoint);
         setProviderAddresses(providers);
     }
 
-    public ProviderConfig(String accessEndpoint,  String metadataEndpoint, String provenanceEndpoint, String secretStoreEndpoint, String provider) {
-        this(accessEndpoint, metadataEndpoint, provenanceEndpoint, secretStoreEndpoint);
+    public ProviderConfig(String accessEndpoint,  String metadataEndpoint, String gatewayUrl, String provenanceEndpoint, String secretStoreEndpoint, String provider) {
+        this(accessEndpoint, metadataEndpoint, gatewayUrl, provenanceEndpoint, secretStoreEndpoint);
         this.addProvider(provider);
     }
 
@@ -57,13 +59,21 @@ public class ProviderConfig {
         return this;
     }
 
-
     public String getMetadataEndpoint() {
         return metadataEndpoint;
     }
 
     public ProviderConfig setMetadataEndpoint(String metadataEndpoint) {
         this.metadataEndpoint = metadataEndpoint;
+        return this;
+    }
+
+    public String getGatewayUrl() {
+        return gatewayUrl;
+    }
+
+    public ProviderConfig setGatewayUrl(String gatewayUrl) {
+        this.gatewayUrl = gatewayUrl;
         return this;
     }
 

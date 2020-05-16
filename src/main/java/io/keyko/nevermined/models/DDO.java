@@ -11,7 +11,10 @@ import io.keyko.nevermined.exceptions.DDOException;
 import io.keyko.nevermined.exceptions.DIDFormatException;
 import io.keyko.nevermined.exceptions.EncryptionException;
 import io.keyko.nevermined.exceptions.ServiceException;
+import io.keyko.nevermined.external.GatewayService;
 import io.keyko.nevermined.manager.SecretStoreManager;
+import io.keyko.nevermined.models.gateway.EncryptionResponse;
+import io.keyko.nevermined.models.service.AuthConfig;
 import io.keyko.nevermined.models.service.Service;
 import io.keyko.nevermined.models.service.types.*;
 import org.apache.logging.log4j.LogManager;
@@ -325,16 +328,50 @@ public class DDO extends AbstractModel implements FromJsonToModel {
         }
     }
 
-    public DDO encryptFiles(SecretStoreManager secretStoreManager, int threshold) throws DDOException {
+    public DDO secretStoreLocalEncryptFiles(SecretStoreManager secretStoreManager, AuthConfig authConfig) throws DDOException {
 
         try {
             Service metadataService = this.getMetadataService();
+            Service authService = this.getAuthorizationService();
+
             String filesJson = metadataService.toJson(metadataService.attributes.main.files);
-            metadataService.attributes.encryptedFiles = secretStoreManager.encryptDocument(did.getHash(), filesJson, threshold);
-        }catch (EncryptionException| JsonProcessingException e) {
-            throw new DDOException("Unable to encrypt files from DDL: " + e.getMessage(), e);
+//            metadataService.attributes.encryptedFiles = secretStoreManager.encryptDocument(
+//                    did.getHash(), filesJson, authConfig.getThreshold());
+            EncryptionResponse encryptionResponse = GatewayService.encrypt(
+                    authConfig.getServiceEndpoint(), filesJson, authConfig.getService());
+
+            metadataService.attributes.encryptedFiles = encryptionResponse.hash;
+            authService.attributes.main.publicKey = encryptionResponse.publicKey;
+
+        }catch (JsonProcessingException | ServiceException e) {
+            throw new DDOException("Unable to encrypt files using SecretStore: " + e.getMessage(), e);
         }
 
+        return this;
+    }
+
+    public DDO gatewayEncryptFiles(AuthConfig authConfig) throws DDOException {
+        try {
+            Service metadataService = this.getMetadataService();
+            Service authService = this.getAuthorizationService();
+
+            String filesJson = metadataService.toJson(metadataService.attributes.main.files);
+
+            EncryptionResponse encryptionResponse = GatewayService.encrypt(
+                    authConfig.getServiceEndpoint(), filesJson, authConfig.getService());
+
+            metadataService.attributes.encryptedFiles = encryptionResponse.hash;
+            authService.attributes.main.publicKey = encryptionResponse.publicKey;
+        }catch (JsonProcessingException | ServiceException e) {
+            throw new DDOException("Unable to encrypt files via Gateway: " + e.getMessage(), e);
+        }
+
+        return this;
+    }
+
+    public DDO setEncryptedFiles(String hash)   {
+        Service metadataService = this.getMetadataService();
+        metadataService.attributes.encryptedFiles = hash;
         return this;
     }
 
@@ -426,7 +463,6 @@ public class DDO extends AbstractModel implements FromJsonToModel {
                 return service;
             }
         }
-
         return null;
     }
 
@@ -437,9 +473,9 @@ public class DDO extends AbstractModel implements FromJsonToModel {
                 return (AccessService) service;
             }
         }
-
         return null;
     }
+
 
     @JsonIgnore
     public static DDO cleanFileUrls(DDO ddo) {

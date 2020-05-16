@@ -24,10 +24,16 @@ public class ServiceMain extends AbstractModel {
     @JsonProperty
     public String type;
 
-
     // Properties of Authorization Service
     @JsonProperty
     public String service;
+
+    @JsonProperty
+    public String threshold;
+
+    @JsonProperty
+    public String publicKey;
+
 
     // Properties of Computing Service
     @JsonProperty
@@ -39,10 +45,6 @@ public class ServiceMain extends AbstractModel {
 
     @JsonProperty
     public String creator;
-
-//
-//    @JsonProperty
-//    public int timeout;
 
     // Properties of Metadata
 

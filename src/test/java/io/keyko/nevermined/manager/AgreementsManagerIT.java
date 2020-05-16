@@ -58,7 +58,7 @@ public class AgreementsManagerIT {
         metadataApiService = ManagerHelper.getMetadataService(config);
         String metadataUrl = config.getString("metadata-internal.url") + "/api/v1/metadata/assets/ddo/{did}";
         String provenanceUrl = config.getString("metadata-internal.url") + "/api/v1/metadata/assets/provenance/{did}";
-        String consumeUrl = config.getString("gateway.url") + "/api/v1/gateway/services/consume";
+        String consumeUrl = config.getString("gateway.url") + "/api/v1/gateway/services/access";
         String secretStoreEndpoint = config.getString("secretstore.url");
         String providerAddress = config.getString("provider.address");
         providerConfig = new ProviderConfig(consumeUrl, metadataUrl, provenanceUrl, secretStoreEndpoint, providerAddress);
