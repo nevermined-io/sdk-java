@@ -75,11 +75,12 @@ public class AssetsApiIT {
 
         String metadataUrl = config.getString("metadata-internal.url") + "/api/v1/metadata/assets/ddo/{did}";
         String provenanceUrl = config.getString("metadata-internal.url") + "/api/v1/metadata/assets/provenance/{did}";
-        String consumeUrl = config.getString("gateway.url") + "/api/v1/gateway/services/consume";
+        String gatewayUrl = config.getString("gateway.url");
+        String consumeUrl = gatewayUrl + "/api/v1/gateway/services/access";
         String secretStoreEndpoint = config.getString("secretstore.url");
         String providerAddress = config.getString("provider.address");
 
-        providerConfig = new ProviderConfig(consumeUrl, metadataUrl, provenanceUrl, secretStoreEndpoint, providerAddress);
+        providerConfig = new ProviderConfig(consumeUrl, metadataUrl, gatewayUrl, provenanceUrl, secretStoreEndpoint, providerAddress);
 
         neverminedAPI = NeverminedAPI.getInstance(config);
 
@@ -238,6 +239,9 @@ public class AssetsApiIT {
     @Test
     public void consumeBinaryDirectly() throws Exception {
 
+        int consumedAssetsBefore = neverminedAPI.getAssetsAPI().consumerAssets(
+                neverminedAPIConsumer.getMainAccount().address).size();
+
         metadataBase.attributes.main.dateCreated = new Date();
         DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
         DID did = new DID(ddo.id);
@@ -263,6 +267,10 @@ public class AssetsApiIT {
         log.debug("Full consumption took " + (endTime - startTime) + " milliseconds");
 
         assertNotNull(result);
+
+        int consumedAssetsAfter = neverminedAPI.getAssetsAPI().consumerAssets(
+                neverminedAPIConsumer.getMainAccount().address).size();
+        assertEquals(consumedAssetsBefore + 1, consumedAssetsAfter);
     }
 
     @Test
@@ -330,45 +338,4 @@ public class AssetsApiIT {
         assertEquals(assetsOwnedAfter, assetsOwnedBefore + 1);
     }
 
-    @Test
-    public void consumeAndConsumerAssets() throws Exception{
-        int consumedAssetsBefore = neverminedAPI.getAssetsAPI().consumerAssets(neverminedAPIConsumer.getMainAccount().address).size();
-
-        providerConfig.setSecretStoreEndpoint(config.getString("secretstore.url"));
-        String basePath = config.getString("consume.basePath");
-        AssetMetadata metadata = DDO.fromJSON(new TypeReference<AssetMetadata>() {
-        }, METADATA_JSON_CONTENT);
-        metadata.attributes.main.dateCreated = new Date();
-        DDO ddo = neverminedAPI.getAssetsAPI().create(metadata, providerConfig);
-        DID did = new DID(ddo.id);
-
-        log.debug("DDO registered!");
-        neverminedAPIConsumer.getAccountsAPI().requestTokens(BigInteger.TEN);
-        Flowable<OrderResult> response = neverminedAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_ACCESS_INDEX);
-
-        TimeUnit.SECONDS.sleep(2l);
-
-        OrderResult orderResult = response.blockingFirst();
-        assertNotNull(orderResult.getServiceAgreementId());
-        assertEquals(true, orderResult.isAccessGranted());
-        log.debug("Granted Access Received for the service Agreement " + orderResult.getServiceAgreementId());
-
-        boolean result = neverminedAPIConsumer.getAssetsAPI().consume(
-                orderResult.getServiceAgreementId(),
-                did,
-                Service.DEFAULT_ACCESS_INDEX, basePath);
-        assertTrue(result);
-
-
-        int consumedAssetsAfter = neverminedAPI.getAssetsAPI().consumerAssets(neverminedAPIConsumer.getMainAccount().address).size();
-        assertEquals(consumedAssetsBefore + 1, consumedAssetsAfter);
-
-    }
-
-//    @Test
-//    public void validate() throws Exception {
-//        AssetMetadata metadata = DDO.fromJSON(new TypeReference<AssetMetadata>() {
-//        }, METADATA_JSON_CONTENT);
-//        assertTrue(neverminedAPI.getAssetsAPI().validate(metadata));
-//    }
 }

@@ -13,7 +13,9 @@ import io.keyko.nevermined.models.Account;
 import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
+import io.keyko.nevermined.models.service.AuthConfig;
 import io.keyko.nevermined.models.service.ProviderConfig;
+import io.keyko.nevermined.models.service.types.AuthorizationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
@@ -163,16 +165,17 @@ public class NeverminedManagerIT {
         metadataBase = DDO.fromJSON(new TypeReference<AssetMetadata>() {}, completeDDO.services.get(0).toJson());
 */
         String metadataUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/ddo/{did}";
+        String gatewayUrl= config.getString("gateway.url");
         String provenanceUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/provenance/{did}";
-        String consumeUrl= config.getString("gateway.url") + "/api/v1/gateway/services/consume";
+        String consumeUrl= gatewayUrl + "/api/v1/gateway/services/access";
         String secretStoreEndpoint= config.getString("secretstore.url");
         String providerAddress= config.getString("provider.address");
 
-        ProviderConfig providerConfig = new ProviderConfig(consumeUrl, metadataUrl, provenanceUrl, secretStoreEndpoint, providerAddress);
+        ProviderConfig providerConfig = new ProviderConfig(consumeUrl, metadataUrl, gatewayUrl, provenanceUrl, secretStoreEndpoint, providerAddress);
 
         return managerPublisher.registerAccessServiceAsset(metadataBase,
                 providerConfig,
-                0);
+                new AuthConfig(gatewayUrl, AuthorizationService.AuthTypes.PSK_RSA));
 
     }
 
@@ -181,16 +184,15 @@ public class NeverminedManagerIT {
 
         String metadataUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/ddo/{did}";
         String provenanceUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/provenance/{did}";
-        String consumeUrl= config.getString("gateway.url") + "/api/v1/gateway/services/consume";
+        String gatewayUrl= config.getString("gateway.url");
+        String consumeUrl= gatewayUrl + "/api/v1/gateway/services/access";
         String secretStoreEndpoint= config.getString("secretstore.url");
         String providerAddress= config.getString("provider.address");
 
 
-        ProviderConfig providerConfig = new ProviderConfig(consumeUrl, metadataUrl, provenanceUrl, secretStoreEndpoint, providerAddress);
+        ProviderConfig providerConfig = new ProviderConfig(consumeUrl, metadataUrl, gatewayUrl, provenanceUrl, secretStoreEndpoint, providerAddress);
 
-        DDO ddo= managerPublisher.registerAccessServiceAsset(metadataBase,
-                providerConfig,
-                0);
+        DDO ddo= managerPublisher.registerAccessServiceAsset(metadataBase, providerConfig);
 
         DID did= ddo.getDid();
         DDO resolvedDDO= managerPublisher.resolveDID(did);

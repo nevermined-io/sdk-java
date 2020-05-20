@@ -1,7 +1,14 @@
 History
 =======
 
-0.2.0 (April, 2020)
+0.2.0 (May, 2020)
+-------------------------
+
+* [#8](https://github.com/keyko-io/nevermined-sdk-java/issues/8) Modify the publishing & consume flow for making RSA the default auth method
+* [#9](https://github.com/keyko-io/nevermined-sdk-java/issues/9) Integration of new access gateway flow that grants permissions
+
+
+0.1.0 (April, 2020)
 -------------------------
 
 * Renaming to Nevermined

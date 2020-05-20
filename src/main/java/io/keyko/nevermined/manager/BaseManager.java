@@ -112,27 +112,19 @@ public abstract class BaseManager {
         return SecretStoreManager.getInstance(SecretStoreDto.builder(authorizationService.serviceEndpoint), evmDto);
     }
 
-
-    protected DDO buildDDO(MetadataService metadataService, AuthorizationService authorizationService, String address, int threshold) throws DDOException {
-
+    protected DDO buildDDO(MetadataService metadataService, String address) throws DDOException {
         try {
-            String signature = "";
-            return new DDO(metadataService, address, signature);
+            return new DDO(metadataService, address, "");
         } catch (DIDFormatException e) {
             throw new DDOException("Error building DDO", e);
         }
-
     }
 
-    protected DDO buildDDO(MetadataService metadataService, AuthorizationService authorizationService, String address) throws DDOException {
-        return this.buildDDO(metadataService, authorizationService, address, 0);
+    public List<AssetMetadata.File> getDecriptedSecretStoreMetadataFiles(DDO ddo) throws IOException, EncryptionException, InterruptedException {
+        return getDecriptedSecretStoreMetadataFiles(ddo, MAX_SS_RETRIES);
     }
 
-    public List<AssetMetadata.File> getMetadataFiles(DDO ddo) throws IOException, EncryptionException, InterruptedException {
-        return getMetadataFiles(ddo, MAX_SS_RETRIES);
-    }
-
-    public List<AssetMetadata.File> getMetadataFiles(DDO ddo, int retries) throws IOException, EncryptionException, InterruptedException {
+    public List<AssetMetadata.File> getDecriptedSecretStoreMetadataFiles(DDO ddo, int retries) throws IOException, EncryptionException, InterruptedException {
         int counter = 0;
         AuthorizationService authorizationService = ddo.getAuthorizationService();
         SecretStoreManager secretStoreManager = getSecretStoreInstance(authorizationService);

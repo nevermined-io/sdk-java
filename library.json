@@ -6,7 +6,7 @@
   },
   "dependencies": [
     {
-      "name": "squid",
+      "name": "api",
       "version": "0.1"
     },
     {
@@ -19,7 +19,7 @@
     },
     {
       "name": "nevermined-contracts",
-      "version": "0.1.2"
+      "version": "0.2.1"
     },
     {
       "name": "metadata",
@@ -27,7 +27,7 @@
     },
     {
       "name": "gateway",
-      "version": "0.1.0"
+      "version": "0.3.3"
     },
     {
       "name": "events-handler",

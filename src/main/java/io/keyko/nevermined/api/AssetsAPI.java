@@ -6,6 +6,7 @@ import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.asset.OrderResult;
 import io.keyko.nevermined.models.metadata.SearchResult;
+import io.keyko.nevermined.models.service.AuthConfig;
 import io.keyko.nevermined.models.service.ProviderConfig;
 import io.keyko.nevermined.models.service.types.ComputingService;
 import io.reactivex.Flowable;
@@ -24,11 +25,11 @@ public interface AssetsAPI {
      *
      * @param metadata       the metadata of the DDO
      * @param providerConfig the endpoints of the DDO's services
-     * @param threshold      the secret store threshold
+     * @param authConfig     Auth configuration
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
-    public DDO create(AssetMetadata metadata, ProviderConfig providerConfig, int threshold) throws DDOException;
+    DDO create(AssetMetadata metadata, ProviderConfig providerConfig, AuthConfig authConfig) throws DDOException;
 
     /**
      * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
@@ -38,21 +39,8 @@ public interface AssetsAPI {
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
-    public DDO create(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException;
+    DDO create(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException;
 
-
-
-    /**
-     * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
-     *
-     * @param metadata       the metadata of the DDO
-     * @param providerConfig the endpoints of the DDO's services
-     * @param computingProvider the computing provider configuration
-     * @param threshold      the secret store threshold
-     * @return an instance of the DDO created
-     * @throws DDOException DDOException
-     */
-    public DDO createComputingService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider, int threshold) throws DDOException;
 
     /**
      * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
@@ -63,7 +51,7 @@ public interface AssetsAPI {
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
-    public DDO createComputingService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException;
+    DDO createComputingService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException;
 
 
     /**
@@ -74,7 +62,7 @@ public interface AssetsAPI {
      * @throws EthereumException EthereumException
      * @throws DDOException      DDOException
      */
-    public DDO resolve(DID did) throws EthereumException, DDOException;
+    DDO resolve(DID did) throws EthereumException, DDOException;
 
     /**
      * Gets the list of the files that belongs to a DDO
@@ -82,7 +70,7 @@ public interface AssetsAPI {
      * @return a list of the Files
      * @throws DDOException EncryptionException
      */
-    public List<AssetMetadata.File> getMetadataFiles(DID did) throws DDOException;
+    List<AssetMetadata.File> getMetadataFiles(DID did) throws DDOException;
 
     /**
      * Gets all the DDO that match the search criteria
@@ -91,7 +79,7 @@ public interface AssetsAPI {
      * @return a List with all the DDOs found
      * @throws DDOException DDOException
      */
-    public SearchResult search(String text) throws DDOException;
+    SearchResult search(String text) throws DDOException;
 
     /**
      * Gets all the DDOs that match the search criteria
@@ -102,7 +90,7 @@ public interface AssetsAPI {
      * @return a List with all the DDOs found
      * @throws DDOException DDOException
      */
-    public SearchResult search(String text, int offset, int page) throws DDOException;
+    SearchResult search(String text, int offset, int page) throws DDOException;
 
     /**
      * Gets all the DDOs that match the parameters of the query
@@ -114,7 +102,7 @@ public interface AssetsAPI {
      * @return a List with all the DDOs found
      * @throws DDOException DDOException
      */
-    public SearchResult query(Map<String, Object> params, int offset, int page, int sort) throws DDOException;
+    SearchResult query(Map<String, Object> params, int offset, int page, int sort) throws DDOException;
 
     /**
      * Gets all the DDOs that match the parameters of the query
@@ -123,45 +111,7 @@ public interface AssetsAPI {
      * @return a List with all the DDOs found
      * @throws DDOException DDOException
      */
-    public SearchResult query(Map<String, Object> params) throws DDOException;
-
-    /**
-     *  Downloads a single file of an Asset previously ordered through a Service Agreement
-     * @param serviceAgreementId the service agreement id of the asset
-     * @param did the did
-     * @param serviceDefinitionId the service definition id
-     * @param index of the file inside the files definition in metadata
-     * @param basePath  the path where the asset will be downloaded
-     * @param threshold secret store threshold to decrypt the urls of the asset
-     * @return a flag that indicates if the consume flow was executed correctly
-     * @throws ConsumeServiceException ConsumeServiceException
-     */
-    public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, String basePath, int threshold) throws ConsumeServiceException;
-
-    /**
-     *  Downloads a single file of an Asset previously ordered through a Service Agreement
-     * @param serviceAgreementId the service agreement id of the asset
-     * @param did the did
-     * @param serviceDefinitionId the service definition id
-     * @param index of the file inside the files definition in metadata
-     * @param basePath the path where the asset will be downloaded
-     * @return a flag that indicates if the consume flow was executed correctly
-     * @throws ConsumeServiceException ConsumeServiceException
-     */
-    public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, String basePath) throws ConsumeServiceException;
-
-    /**
-     * Downloads an Asset previously ordered through a Service Agreement
-     *
-     * @param serviceAgreementId  the service agreement id of the asset
-     * @param did                 the did
-     * @param serviceDefinitionId the service definition id
-     * @param basePath            the path where the asset will be downloaded
-     * @param threshold           secret store threshold to decrypt the urls of the asset
-     * @return a flag that indicates if the consume flow was executed correctly
-     * @throws ConsumeServiceException ConsumeServiceException
-     */
-    public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, String basePath, int threshold) throws ConsumeServiceException;
+    SearchResult query(Map<String, Object> params) throws DDOException;
 
     /**
      * Downloads an Asset previously ordered through a Service Agreement
@@ -173,7 +123,20 @@ public interface AssetsAPI {
      * @return a flag that indicates if the consume flow was executed correctly
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, String basePath) throws ConsumeServiceException;
+    Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, String basePath) throws ConsumeServiceException;
+
+    /**
+     * Downloads an Asset previously ordered through a Service Agreement
+     *
+     * @param serviceAgreementId  the service agreement id of the asset
+     * @param did                 the did
+     * @param serviceDefinitionId the service definition id
+     * @param fileIndex           index id of the file to consume
+     * @param basePath            the path where the asset will be downloaded
+     * @return a flag that indicates if the consume flow was executed correctly
+     * @throws ConsumeServiceException ConsumeServiceException
+     */
+    Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, String basePath) throws ConsumeServiceException;
 
 
     /**
@@ -181,23 +144,21 @@ public interface AssetsAPI {
      * @param serviceAgreementId  the service agreement id of the asset
      * @param did                 the did
      * @param serviceDefinitionId the service definition id
-     * @param index               the index of the file
      * @return the input stream wit the binary content of the file
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index) throws ConsumeServiceException;
+    InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId) throws ConsumeServiceException;
 
     /**
      * Gets the input stream of one file of the asset
      * @param serviceAgreementId  the service agreement id of the asset
      * @param did                 the did
      * @param serviceDefinitionId the service definition id
-     * @param index               the index of the file
-     * @param threshold           secret store threshold to decrypt the urls of the asset
+     * @param fileIndex               the index of the file
      * @return the input stream wit the binary content of the file
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, int threshold) throws ConsumeServiceException;
+    InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex) throws ConsumeServiceException;
 
 
     /**
@@ -205,28 +166,13 @@ public interface AssetsAPI {
      * @param serviceAgreementId  the service agreement id of the asset
      * @param did                 the did
      * @param serviceDefinitionId the service definition id
-     * @param index               the index of the file
+     * @param fileIndex               the index of the file
      * @param rangeStart          the start of the bytes range
      * @param rangeEnd            the end of the bytes range
      * @return                    the input stream wit the binary content of the specified range
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, Integer rangeStart, Integer rangeEnd) throws ConsumeServiceException;
-
-
-    /**
-     * Gets a range of bytes of the input stream of one file of the asset
-     * @param serviceAgreementId  the service agreement id of the asset
-     * @param did                 the did
-     * @param serviceDefinitionId the service definition id
-     * @param index               the index of the file
-     * @param rangeStart          the start of the bytes range
-     * @param rangeEnd            the end of the bytes range
-     * @param threshold           secret store threshold to decrypt the urls of the asset
-     * @return                    the input stream wit the binary content of the specified range
-     * @throws ConsumeServiceException ConsumeServiceException
-     */
-    InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, Integer rangeStart, Integer rangeEnd, int threshold) throws ConsumeServiceException;
+    InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, int rangeStart, int rangeEnd) throws ConsumeServiceException;
 
 
     /**
@@ -258,7 +204,7 @@ public interface AssetsAPI {
      * @return an execution id
      * @throws ServiceException ServiceException
      */
-    public String execute(String agreementId, DID did, int index, String workflowDID) throws ServiceException;
+    String execute(String agreementId, DID did, int index, String workflowDID) throws ServiceException;
 
     /**
      * Return the owner of the asset.
@@ -267,7 +213,7 @@ public interface AssetsAPI {
      * @return the ethereum address of the owner/publisher of given asset did
      * @throws Exception Exception
      */
-    public String owner(DID did) throws Exception;
+    String owner(DID did) throws Exception;
 
     /**
      * List of Asset objects published by ownerAddress
@@ -276,7 +222,7 @@ public interface AssetsAPI {
      * @return list of dids
      * @throws ServiceException ServiceException
      */
-    public List<DID> ownerAssets(String ownerAddress) throws ServiceException;
+    List<DID> ownerAssets(String ownerAddress) throws ServiceException;
 
     /**
      * List of Asset objects purchased by consumerAddress
@@ -285,7 +231,7 @@ public interface AssetsAPI {
      * @return list of dids
      * @throws ServiceException ServiceException
      */
-    public List<DID> consumerAssets(String consumerAddress) throws ServiceException;
+    List<DID> consumerAssets(String consumerAddress) throws ServiceException;
 
     /**
      * Retire this did of Metadata
@@ -294,7 +240,7 @@ public interface AssetsAPI {
      * @return a flag that indicates if the action was executed correctly
      * @throws DDOException DDOException
      */
-    public Boolean retire(DID did) throws DDOException;
+    Boolean retire(DID did) throws DDOException;
 
     /**
      * Validate the asset metadata.
@@ -303,7 +249,7 @@ public interface AssetsAPI {
      * @return a flag that indicates if the metadata is valid
      * @throws DDOException DDOException
      */
-    public Boolean validate(AssetMetadata metadata) throws DDOException;
+    Boolean validate(AssetMetadata metadata) throws DDOException;
 
 
     /**
@@ -313,7 +259,7 @@ public interface AssetsAPI {
      * @return  a flag that indicates if the action was executed correctly
      * @throws DDOException DDOException
      */
-    public Boolean transferOwnership(DID did, String newOwnerAddress) throws DDOException;
+    Boolean transferOwnership(DID did, String newOwnerAddress) throws DDOException;
 
 
     /**
@@ -323,7 +269,7 @@ public interface AssetsAPI {
      * @return a flag that indicates if the action was executed correctly
      * @throws DDOException DDOException
      */
-    public Boolean delegatePermissions(DID did, String subjectAddress) throws DDOException;
+    Boolean delegatePermissions(DID did, String subjectAddress) throws DDOException;
 
     /**
      * For a existing asset, the owner of the asset revoke the access grants of a subject.
@@ -332,7 +278,7 @@ public interface AssetsAPI {
      * @return a flag that indicates if the action was executed correctly
      * @throws DDOException DDOException
      */
-    public Boolean revokePermissions(DID did, String subjectAddress) throws DDOException;
+    Boolean revokePermissions(DID did, String subjectAddress) throws DDOException;
 
 
     /**
@@ -342,7 +288,7 @@ public interface AssetsAPI {
      * @return a flag that indicates if the subject address has permissions
      * @throws DDOException DDOException
      */
-    public Boolean getPermissions(DID did, String subjectAddress) throws DDOException;
+    Boolean getPermissions(DID did, String subjectAddress) throws DDOException;
 
 
 }

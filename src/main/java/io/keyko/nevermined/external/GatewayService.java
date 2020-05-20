@@ -6,15 +6,22 @@ import io.keyko.common.helpers.HttpHelper;
 import io.keyko.common.helpers.HttpHelper.DownloadResult;
 import io.keyko.common.helpers.StringsHelper;
 import io.keyko.common.models.HttpResponse;
-import io.keyko.nevermined.models.gateway.ExecuteService;
-import io.keyko.nevermined.models.gateway.InitializeAccessSLA;
+import io.keyko.nevermined.exceptions.ServiceException;
+import io.keyko.nevermined.models.gateway.*;
 import io.keyko.nevermined.models.service.Service;
+import io.keyko.nevermined.models.service.types.AuthorizationService;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +32,8 @@ import java.util.Map;
 public class GatewayService {
 
     private static final Logger log = LogManager.getLogger(GatewayService.class);
+
+    private static final String ENCRYPT_URI = "/api/v1/gateway/services/encrypt";
 
     public static class ServiceAgreementResult {
 
@@ -80,14 +89,20 @@ public class GatewayService {
 
     }
 
+    private static final String ACCESS_HEADER_CONSUMER_ADDRESS = "X-Consumer-Address";
+    private static final String ACCESS_HEADER_DID = "X-DID";
+    private static final String ACCESS_HEADER_SIGNATURE = "X-Signature";
+
 
     /**
+     * This method is Deprecated and will be removed in further versions
      * Calls a Gateway's endpoint to request the initialization of a new Service Agreement
      *
      * @param url     the url
      * @param payload the payload
      * @return an object that indicates if the Gateway initialized the Service Agreement correctly
      */
+    @Deprecated
     public static ServiceAgreementResult initializeAccessServiceAgreement(String url, InitializeAccessSLA payload) {
 
         log.debug("Initializing SLA[" + payload.serviceAgreementId + "]: " + url);
@@ -177,27 +192,132 @@ public class GatewayService {
      * @param serviceEndpoint the service endpoint
      * @param consumerAddress the address of the consumer
      * @param serviceAgreementId the serviceAgreement Id
-     * @param url the url
      * @param startRange  the start of the bytes range
      * @param endRange  the end of the bytes range
      * @param isRangeRequest indicates if is a range request
      * @return an InputStream that represents the binary content
      * @throws IOException Exception during the download process
      */
-    public static InputStream downloadUrl(String serviceEndpoint, String consumerAddress, String serviceAgreementId, String url, Boolean isRangeRequest, Integer startRange, Integer endRange ) throws IOException {
+    public static InputStream downloadUrl(String serviceEndpoint, String consumerAddress, String serviceAgreementId,
+                                          String did, int index, String signature, Boolean isRangeRequest,
+                                          Integer startRange, Integer endRange ) throws IOException {
 
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(Service.CONSUMER_ADDRESS_PARAM, consumerAddress);
-        parameters.put(Service.SERVICE_AGREEMENT_PARAM, serviceAgreementId);
-        parameters.put(Service.URL_PARAM, url);
+        Map<String, String> headers = new HashMap<>();
+        headers.put(ACCESS_HEADER_CONSUMER_ADDRESS, consumerAddress);
+        headers.put(ACCESS_HEADER_DID, did);
+        headers.put(ACCESS_HEADER_SIGNATURE, signature);
 
-        String endpoint = StringsHelper.formUrl(serviceEndpoint, parameters);
+//        String endpoint = StringsHelper.formUrl(serviceEndpoint, parameters);
+        String endpoint = serviceEndpoint + "/" + serviceAgreementId + "/" + index;
 
-        log.debug("Consuming URL[" + url + "]: for service Agreement " + serviceAgreementId);
+        log.debug("Downloading from URL[" + endpoint + "]: for service Agreement " + serviceAgreementId);
 
-        return HttpHelper.download(endpoint, isRangeRequest, startRange, endRange);
+        return HttpHelper.download(endpoint, headers, isRangeRequest, startRange, endRange);
 
     }
+
+
+    /**
+     * Calls a Gateway endpoint to download an asset
+     * @param serviceEndpoint the service endpoint
+     * @param consumerAddress the address of the consumer
+     * @param serviceAgreementId the serviceAgreement Id
+     * @param destinationPath path where the downloaded asset will be stored
+     * @param startRange  the start of the bytes range
+     * @param endRange  the end of the bytes range
+     * @param isRangeRequest indicates if is a range request
+     * @return an InputStream that represents the binary content
+     * @throws IOException Exception during the download process
+     */
+    public static void downloadToPath(String serviceEndpoint, String consumerAddress, String serviceAgreementId,
+                                                String did, int index, String signature, String destinationPath,
+                                                Boolean isRangeRequest, Integer startRange, Integer endRange ) throws IOException {
+
+
+        InputStream inputStream = downloadUrl(serviceEndpoint, consumerAddress, serviceAgreementId, did, index,
+                signature, isRangeRequest, startRange, endRange);
+        ReadableByteChannel readableByteChannel = Channels.newChannel(inputStream);
+        FileOutputStream fileOutputStream = FileUtils.openOutputStream(new File(destinationPath));
+
+        fileOutputStream.getChannel()
+                .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+
+    }
+
+    /**
+     * Calls a Gateway endpoint to download an asset
+     * @param serviceEndpoint the service endpoint
+     * @return an InputStream that represents the binary content
+     * @throws IOException Exception during the download process
+     */
+    public static Status getStatus(String serviceEndpoint) throws IOException {
+
+        log.debug("Getting Gateway Status");
+        try {
+            final HttpResponse httpResponse = HttpHelper.httpClientGet(serviceEndpoint);
+            if (httpResponse.getStatusCode() != 200) {
+                throw new IOException("Invalid http response from Gateway: " + httpResponse.getStatusCode());
+            }
+            return Status.fromJSON(new TypeReference<Status>() {}, httpResponse.getBody());
+        } catch (HttpException e) {
+            throw new IOException("Unable to fetch status page", e);
+        } catch (Exception e) {
+            throw new IOException("Unable to parse status page from gateway", e);
+        }
+    }
+
+    /**
+     * Calls a Gateway endpoint to request the execution of a Compute Service
+     *
+     * @param gatewayUrl encryption endpoint
+     * @param message the message to encrypt
+     * @param authType AuthType to use for encryption
+     * @return an object that indicates if Gateway initialized the Execution of the Service correctly
+     */
+    public static EncryptionResponse encrypt(String gatewayUrl, String message, AuthorizationService.AuthTypes authType)
+            throws ServiceException {
+        return encrypt(gatewayUrl, message, authType, null);
+    }
+
+    /**
+     * Calls a Gateway endpoint to request the execution of a Compute Service
+     *
+     * @param gatewayUrl encryption endpoint
+     * @param message the message to encrypt
+     * @param authType AuthType to use for encryption
+     * @param did DID used to encrypt when using SecretStore
+     * @return an object with the gateway encryption response
+     */
+    public static EncryptionResponse encrypt(String gatewayUrl, String message, AuthorizationService.AuthTypes authType, String did)
+        throws ServiceException {
+
+        log.debug("Encrypting message using " + authType.name());
+
+        EncryptionRequest encryptionReq = new EncryptionRequest(message, authType.getName());
+        final String endpoint = gatewayUrl + ENCRYPT_URI;
+        if (authType.equals(AuthorizationService.AuthTypes.SECRET_STORE) && !did.isEmpty())
+            encryptionReq.did = did;
+
+        HttpResponse response;
+
+        try {
+            String payloadJson = encryptionReq.toJson();
+
+            response = HttpHelper.httpClientPost(
+                    endpoint, new ArrayList<>(), payloadJson);
+
+            if (response.getStatusCode() != 200) {
+                log.error("Unable to Encrypt Message: " + response.toString());
+                throw new ServiceException("Unable to Encrypt Message");
+            }
+            return EncryptionResponse.fromJSON(new TypeReference<EncryptionResponse>() {}, response.getBody());
+
+        } catch (Exception e) {
+            log.error("Error encrypting message: " + e.getMessage());
+            throw new ServiceException("Error Encrypting Message: " + e.getMessage());
+        }
+    }
+
 
     /**
      * Calls a Gateway endpoint to request the execution of a Compute Service
@@ -245,8 +365,6 @@ public class GatewayService {
             result.setOk(false);
             return result;
         }
-
-
     }
 
     private static String getExecutionId(String bodyResponse) throws IOException {

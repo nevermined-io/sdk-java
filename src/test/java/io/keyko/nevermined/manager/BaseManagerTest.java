@@ -81,7 +81,7 @@ public class BaseManagerTest {
     @Test
     public void buildDDO() throws DDOException {
 
-        DDO ddo = baseManager.buildDDO(metadataService, null, SERVICE_AGREEMENT_ADDRESS);
+        DDO ddo = baseManager.buildDDO(metadataService, SERVICE_AGREEMENT_ADDRESS);
         assertNotNull(ddo.proof);
 
     }
@@ -92,7 +92,7 @@ public class BaseManagerTest {
         String serviceEndpoint =  config.getString("secretstore.url");
         AuthorizationService authorizationService = new AuthorizationService(serviceEndpoint, Service.DEFAULT_AUTHORIZATION_INDEX);
 
-        DDO ddo = baseManager.buildDDO(metadataService, authorizationService, SERVICE_AGREEMENT_ADDRESS);
+        DDO ddo = baseManager.buildDDO(metadataService, SERVICE_AGREEMENT_ADDRESS);
         assertNotNull(ddo.proof);
 
     }

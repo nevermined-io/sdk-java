@@ -10,10 +10,12 @@ import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.asset.OrderResult;
 import io.keyko.nevermined.models.metadata.SearchResult;
+import io.keyko.nevermined.models.service.AuthConfig;
 import io.keyko.nevermined.models.service.ProviderConfig;
 import io.keyko.nevermined.models.service.types.ComputingService;
 import io.reactivex.Flowable;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -46,27 +48,22 @@ public class AssetsImpl implements AssetsAPI {
 
 
     @Override
-    public DDO create(AssetMetadata metadata, ProviderConfig providerConfig, int threshold) throws DDOException {
-        return neverminedManager.registerAccessServiceAsset(metadata, providerConfig, threshold);
+    public DDO create(AssetMetadata metadata, ProviderConfig providerConfig, AuthConfig authConfig) throws DDOException {
+        return neverminedManager.registerAccessServiceAsset(metadata, providerConfig, authConfig);
     }
 
     @Override
     public DDO create(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException {
-        return this.create(metadata, providerConfig, 0);
-    }
-
-    @Override
-    public DDO createComputingService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider, int threshold) throws DDOException {
-        return neverminedManager.registerComputingServiceAsset(metadata, providerConfig, computingProvider, threshold);
+        return this.create(metadata, providerConfig, new AuthConfig(providerConfig.getGatewayUrl()));
     }
 
     @Override
     public DDO createComputingService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException {
-        return this.createComputingService(metadata, providerConfig, computingProvider,0);
+        return neverminedManager.registerComputingServiceAsset(metadata, providerConfig, computingProvider);
     }
 
     @Override
-    public DDO resolve(DID did) throws EthereumException, DDOException {
+    public DDO resolve(DID did) throws DDOException {
         return neverminedManager.resolveDID(did);
     }
 
@@ -76,7 +73,7 @@ public class AssetsImpl implements AssetsAPI {
         try {
 
             DDO ddo = this.resolve(did);
-            return neverminedManager.getMetadataFiles(ddo);
+            return neverminedManager.getDecriptedSecretStoreMetadataFiles(ddo);
 
         }catch (Exception e){
             throw new DDOException("Error trying to get the files of the DDO", e);
@@ -104,46 +101,30 @@ public class AssetsImpl implements AssetsAPI {
         return this.query(params, DEFAULT_OFFSET, DEFAULT_PAGE, 1);
     }
 
-
-    @Override
-    public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, String basePath, int threshold) throws ConsumeServiceException {
-        return neverminedManager.consume(serviceAgreementId, did, serviceDefinitionId, false, -1, basePath, threshold);
-    }
-
     @Override
     public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, String basePath) throws ConsumeServiceException {
-        return this.consume(serviceAgreementId, did, serviceDefinitionId, basePath, 0);
+        return neverminedManager.access(serviceAgreementId, did, serviceDefinitionId, basePath);
     }
 
     @Override
-    public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, String basePath) throws ConsumeServiceException {
-        return this.consume(serviceAgreementId, did, serviceDefinitionId, index, basePath, 0);
-    }
-
-    @Override
-    public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, String basePath, int threshold) throws ConsumeServiceException {
-        return neverminedManager.consume(serviceAgreementId, did, serviceDefinitionId, true, index, basePath, threshold);
+    public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, String basePath) throws ConsumeServiceException {
+        return neverminedManager.access(serviceAgreementId, did, serviceDefinitionId, fileIndex, basePath);
     }
 
 
     @Override
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index) throws ConsumeServiceException{
-        return this.consumeBinary(serviceAgreementId, did, serviceDefinitionId, index, 0);
+    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId) throws ConsumeServiceException{
+        return this.consumeBinary(serviceAgreementId, did, serviceDefinitionId, 0);
     }
 
     @Override
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, int threshold) throws ConsumeServiceException{
-        return neverminedManager.consumeBinary(serviceAgreementId, did, serviceDefinitionId,  index, threshold);
+    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex) throws ConsumeServiceException{
+        return neverminedManager.consumeBinary(serviceAgreementId, did, serviceDefinitionId,  fileIndex);
     }
 
     @Override
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, Integer rangeStart, Integer rangeEnd) throws ConsumeServiceException {
-        return this.consumeBinary(serviceAgreementId, did, serviceDefinitionId, index, rangeStart, rangeEnd, 0);
-    }
-
-    @Override
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, Integer rangeStart, Integer rangeEnd, int threshold) throws ConsumeServiceException{
-        return neverminedManager.consumeBinary(serviceAgreementId, did, serviceDefinitionId, index, true, rangeStart, rangeEnd, threshold);
+    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, int rangeStart, int rangeEnd) throws ConsumeServiceException{
+        return neverminedManager.consumeBinary(serviceAgreementId, did, serviceDefinitionId, fileIndex, true, rangeStart, rangeEnd);
     }
 
     @Override

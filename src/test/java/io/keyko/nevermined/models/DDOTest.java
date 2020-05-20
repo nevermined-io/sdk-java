@@ -250,8 +250,8 @@ public class DDOTest {
         assertEquals(3, ddo.services.size());
 
         AuthorizationService authorizationService = ddo.getAuthorizationService();
-        Assert.assertEquals("http://localhost:12001", authorizationService.serviceEndpoint);
-        Assert.assertEquals(Service.ServiceTypes.authorization.name(), authorizationService.type);
+        assertTrue(authorizationService.serviceEndpoint.contains("localhost:8030"));
+        assertEquals(Service.ServiceTypes.authorization.name(), authorizationService.type);
     }
 
     @Test
@@ -278,7 +278,7 @@ public class DDOTest {
         Service metadataService = new Service(Service.ServiceTypes.metadata, "http://disney.com", 0);
         metadataService.attributes.main.name = "test name";
 
-        AccessService accessService = new AccessService("http://ocean.com", 1, "0x00000000");
+        AccessService accessService = new AccessService("http://nevermined.io", 1, "0x00000000");
 
         ddo.services.add(metadataService);
         ddo.services.add(accessService);

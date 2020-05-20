@@ -25,6 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Hash;
 import org.web3j.crypto.Keys;
+import org.web3j.crypto.Sign;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.io.File;
@@ -150,22 +151,34 @@ public class NeverminedManager extends BaseManager {
      *
      * @param metadata       the metadata
      * @param providerConfig the service Endpoints
-     * @param threshold      secret store threshold
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
-    public DDO registerAccessServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig, int threshold) throws DDOException {
+    public DDO registerAccessServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException {
+        return registerAccessServiceAsset(
+                metadata,
+                providerConfig,
+                new AuthConfig(providerConfig.getGatewayUrl(), AuthorizationService.AuthTypes.PSK_RSA));
+    }
+
+    /**
+     * Creates a new DDO with an AccessService
+     *
+     * @param metadata       the metadata
+     * @param providerConfig the service Endpoints
+     * @param authConfig      auth configuration
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
+    public DDO registerAccessServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig, AuthConfig authConfig) throws DDOException {
 
         try {
-
-            //DID did = DDO.generateDID();
-
             Map<String, Object> configuration = buildBasicAccessServiceConfiguration(providerConfig, metadata.attributes.main.price, getMainAccount().address);
             Service accessService = ServiceBuilder
                     .getServiceBuilder(Service.ServiceTypes.access)
                     .buildService(configuration);
 
-            return registerAsset(metadata, providerConfig, accessService, threshold);
+            return registerAsset(metadata, providerConfig, accessService, authConfig);
 
         } catch (ServiceException e) {
             throw new DDOException("Error registering Asset.", e);
@@ -180,11 +193,10 @@ public class NeverminedManager extends BaseManager {
      * @param metadata       the metadata
      * @param providerConfig the service Endpoints
      * @param computingProvider the data relative to the provider
-     * @param threshold      secret store threshold
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
-    public DDO registerComputingServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider, int threshold) throws DDOException {
+    public DDO registerComputingServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException {
 
         try {
 
@@ -193,7 +205,8 @@ public class NeverminedManager extends BaseManager {
                     .getServiceBuilder(Service.ServiceTypes.compute)
                     .buildService(configuration);
 
-            return registerAsset(metadata, providerConfig, computingService, threshold);
+
+            return registerAsset(metadata, providerConfig, computingService, new AuthConfig(providerConfig.getGatewayUrl()));
 
         } catch ( ServiceException e) {
             throw new DDOException("Error registering Asset.", e);
@@ -207,11 +220,11 @@ public class NeverminedManager extends BaseManager {
      * @param metadata       the metadata
      * @param providerConfig the service Endpoints
      * @param service        the service
-     * @param threshold      secret store threshold
+     * @param authConfig      auth configuration
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
-    private DDO registerAsset(AssetMetadata metadata, ProviderConfig providerConfig, Service service, int threshold) throws DDOException {
+    private DDO registerAsset(AssetMetadata metadata, ProviderConfig providerConfig, Service service, AuthConfig authConfig) throws DDOException {
 
         try {
 
@@ -226,14 +239,22 @@ public class NeverminedManager extends BaseManager {
             MetadataService metadataService = new MetadataService(metadata, metadataEndpoint, Service.DEFAULT_METADATA_INDEX);
 
             ProvenanceService provenanceService= new ProvenanceService(providerConfig.getMetadataEndpoint(), Service.DEFAULT_PROVENANCE_INDEX);
+
             AuthorizationService authorizationService = null;
-            //Adding the authorization service if the endpoint is defined
-            if (providerConfig.getSecretStoreEndpoint() != null && !providerConfig.getSecretStoreEndpoint().equals("")) {
-                authorizationService = new AuthorizationService(providerConfig.getSecretStoreEndpoint(), Service.DEFAULT_AUTHORIZATION_INDEX);
+            if (null != authConfig) {
+                if (authConfig.getService().equals(AuthorizationService.AuthTypes.SECRET_STORE))
+                    authorizationService = AuthorizationService.buildSecretStoreAuthService(
+                            providerConfig.getSecretStoreEndpoint(), Service.DEFAULT_AUTHORIZATION_INDEX, authConfig.getThreshold());
+                else if (authConfig.getService().equals(AuthorizationService.AuthTypes.PSK_ECDSA))
+                    authorizationService = AuthorizationService.buildECDSAAuthService(
+                            providerConfig.getGatewayUrl(), Service.DEFAULT_AUTHORIZATION_INDEX);
+                else if (authConfig.getService().equals(AuthorizationService.AuthTypes.PSK_RSA))
+                    authorizationService = AuthorizationService.buildRSAAuthService(
+                            providerConfig.getGatewayUrl(), Service.DEFAULT_AUTHORIZATION_INDEX);
             }
 
             // Initializing DDO
-            DDO ddo = this.buildDDO(metadataService, authorizationService, getMainAccount().address, threshold);
+            DDO ddo = this.buildDDO(metadataService, getMainAccount().address);
 
             // Adding services to DDO
             ddo.addService(service);
@@ -242,16 +263,19 @@ public class NeverminedManager extends BaseManager {
             if (authorizationService != null)
                 ddo.addService(authorizationService);
 
-
             // Generating the DDO.proof, checksums and calculating DID
             ddo= ddo.integrityBuilder(getKeeperService().getCredentials());
 
             // Add authentication
             ddo.addAuthentication(ddo.id);
 
-            if (service instanceof AccessService)
-                ddo.encryptFiles(getSecretStoreManager(), threshold);
-
+            if (service instanceof AccessService)   {
+                if (authConfig.getService().equals(AuthorizationService.AuthTypes.SECRET_STORE))
+                    ddo.secretStoreLocalEncryptFiles(getSecretStoreManager(), authConfig);
+                else if (authConfig.getService().equals(AuthorizationService.AuthTypes.PSK_ECDSA) ||
+                        authConfig.getService().equals(AuthorizationService.AuthTypes.PSK_RSA))
+                    ddo.gatewayEncryptFiles(authConfig);
+            }
 
             // Initialize conditions
             ServiceAgreementHandler sla = null;
@@ -280,7 +304,6 @@ public class NeverminedManager extends BaseManager {
 
             Service theService = ddo.getService(service.index);
             theService.attributes.serviceAgreementTemplate.conditions = conditions;
-//            theService.attributes.main.timeout = theService.calculateServiceTimeout();
 
             // Registering DID
             registerDID(ddo.getDid(), metadataEndpoint, ddo.getDid().getHash(), providerConfig.getProviderAddresses());
@@ -716,46 +739,45 @@ public class NeverminedManager extends BaseManager {
                 releaseConditionId);
     }
 
-
     /**
      * Gets the data needed to download an asset
      *
      * @param did                 the did
-     * @param serviceDefinitionId the id of the service
-     * @param isIndexDownload     indicates if we want to download an especific file of the asset
-     * @param index               the index of the file we want to consume
+     * @param serviceIndex          the id of the service in the DDO
      * @return a Map with the data needed to consume the asset
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    private Map<String, Object> getConsumeData(DID did, int serviceDefinitionId, Boolean isIndexDownload, Integer index) throws ConsumeServiceException {
+    private Map<String, Object> fetchAssetDataBeforeConsume(DID did, int serviceIndex) throws ConsumeServiceException {
 
         DDO ddo;
         String serviceEndpoint;
-        List<AssetMetadata.File> files;
+//        List<AssetMetadata.File> files;
         Map<String, Object> data = new HashMap<>();
 
         try {
 
             ddo = resolveDID(did);
-            serviceEndpoint = ddo.getAccessService(serviceDefinitionId).serviceEndpoint;
+            serviceEndpoint = ddo.getAccessService(serviceIndex).serviceEndpoint;
 
-            files = this.getMetadataFiles(ddo);
-
-            if (isIndexDownload) {
-                Optional<AssetMetadata.File> optional = files.stream().filter(f -> f.index == index).findFirst();//.orElse(null);
-                if (optional.isEmpty()) {
-                    String msg = "Error getting the data from file with index " + index + " from the  asset with DID " + did.toString();
-                    log.error(msg);
-                    throw new ConsumeServiceException(msg);
-                }
-
-                files = List.of(optional.get());
-            }
+//            ddo.getMetadataService().attributes.main.files
+//            files = this.getDecriptedSecretStoreMetadataFiles(ddo);
+//
+//            if (isIndexDownload) {
+//                Optional<AssetMetadata.File> optional = ddo.getMetadataService().attributes.main.files.stream()
+//                        .filter(f -> f.index == fileIndex).findFirst();//.orElse(null);
+//                if (optional.isEmpty()) {
+//                    String msg = "Error getting the data from file with index " + fileIndex + " from the  asset with DID " + did.toString();
+//                    log.error(msg);
+//                    throw new ConsumeServiceException(msg);
+//                }
+//
+//                files = List.of(optional.get());
+//            }
 
             data.put("serviceEndpoint", serviceEndpoint);
-            data.put("files", files);
+            data.put("files", ddo.getMetadataService().attributes.main.files);
 
-        } catch (DDOException | ServiceException | EncryptionException | IOException | InterruptedException e) {
+        } catch (DDOException | ServiceException e) {
             String msg = "Error getting the data from asset with DID " + did.toString();
             log.error(msg + ": " + e.getMessage());
             throw new ConsumeServiceException(msg, e);
@@ -765,19 +787,19 @@ public class NeverminedManager extends BaseManager {
     }
 
 
+
     /**
      * Downloads an Asset previously ordered through a Service Agreement
      *
      * @param serviceAgreementId  the service agreement id
      * @param did                 the did
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex               the service index in the DDO
      * @param basePath            the path where the asset will be downloaded
      * @return a flag that indicates if the consume operation was executed correctly
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    public boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, String basePath) throws ConsumeServiceException {
-
-        return consume(serviceAgreementId, did, serviceDefinitionId, false, -1, basePath, 0);
+    public boolean access(String serviceAgreementId, DID did, int serviceIndex, String basePath) throws ConsumeServiceException {
+        return access(serviceAgreementId, did, serviceIndex, 0, basePath);
     }
 
 
@@ -786,23 +808,30 @@ public class NeverminedManager extends BaseManager {
      *
      * @param serviceAgreementId  the service agreement id
      * @param did                 the did
-     * @param serviceDefinitionId the service definition id
-     * @param isIndexDownload     indicates if we want to download an especific file of the asset
-     * @param index               of the file inside the files definition in metadata
+     * @param serviceIndex        id of the service in the DDO
+     * @param fileIndex               of the file inside the files definition in metadata
      * @param basePath            the path where the asset will be downloaded
-     * @param threshold           secret store threshold
      * @return a flag that indicates if the consume operation was executed correctly
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    public boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, Boolean isIndexDownload, Integer index, String basePath, int threshold) throws ConsumeServiceException {
+    public boolean access(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, String basePath) throws ConsumeServiceException {
 
 
-        Map<String, Object> consumeData = getConsumeData(did, serviceDefinitionId, isIndexDownload, index);
+        Map<String, Object> consumeData = fetchAssetDataBeforeConsume(did, serviceIndex);
         String serviceEndpoint = (String) consumeData.get("serviceEndpoint");
         List<AssetMetadata.File> files = (List<AssetMetadata.File>) consumeData.get("files");
 
         String checkConsumerAddress = Keys.toChecksumAddress(getMainAccount().address);
         String agreementId = EthereumHelper.add0x(serviceAgreementId);
+        String signature;
+
+        try {
+            signature = generateSignature(agreementId);
+        } catch (IOException | CipherException e) {
+            final String msg = "Unable to generate service agreement signature";
+            log.error(msg + ": " + e.getMessage());
+            throw new ConsumeServiceException(msg, e);
+        }
 
         for (AssetMetadata.File file : files) {
 
@@ -818,7 +847,8 @@ public class NeverminedManager extends BaseManager {
                 String fileName = file.url.substring(file.url.lastIndexOf("/") + 1);
                 String destinationPath = basePath + File.separator + fileName;
 
-                GatewayService.downloadUrl(serviceEndpoint, checkConsumerAddress, serviceAgreementId, file.url, destinationPath);
+                GatewayService.downloadToPath(serviceEndpoint, checkConsumerAddress, serviceAgreementId, did.getDid(),
+                        fileIndex, signature, destinationPath, false, 0, 0);
 
             } catch (IOException e) {
                 String msg = "Error consuming asset with DID " + did.getDid() + " and Service Agreement " + serviceAgreementId;
@@ -832,20 +862,26 @@ public class NeverminedManager extends BaseManager {
         return true;
     }
 
+    public String generateSignature(String message) throws IOException, CipherException {
+        byte[] messageHash = EthereumHelper.getEthereumMessageHash(message);
+        //Sign.SignatureData signatureData = EthereumHelper.signMessage(message, getKeeperService().getCredentials());
+
+        return EncodingHelper.signatureToString(
+            EthereumHelper.signMessage(new String(message), getKeeperService().getCredentials()));
+//        return EthereumHelper.ethSignMessage(getKeeperService().getWeb3(), new String(messageHash),  mainAccount.address, mainAccount.password);
+    }
 
     /**
      * Downloads a single file of an Asset previously ordered through a Service Agreement
      *
      * @param serviceAgreementId  the service agreement id
      * @param did                 the did
-     * @param serviceDefinitionId the service definition id
-     * @param index               of the file inside the files definition in metadata
-     * @param threshold           secret store threshold
+     * @param fileIndex               of the file inside the files definition in metadata
      * @return an InputStream that represents the binary content
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, int threshold) throws ConsumeServiceException {
-        return consumeBinary(serviceAgreementId, did, serviceDefinitionId, index, false, 0, 0, threshold);
+    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex) throws ConsumeServiceException {
+        return consumeBinary(serviceAgreementId, did, serviceIndex, fileIndex, false, 0, 0);
     }
 
     /**
@@ -853,19 +889,19 @@ public class NeverminedManager extends BaseManager {
      *
      * @param serviceAgreementId  the service agreement id
      * @param did                 the did
-     * @param serviceDefinitionId the service definition id
-     * @param index               of the file inside the files definition in metadata
+     * @param serviceIndex        id of the service in the DDO
+     * @param fileIndex               of the file inside the files definition in metadata
      * @param isRangeRequest      indicates if is a request by range of bytes
      * @param rangeStart          the start of the bytes range
      * @param rangeEnd            the end of the bytes range
-     * @param threshold           secret store threshold
      * @return an InputStream that represents the binary content
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, Integer index, Boolean isRangeRequest, Integer rangeStart, Integer rangeEnd, int threshold) throws ConsumeServiceException {
+    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex,
+                                     Boolean isRangeRequest, Integer rangeStart, Integer rangeEnd) throws ConsumeServiceException {
 
 
-        Map<String, Object> consumeData = getConsumeData(did, serviceDefinitionId, true, index);
+        Map<String, Object> consumeData = fetchAssetDataBeforeConsume(did, serviceIndex);
         String serviceEndpoint = (String) consumeData.get("serviceEndpoint");
         List<AssetMetadata.File> files = (List<AssetMetadata.File>) consumeData.get("files");
 
@@ -876,17 +912,24 @@ public class NeverminedManager extends BaseManager {
         AssetMetadata.File file = files.get(0);
 
         try {
+//
+//            if (null == file.url) {
+//                String msg = "Error Decrypting URL for Asset: " + did.getDid() + " and Service Agreement " + agreementId
+//                        + " URL received: " + file.url;
+//                log.error(msg);
+//                throw new ConsumeServiceException(msg);
+//            }
 
-            if (null == file.url) {
-                String msg = "Error Decrypting URL for Asset: " + did.getDid() + " and Service Agreement " + agreementId
-                        + " URL received: " + file.url;
-                log.error(msg);
-                throw new ConsumeServiceException(msg);
-            }
+            //(String serviceEndpoint, String consumerAddress, String serviceAgreementId,
+            //                                          String did, int index, String signature, Boolean isRangeRequest,
+            //                                          Integer startRange, Integer endRange )
 
-            return GatewayService.downloadUrl(serviceEndpoint, checkConsumerAddress, serviceAgreementId, file.url, isRangeRequest, rangeStart, rangeEnd);
+            String signature = generateSignature(agreementId);
+            log.info("Signature: " + signature);
+            return GatewayService.downloadUrl(serviceEndpoint, checkConsumerAddress, agreementId,
+                    did.getDid(), fileIndex, signature, isRangeRequest, rangeStart, rangeEnd);
 
-        } catch (IOException e) {
+        } catch (IOException | CipherException e) {
             String msg = "Error consuming asset with DID " + did.getDid() + " and Service Agreement " + serviceAgreementId;
 
             log.error(msg + ": " + e.getMessage());
