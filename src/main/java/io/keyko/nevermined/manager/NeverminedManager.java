@@ -342,6 +342,8 @@ public class NeverminedManager extends BaseManager {
      * @param serviceIndex the index of the service
      * @return true if the asset was purchased successfully, if not false
      * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
      */
     public OrderResult purchaseAssetDirect(DID did, int serviceIndex)
             throws OrderException, ServiceException, EscrowRewardException {
@@ -876,6 +878,7 @@ public class NeverminedManager extends BaseManager {
      *
      * @param serviceAgreementId  the service agreement id
      * @param did                 the did
+     * @param serviceIndex        the id of the service index in the DDO
      * @param fileIndex               of the file inside the files definition in metadata
      * @return an InputStream that represents the binary content
      * @throws ConsumeServiceException ConsumeServiceException
@@ -909,20 +912,8 @@ public class NeverminedManager extends BaseManager {
         String agreementId = EthereumHelper.add0x(serviceAgreementId);
 
         //  getConsumeData returns a list with only one file in case of consuming by index
-        AssetMetadata.File file = files.get(0);
 
         try {
-//
-//            if (null == file.url) {
-//                String msg = "Error Decrypting URL for Asset: " + did.getDid() + " and Service Agreement " + agreementId
-//                        + " URL received: " + file.url;
-//                log.error(msg);
-//                throw new ConsumeServiceException(msg);
-//            }
-
-            //(String serviceEndpoint, String consumerAddress, String serviceAgreementId,
-            //                                          String did, int index, String signature, Boolean isRangeRequest,
-            //                                          Integer startRange, Integer endRange )
 
             String signature = generateSignature(agreementId);
             log.info("Signature: " + signature);

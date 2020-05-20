@@ -192,6 +192,8 @@ public interface AssetsAPI {
      * @param serviceDefinitionId the service definition id
      * @return OrderResult
      * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
      */
     OrderResult orderDirect(DID did, int serviceDefinitionId) throws OrderException, ServiceException, EscrowRewardException;
 

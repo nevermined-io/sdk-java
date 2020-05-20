@@ -192,6 +192,9 @@ public class GatewayService {
      * @param serviceEndpoint the service endpoint
      * @param consumerAddress the address of the consumer
      * @param serviceAgreementId the serviceAgreement Id
+     * @param did asset decentralized identifier
+     * @param index index position of the file in the DDO
+     * @param signature User signature of the service agreement
      * @param startRange  the start of the bytes range
      * @param endRange  the end of the bytes range
      * @param isRangeRequest indicates if is a range request
@@ -207,7 +210,6 @@ public class GatewayService {
         headers.put(ACCESS_HEADER_DID, did);
         headers.put(ACCESS_HEADER_SIGNATURE, signature);
 
-//        String endpoint = StringsHelper.formUrl(serviceEndpoint, parameters);
         String endpoint = serviceEndpoint + "/" + serviceAgreementId + "/" + index;
 
         log.debug("Downloading from URL[" + endpoint + "]: for service Agreement " + serviceAgreementId);
@@ -222,16 +224,18 @@ public class GatewayService {
      * @param serviceEndpoint the service endpoint
      * @param consumerAddress the address of the consumer
      * @param serviceAgreementId the serviceAgreement Id
+     * @param did asset decentralized identifier
+     * @param index index position of the file in the DDO
+     * @param signature User signature of the service agreement
      * @param destinationPath path where the downloaded asset will be stored
      * @param startRange  the start of the bytes range
      * @param endRange  the end of the bytes range
      * @param isRangeRequest indicates if is a range request
-     * @return an InputStream that represents the binary content
      * @throws IOException Exception during the download process
      */
     public static void downloadToPath(String serviceEndpoint, String consumerAddress, String serviceAgreementId,
                                                 String did, int index, String signature, String destinationPath,
-                                                Boolean isRangeRequest, Integer startRange, Integer endRange ) throws IOException {
+                                                Boolean isRangeRequest, Integer startRange, Integer endRange) throws IOException {
 
 
         InputStream inputStream = downloadUrl(serviceEndpoint, consumerAddress, serviceAgreementId, did, index,
@@ -272,7 +276,8 @@ public class GatewayService {
      * @param gatewayUrl encryption endpoint
      * @param message the message to encrypt
      * @param authType AuthType to use for encryption
-     * @return an object that indicates if Gateway initialized the Execution of the Service correctly
+     * @throws ServiceException Service Exception
+     * @return EncryptionResponse an object that indicates if Gateway initialized the Execution of the Service correctly
      */
     public static EncryptionResponse encrypt(String gatewayUrl, String message, AuthorizationService.AuthTypes authType)
             throws ServiceException {
@@ -286,7 +291,8 @@ public class GatewayService {
      * @param message the message to encrypt
      * @param authType AuthType to use for encryption
      * @param did DID used to encrypt when using SecretStore
-     * @return an object with the gateway encryption response
+     * @throws ServiceException Service Exception
+     * @return EncryptionResponse an object with the gateway encryption response
      */
     public static EncryptionResponse encrypt(String gatewayUrl, String message, AuthorizationService.AuthTypes authType, String did)
         throws ServiceException {
