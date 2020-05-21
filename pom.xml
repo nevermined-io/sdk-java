@@ -23,7 +23,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <final-name>nevermined-sdk</final-name>
 
-        <web3j.version>4.5.17</web3j.version>
+        <web3j.version>4.5.18</web3j.version>
         <common-utils.version>0.1.3</common-utils.version>
 
         <nevermined.contracts.version>0.2.0</nevermined.contracts.version>
@@ -460,6 +460,7 @@
             <artifactId>utils</artifactId>
             <version>${web3j.version}</version>
         </dependency>
+
         <!-- Nevermined Contracts: Web3j stubs & ABI's -->
         <dependency>
             <groupId>io.keyko.nevermined</groupId>
