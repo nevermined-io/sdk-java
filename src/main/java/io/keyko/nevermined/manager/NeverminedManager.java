@@ -753,28 +753,12 @@ public class NeverminedManager extends BaseManager {
 
         DDO ddo;
         String serviceEndpoint;
-//        List<AssetMetadata.File> files;
         Map<String, Object> data = new HashMap<>();
 
         try {
 
             ddo = resolveDID(did);
             serviceEndpoint = ddo.getAccessService(serviceIndex).serviceEndpoint;
-
-//            ddo.getMetadataService().attributes.main.files
-//            files = this.getDecriptedSecretStoreMetadataFiles(ddo);
-//
-//            if (isIndexDownload) {
-//                Optional<AssetMetadata.File> optional = ddo.getMetadataService().attributes.main.files.stream()
-//                        .filter(f -> f.index == fileIndex).findFirst();//.orElse(null);
-//                if (optional.isEmpty()) {
-//                    String msg = "Error getting the data from file with index " + fileIndex + " from the  asset with DID " + did.toString();
-//                    log.error(msg);
-//                    throw new ConsumeServiceException(msg);
-//                }
-//
-//                files = List.of(optional.get());
-//            }
 
             data.put("serviceEndpoint", serviceEndpoint);
             data.put("files", ddo.getMetadataService().attributes.main.files);
@@ -839,17 +823,13 @@ public class NeverminedManager extends BaseManager {
 
             // For each url we call to consume Gateway endpoint that requires consumerAddress, serviceAgreementId and url as a parameters
             try {
+                String destinationPath = basePath + File.separator + did.getHash() + File.separator;
+                if (null != file.name && !file.name.isEmpty())
+                    destinationPath = destinationPath + file.name;
+                else
+                    destinationPath = destinationPath + fileIndex;
 
-                if (null == file.url) {
-                    String msg = "Error Decrypting URL for Asset: " + did.getDid() + " and Service Agreement " + agreementId
-                            + " URL received: " + file.url;
-                    log.error(msg);
-                    throw new ConsumeServiceException(msg);
-                }
-                String fileName = file.url.substring(file.url.lastIndexOf("/") + 1);
-                String destinationPath = basePath + File.separator + fileName;
-
-                GatewayService.downloadToPath(serviceEndpoint, checkConsumerAddress, serviceAgreementId, did.getDid(),
+                GatewayService.downloadToPath(serviceEndpoint, checkConsumerAddress, agreementId, did.getDid(),
                         fileIndex, signature, destinationPath, false, 0, 0);
 
             } catch (IOException e) {
@@ -865,12 +845,8 @@ public class NeverminedManager extends BaseManager {
     }
 
     public String generateSignature(String message) throws IOException, CipherException {
-        byte[] messageHash = EthereumHelper.getEthereumMessageHash(message);
-        //Sign.SignatureData signatureData = EthereumHelper.signMessage(message, getKeeperService().getCredentials());
-
         return EncodingHelper.signatureToString(
-            EthereumHelper.signMessage(new String(message), getKeeperService().getCredentials()));
-//        return EthereumHelper.ethSignMessage(getKeeperService().getWeb3(), new String(messageHash),  mainAccount.address, mainAccount.password);
+            EthereumHelper.signMessage(message, getKeeperService().getCredentials()));
     }
 
     /**

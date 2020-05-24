@@ -59,6 +59,9 @@ public class AssetMetadata extends AbstractModel {
         public Integer index;
 
         @JsonProperty
+        public String name;
+
+        @JsonProperty
         public String contentType;
 
         @JsonProperty
