@@ -4,7 +4,7 @@ History
 0.2.1 (May, 2020)
 -------------------------
 
-* [#8](https://github.com/keyko-io/nevermined-sdk-java/issues/8) Access method fails because is using old Secret Store format
+* [#12](https://github.com/keyko-io/nevermined-sdk-java/pull/11) Access method fails because is using old Secret Store format
 
 0.2.0 (May, 2020)
 -------------------------
