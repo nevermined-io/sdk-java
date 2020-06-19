@@ -4,6 +4,7 @@ import com.oceanprotocol.secretstore.core.EvmDto;
 import com.oceanprotocol.secretstore.core.SecretStoreDto;
 import com.typesafe.config.Config;
 import io.keyko.common.web3.KeeperService;
+import io.keyko.common.web3.    PersonalTransactionManager;
 import io.keyko.nevermined.api.config.NeverminedConfig;
 import io.keyko.nevermined.contracts.*;
 import io.keyko.nevermined.external.MetadataApiService;
@@ -183,6 +184,7 @@ public abstract class ManagerHelper {
 
 
     public static Dispenser loadDispenserContract(KeeperService keeper, String address) {
+
         return Dispenser.load(
                 address,
                 keeper.getWeb3(),

@@ -4,7 +4,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
 import io.keyko.common.web3.KeeperService;
-import io.keyko.common.web3.parity.JsonRpcSquidAdmin;
 import io.keyko.nevermined.contracts.Dispenser;
 import io.keyko.nevermined.contracts.OceanToken;
 import io.keyko.nevermined.exceptions.EthereumException;
@@ -16,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.web3j.crypto.CipherException;
+import org.web3j.protocol.Web3j;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -45,6 +45,7 @@ public class AccountsManagerIT {
         log.debug("Setting Up DTO's");
 
         keeper= ManagerHelper.getKeeper(config, ManagerHelper.VmClient.parity);
+
         metadataApiService = ManagerHelper.getMetadataService(config);
         manager= AccountsManager.getInstance(keeper, metadataApiService);
 
@@ -56,24 +57,13 @@ public class AccountsManagerIT {
 
         TEST_ADDRESS= config.getString("account.parity.address");
 
-        Config badConfig= config.withValue(
-                "keeper.url", ConfigValueFactory.fromAnyRef("http://fdasdfsa.dasx:8545"));
-
-        keeperError= ManagerHelper.getKeeper(badConfig, ManagerHelper.VmClient.parity);
-        managerError= AccountsManager.getInstance(keeperError, metadataApiService);
-        managerError.setTokenContract(
-                ManagerHelper.loadOceanTokenContract(keeperError, config.getString("contract.OceanToken.address"))
-        );
-        managerError.setDispenserContract(
-                ManagerHelper.loadDispenserContract(keeperError, config.getString("contract.Dispenser.address"))
-        );
     }
 
     @Test
     public void getInstance() {
         // Checking if web3j driver included in KeeperService implements the Web3j interface
         assertTrue(
-                manager.getKeeperService().getWeb3().getClass().isAssignableFrom(JsonRpcSquidAdmin.class));
+                manager.getKeeperService().getWeb3().getClass().isAssignableFrom(Web3j.class));
         assertTrue(
                 manager.getMetadataApiService().getClass().isAssignableFrom(MetadataApiService.class));
     }
@@ -86,7 +76,7 @@ public class AccountsManagerIT {
 
     @Test
     public void getAccountsBalance() throws EthereumException {
-        manager.requestTokens(BigInteger.ONE);
+        manager.requestTokens(BigInteger.TEN);
         log.debug("OceanToken Address: " + manager.tokenContract.getContractAddress());
 
         log.debug("Requesting " + BigInteger.ONE + " ocean tokens for " + TEST_ADDRESS);
@@ -103,6 +93,17 @@ public class AccountsManagerIT {
 
     @Test(expected = EthereumException.class)
     public void getAccountsException() throws IOException, EthereumException, CipherException {
+        Config badConfig= config.withValue(
+                "keeper.url", ConfigValueFactory.fromAnyRef("http://fdasdfsa.dasx:8545"));
+
+        keeperError= ManagerHelper.getKeeper(badConfig, ManagerHelper.VmClient.parity);
+        managerError= AccountsManager.getInstance(keeperError, metadataApiService);
+        managerError.setTokenContract(
+                ManagerHelper.loadOceanTokenContract(keeperError, config.getString("contract.OceanToken.address"))
+        );
+        managerError.setDispenserContract(
+                ManagerHelper.loadDispenserContract(keeperError, config.getString("contract.Dispenser.address"))
+        );
 
         List<Account> accounts= managerError.getAccounts();
         assertTrue(accounts.size()>0);
@@ -110,6 +111,18 @@ public class AccountsManagerIT {
 
     @Test(expected = EthereumException.class)
     public void getAccountsBalanceError() throws EthereumException, CipherException, IOException {
+        Config badConfig= config.withValue(
+                "keeper.url", ConfigValueFactory.fromAnyRef("http://fdasdfsa.dasx:8545"));
+
+        keeperError= ManagerHelper.getKeeper(badConfig, ManagerHelper.VmClient.parity);
+        managerError= AccountsManager.getInstance(keeperError, metadataApiService);
+        managerError.setTokenContract(
+                ManagerHelper.loadOceanTokenContract(keeperError, config.getString("contract.OceanToken.address"))
+        );
+        managerError.setDispenserContract(
+                ManagerHelper.loadDispenserContract(keeperError, config.getString("contract.Dispenser.address"))
+        );
+
         managerError.requestTokens(BigInteger.valueOf(100));
 
         managerError.getAccountBalance(TEST_ADDRESS);

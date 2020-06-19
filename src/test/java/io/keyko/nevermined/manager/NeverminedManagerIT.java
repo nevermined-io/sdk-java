@@ -5,7 +5,6 @@ import com.oceanprotocol.secretstore.core.EvmDto;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.keyko.common.web3.KeeperService;
-import io.keyko.common.web3.parity.JsonRpcSquidAdmin;
 import io.keyko.nevermined.contracts.*;
 import io.keyko.nevermined.exceptions.DDOException;
 import io.keyko.nevermined.external.MetadataApiService;
@@ -21,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.web3j.protocol.Web3j;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -147,7 +147,7 @@ public class NeverminedManagerIT {
     public void getInstance() {
         // Checking if web3j driver included in KeeperService implements the Web3j interface
         assertTrue(
-                managerPublisher.getKeeperService().getWeb3().getClass().isAssignableFrom(JsonRpcSquidAdmin.class));
+                managerPublisher.getKeeperService().getWeb3().getClass().isAssignableFrom(Web3j.class));
         assertTrue(
                 managerPublisher.getMetadataApiService().getClass().isAssignableFrom(MetadataApiService.class));
     }
@@ -155,15 +155,6 @@ public class NeverminedManagerIT {
 
     private DDO newRegisteredAsset() throws Exception {
 
-        /*
-        String OEP7_DATASET_EXAMPLE_CONTENT = IOUtils.toString(new URI(OEP7_DATASET_EXAMPLE_URL), "utf-8");
-
-        DDO completeDDO = DDO.fromJSON(new TypeReference<DDO>() {
-        }, OEP7_DATASET_EXAMPLE_CONTENT);
-
-
-        metadataBase = DDO.fromJSON(new TypeReference<AssetMetadata>() {}, completeDDO.services.get(0).toJson());
-*/
         String metadataUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/ddo/{did}";
         String gatewayUrl= config.getString("gateway.url");
         String provenanceUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/provenance/{did}";
