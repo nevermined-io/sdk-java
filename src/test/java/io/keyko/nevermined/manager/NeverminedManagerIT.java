@@ -146,8 +146,15 @@ public class NeverminedManagerIT {
     @Test
     public void getInstance() {
         // Checking if web3j driver included in KeeperService implements the Web3j interface
-        assertTrue(
-                managerPublisher.getKeeperService().getWeb3().getClass().isAssignableFrom(Web3j.class));
+        Class[] interfaces = managerPublisher.getKeeperService().getWeb3().getClass().getInterfaces();
+        boolean implementsClass = false;
+        for (Class c : interfaces) {
+            if ("Web3j".equals(c.getSimpleName())) {
+                implementsClass = true;
+            }
+        }
+        assertTrue(implementsClass);
+
         assertTrue(
                 managerPublisher.getMetadataApiService().getClass().isAssignableFrom(MetadataApiService.class));
     }

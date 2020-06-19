@@ -62,8 +62,14 @@ public class AccountsManagerIT {
     @Test
     public void getInstance() {
         // Checking if web3j driver included in KeeperService implements the Web3j interface
-        assertTrue(
-                manager.getKeeperService().getWeb3().getClass().isAssignableFrom(Web3j.class));
+        Class[] interfaces = manager.getKeeperService().getWeb3().getClass().getInterfaces();
+        boolean implementsClass = false;
+        for (Class c : interfaces) {
+            if ("Web3j".equals(c.getSimpleName())) {
+                implementsClass = true;
+            }
+        }
+        assertTrue(implementsClass);
         assertTrue(
                 manager.getMetadataApiService().getClass().isAssignableFrom(MetadataApiService.class));
     }
