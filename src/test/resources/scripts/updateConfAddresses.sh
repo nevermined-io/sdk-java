@@ -1,6 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-network="spree"
+export LC_ALL=en_US.UTF-8
+
+NETWORK=${1:-"spree"}
 
 RETRY_COUNT=0
 COMMAND_STATUS=1
@@ -43,7 +45,7 @@ fi
 
 for c in "${contracts[@]}"
 do
-   address=$(jq -r .address "${HOME}/.nevermined/nevermined-contracts/artifacts/$c.$network.json")
+   address=$(jq -r .address "${HOME}/.nevermined/nevermined-contracts/artifacts/$c.$NETWORK.json")
    echo "Setting up $c address to $address"
    sed -i  "s/contract.$c.address=.*/contract.$c.address=\"$address\"/g" src/test/resources/application.conf
 

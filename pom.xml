@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.keyko.nevermined</groupId>
     <artifactId>api</artifactId>
-    <version>0.2.1</version>
+    <version>0.2.2</version>
     <packaging>jar</packaging>
     <name>Nevermined Data Platform Java SDK</name>
     <url>https://github.com/keyko-io/nevermined-sdk-java</url>
@@ -24,9 +24,9 @@
         <final-name>nevermined-sdk</final-name>
 
         <web3j.version>4.5.18</web3j.version>
-        <common-utils.version>0.1.3</common-utils.version>
+        <common-utils.version>0.3.0</common-utils.version>
 
-        <nevermined.contracts.version>0.2.0</nevermined.contracts.version>
+        <nevermined.contracts.version>0.3.1</nevermined.contracts.version>
         <ocean.secretstore.version>0.1.4</ocean.secretstore.version>
         <eddsa.version>0.3.0</eddsa.version>
         <jackson.version>2.9.8</jackson.version>
@@ -460,7 +460,11 @@
             <artifactId>utils</artifactId>
             <version>${web3j.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>hosted-providers</artifactId>
+            <version>${web3j.version}</version>
+        </dependency>
         <!-- Nevermined Contracts: Web3j stubs & ABI's -->
         <dependency>
             <groupId>io.keyko.nevermined</groupId>
