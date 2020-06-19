@@ -14,7 +14,7 @@ jobs:
       - name: Starting Nevermined Tools
         run: |
           git clone https://github.com/keyko-io/nevermined-tools
-          rm -rf ~/.nevermined/nevermined-contracts/artifacts
+          rm -rf ~/.nevermined/nevermined-contracts/artifacts || true
           cd nevermined-tools
           sudo bash -x start_nevermined.sh --no-commons --no-faucet --no-dashboard --latest 2>&1 > start_nevermined.log &
           cd ..
