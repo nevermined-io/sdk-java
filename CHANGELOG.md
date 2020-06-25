@@ -1,6 +1,9 @@
 History
 =======
 
+0.2.3 (June, 2020)
+-------------------------
+* DDOs will be registered using the complete metadata url instead of a did token
 
 0.2.2 (June, 2020)
 -------------------------
