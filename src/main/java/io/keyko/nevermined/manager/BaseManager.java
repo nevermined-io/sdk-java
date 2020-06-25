@@ -215,8 +215,7 @@ public abstract class BaseManager {
 
             EthLog.LogResult logResult = logs.get(numLogs - 1);
             List<Type> nonIndexed = FunctionReturnDecoder.decode(((EthLog.LogObject) logResult).getData(), event.getNonIndexedParameters());
-            String ddoUrl = nonIndexed.get(0).getValue().toString();
-            String didUrl = UrlHelper.parseDDOUrl(ddoUrl, did.toString());
+            String didUrl = nonIndexed.get(0).getValue().toString();
 
             MetadataApiService ddoAquariosDto = MetadataApiService.getInstance(UrlHelper.getBaseUrl(didUrl));
             return ddoAquariosDto.getDDO(didUrl);

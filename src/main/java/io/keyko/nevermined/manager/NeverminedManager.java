@@ -2,6 +2,7 @@ package io.keyko.nevermined.manager;
 
 import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.helpers.EthereumHelper;
+import io.keyko.common.helpers.UrlHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.core.sla.functions.FulfillEscrowReward;
 import io.keyko.nevermined.core.sla.functions.FulfillLockReward;
@@ -304,6 +305,9 @@ public class NeverminedManager extends BaseManager {
 
             Service theService = ddo.getService(service.index);
             theService.attributes.serviceAgreementTemplate.conditions = conditions;
+
+            // Substitution of the did token in the url. The ddo will be registered using the complete metadata url
+            metadataEndpoint = UrlHelper.parseDDOUrl(metadataEndpoint, ddo.getDid().toString());
 
             // Registering DID
             registerDID(ddo.getDid(), metadataEndpoint, ddo.getDid().getHash(), providerConfig.getProviderAddresses());
