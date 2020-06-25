@@ -206,11 +206,12 @@ public class NeverminedManagerIT {
 
         DID did= DID.builder();
         String oldUrl= "http://mymetadata.io/api";
-        String newUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/ddo/{did}";
+
 
         String checksum = "0xd190bc85ee50643baffe7afe84ec6a9dd5212b67223523cd8e4d88f9069255fb";
 
         ddoBase.id = did.toString();
+        String newUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/ddo/" + did.toString();
 
         ddoBase.services.get(0).serviceEndpoint = newUrl;
         metadataApiService.createDDO(ddoBase);
