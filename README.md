@@ -1,8 +1,9 @@
-[![banner](https://raw.githubusercontent.com/keyko-io/assets/master/images/logo/small/keyko_logo@2x-100.jpg)](https://keyko.io)
+[![banner](https://raw.githubusercontent.com/keyko-io/assets/master/images/logo/nevermined_logo_1.png)](https://nevermined.io)
+
 
 # Java API for Nevermined Data platform
 
-> 🦑 Java SDK for connecting with Nevermined Data Platform
+> Java SDK for connecting with Nevermined Data Platform
 > [keyko.io](https://keyko.io)
 
 ![Java Maven CI](https://github.com/keyko-io/nevermined-sdk-java/workflows/Java%20Maven%20CI/badge.svg)
