@@ -172,16 +172,16 @@ public class InitializationHelper {
     }
 
     /**
-     * Loads the OceanToken contract from Keeper
+     * Loads the NeverminedToken contract from Keeper
      *
      * @param keeper the keeper Service
-     * @return an instance of OceanToken contract deployed in keeper
+     * @return an instance of NeverminedToken contract deployed in keeper
      * @throws IOException     IOException
      * @throws CipherException CipherException
      */
-    public OceanToken loadOceanTokenContract(KeeperService keeper) throws IOException, CipherException {
+    public NeverminedToken loadNeverminedTokenContract(KeeperService keeper) throws IOException, CipherException {
 
-        return OceanToken.load(
+        return NeverminedToken.load(
                 neverminedConfig.getTokenAddress(),
                 keeper.getWeb3(),
 //                keeper.getCredentials(),

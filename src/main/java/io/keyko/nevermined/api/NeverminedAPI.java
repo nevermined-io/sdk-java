@@ -46,7 +46,7 @@ public class NeverminedAPI {
     private ConditionsManager conditionsManager;
     private TemplatesManager templatesManager;
 
-    private OceanToken tokenContract;
+    private NeverminedToken tokenContract;
     private Dispenser dispenser;
     private DIDRegistry didRegistryContract;
     private EscrowAccessSecretStoreTemplate escrowAccessSecretStoreTemplate;
@@ -170,7 +170,7 @@ public class NeverminedAPI {
             neverminedAPI.accessSecretStoreCondition = initializationHelper.loadAccessSecretStoreCondition(neverminedAPI.keeperService);
             neverminedAPI.escrowReward = initializationHelper.loadEscrowReward(neverminedAPI.keeperService);
             neverminedAPI.dispenser = initializationHelper.loadDispenserContract(neverminedAPI.keeperService);
-            neverminedAPI.tokenContract = initializationHelper.loadOceanTokenContract(neverminedAPI.keeperService);
+            neverminedAPI.tokenContract = initializationHelper.loadNeverminedTokenContract(neverminedAPI.keeperService);
             neverminedAPI.templateStoreManagerContract = initializationHelper.loadTemplateStoreManagerContract(neverminedAPI.keeperService);
             neverminedAPI.agreementStoreManagerContract = initializationHelper.loadAgreementStoreManager(neverminedAPI.keeperService);
             neverminedAPI.conditionStoreManager = initializationHelper.loadConditionStoreManager(neverminedAPI.keeperService);

@@ -5,7 +5,7 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.contracts.Dispenser;
-import io.keyko.nevermined.contracts.OceanToken;
+import io.keyko.nevermined.contracts.NeverminedToken;
 import io.keyko.nevermined.exceptions.EthereumException;
 import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.models.Account;
@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.web3j.crypto.CipherException;
-import org.web3j.protocol.Web3j;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -34,7 +33,7 @@ public class AccountsManagerIT {
     private static KeeperService keeperError;
     private static MetadataApiService metadataApiService;
 
-    private static OceanToken oceanToken;
+    private static NeverminedToken neverminedToken;
     private static Dispenser dispenser;
 
     private static final Config config = ConfigFactory.load();
@@ -50,9 +49,9 @@ public class AccountsManagerIT {
         manager= AccountsManager.getInstance(keeper, metadataApiService);
 
         // Loading Smart Contracts required
-        oceanToken= ManagerHelper.loadOceanTokenContract(keeper, config.getString("contract.OceanToken.address"));
+        neverminedToken = ManagerHelper.loadNeverminedTokenContract(keeper, config.getString("contract.NeverminedToken.address"));
         dispenser= ManagerHelper.loadDispenserContract(keeper, config.getString("contract.Dispenser.address"));
-        manager.setTokenContract(oceanToken);
+        manager.setTokenContract(neverminedToken);
         manager.setDispenserContract(dispenser);
 
         TEST_ADDRESS= config.getString("account.parity.address");
@@ -83,9 +82,9 @@ public class AccountsManagerIT {
     @Test
     public void getAccountsBalance() throws EthereumException {
         manager.requestTokens(BigInteger.TEN);
-        log.debug("OceanToken Address: " + manager.tokenContract.getContractAddress());
+        log.debug("Token Address: " + manager.tokenContract.getContractAddress());
 
-        log.debug("Requesting " + BigInteger.ONE + " ocean tokens for " + TEST_ADDRESS);
+        log.debug("Requesting " + BigInteger.ONE + " nevermined tokens for " + TEST_ADDRESS);
 
         Balance balance= manager.getAccountBalance(TEST_ADDRESS);
 
@@ -105,7 +104,7 @@ public class AccountsManagerIT {
         keeperError= ManagerHelper.getKeeper(badConfig, ManagerHelper.VmClient.parity);
         managerError= AccountsManager.getInstance(keeperError, metadataApiService);
         managerError.setTokenContract(
-                ManagerHelper.loadOceanTokenContract(keeperError, config.getString("contract.OceanToken.address"))
+                ManagerHelper.loadNeverminedTokenContract(keeperError, config.getString("contract.NeverminedToken.address"))
         );
         managerError.setDispenserContract(
                 ManagerHelper.loadDispenserContract(keeperError, config.getString("contract.Dispenser.address"))
@@ -123,7 +122,7 @@ public class AccountsManagerIT {
         keeperError= ManagerHelper.getKeeper(badConfig, ManagerHelper.VmClient.parity);
         managerError= AccountsManager.getInstance(keeperError, metadataApiService);
         managerError.setTokenContract(
-                ManagerHelper.loadOceanTokenContract(keeperError, config.getString("contract.OceanToken.address"))
+                ManagerHelper.loadNeverminedTokenContract(keeperError, config.getString("contract.NeverminedToken.address"))
         );
         managerError.setDispenserContract(
                 ManagerHelper.loadDispenserContract(keeperError, config.getString("contract.Dispenser.address"))

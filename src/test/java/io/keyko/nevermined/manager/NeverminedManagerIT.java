@@ -33,8 +33,6 @@ public class NeverminedManagerIT {
 
     private static final Logger log = LogManager.getLogger(NeverminedManagerIT.class);
 
-    private static final String OEP7_DATASET_EXAMPLE_URL = "https://raw.githubusercontent.com/oceanprotocol/OEPs/master/8/v0.4/ddo-example-access.json";
-
     private static final String DDO_JSON_SAMPLE = "src/test/resources/examples/ddo-example.json";
     private static String DDO_JSON_CONTENT;
     private static final String METADATA_JSON_SAMPLE = "src/test/resources/examples/metadata.json";

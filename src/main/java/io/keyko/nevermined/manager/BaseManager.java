@@ -48,7 +48,7 @@ public abstract class BaseManager {
     private SecretStoreDto secretStoreDto;
     private EvmDto evmDto;
     private SecretStoreManager secretStoreManager;
-    protected OceanToken tokenContract;
+    protected NeverminedToken tokenContract;
     protected Dispenser dispenser;
     protected DIDRegistry didRegistry;
     protected LockRewardCondition lockRewardCondition;
@@ -144,7 +144,7 @@ public abstract class BaseManager {
 
     }
 
-    public boolean tokenApprove(OceanToken tokenContract, String spenderAddress, String price) throws TokenApproveException {
+    public boolean tokenApprove(NeverminedToken tokenContract, String spenderAddress, String price) throws TokenApproveException {
 
         String checksumAddress = Keys.toChecksumAddress(spenderAddress);
 
@@ -332,20 +332,20 @@ public abstract class BaseManager {
     }
 
     /**
-     * It sets the OceanToken stub instance
+     * It sets the NeverminedToken stub instance
      *
-     * @param contract OceanToken instance
+     * @param contract NeverminedToken instance
      * @return BaseManager instance
      */
-    public BaseManager setTokenContract(OceanToken contract) {
+    public BaseManager setTokenContract(NeverminedToken contract) {
         this.tokenContract = contract;
         return this;
     }
 
     /**
-     * It sets the OceanToken stub instance
+     * It sets the NeverminedToken stub instance
      *
-     * @param contract OceanToken instance
+     * @param contract NeverminedToken instance
      * @return BaseManager instance
      */
     public BaseManager setTemplateStoreManagerContract(TemplateStoreManager contract) {

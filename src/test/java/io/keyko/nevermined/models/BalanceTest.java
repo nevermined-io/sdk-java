@@ -10,18 +10,18 @@ import static org.junit.Assert.assertEquals;
 public class BalanceTest {
 
     @Test
-    public void dropsToOcean() {
+    public void dropsToNevermined() {
         BigInteger drops= BigInteger.valueOf(150);
-        BigDecimal ocean= Balance.dropsToOcean(drops);
+        BigDecimal nvn= Balance.dropsToNevermined(drops);
 
-        assertEquals(0, ocean.compareTo(new BigDecimal("1.5E-16")));
+        assertEquals(0, nvn.compareTo(new BigDecimal("1.5E-16")));
 
     }
 
     @Test
-    public void oceanToDrops() {
-        BigInteger ocean= BigInteger.valueOf(234);
-        BigInteger drops= Balance.oceanToDrops(ocean);
+    public void neverminedToDrops() {
+        BigInteger nvn= BigInteger.valueOf(234);
+        BigInteger drops= Balance.neverminedToDrops(nvn);
 
         assertEquals(0, BigInteger.valueOf(234).multiply(BigInteger.TEN.pow(18)).compareTo(drops));
     }

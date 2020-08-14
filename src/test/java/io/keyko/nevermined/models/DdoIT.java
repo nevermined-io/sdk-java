@@ -21,13 +21,13 @@ public class DdoIT {
 
     private static final Logger log = LogManager.getLogger(DdoIT.class);
 
-    private static final String DDO_COMPUTING_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/architecture/specs/examples/compute/v0.1/ddo.computing.json";
-    private static final String DDO_WORKFLOW_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/architecture/specs/examples/compute/v0.1/ddo.workflow.json";
+    private static final String DDO_COMPUTING_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/docs/architecture/specs/examples/compute/v0.1/ddo.computing.json";
+    private static final String DDO_WORKFLOW_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/docs/architecture/specs/examples/compute/v0.1/ddo.workflow.json";
 
-    private static final String ACCESS_DATASET_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/architecture/specs/examples/metadata/v0.1/ddo-example-access.json";
-    private static final String ACCESS_ALGORITHM_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/architecture/specs/examples/metadata/v0.1/ddo-example-algorithm.json";
-    private static final String ACCESS_WORKFLOW_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/architecture/specs/examples/metadata/v0.1/ddo-example-workflow.json";
-    private static final String ACCESS_SERVICE_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/architecture/specs/examples/metadata/v0.1/ddo-example-service.json";
+    private static final String ACCESS_DATASET_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/docs/architecture/specs/examples/metadata/v0.1/ddo-example-access.json";
+    private static final String ACCESS_ALGORITHM_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/docs/architecture/specs/examples/metadata/v0.1/ddo-example-algorithm.json";
+    private static final String ACCESS_WORKFLOW_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/docs/architecture/specs/examples/metadata/v0.1/ddo-example-workflow.json";
+    private static final String ACCESS_SERVICE_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/docs/architecture/specs/examples/metadata/v0.1/ddo-example-service.json";
 
     private static  String ACCESS_DATASET_EXAMPLE_CONTENT;
     private static  String ACCESS_ALGORITHM_EXAMPLE_CONTENT;

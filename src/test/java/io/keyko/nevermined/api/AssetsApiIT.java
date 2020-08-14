@@ -22,6 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InputStream;
@@ -107,7 +108,7 @@ public class AssetsApiIT {
         properties.put(NeverminedConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
         properties.put(NeverminedConfig.ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.AccessSecretStoreCondition.address"));
         properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
-        properties.put(NeverminedConfig.TOKEN_ADDRESS, config.getString("contract.OceanToken.address"));
+        properties.put(NeverminedConfig.TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
         properties.put(NeverminedConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
         properties.put(NeverminedConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
 
@@ -168,17 +169,21 @@ public class AssetsApiIT {
         assertEquals(ddo.id, resolvedDDO.id);
         assertTrue(resolvedDDO.services.size() == 4);
 
-        Flowable<OrderResult> response = neverminedAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_COMPUTING_INDEX);
+        OrderResult result = neverminedAPIConsumer.getAssetsAPI().orderDirect(did, Service.DEFAULT_COMPUTING_INDEX);
+
+//        Flowable<OrderResult> response = neverminedAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_COMPUTING_INDEX);
         TimeUnit.SECONDS.sleep(2l);
 
-        OrderResult result = response.blockingFirst();
+//        OrderResult result = response.blockingFirst();
         assertNotNull(result.getServiceAgreementId());
         assertEquals(true, result.isAccessGranted());
 
     }
 
 
-
+    // This test only makes sense if is executed in combination with the events handler
+    // Disabling by default because in the integration tests, the events handler is not executed
+    @Ignore
     @Test
     public void order() throws Exception {
 
@@ -273,6 +278,9 @@ public class AssetsApiIT {
         assertEquals(consumedAssetsBefore + 1, consumedAssetsAfter);
     }
 
+    // This test only makes sense if is executed in combination with the events handler
+    // Disabling by default because in the integration tests, the events handler is not executed
+    @Ignore
     @Test
     public void consumeBinary() throws Exception {
 

@@ -53,7 +53,7 @@ public class TokensApiIT {
         log.debug("Balance Before is: " + balanceBefore);
         log.debug("Balance After is: " + balanceAfter);
 
-        assertEquals(-1, balanceBefore.getOceanTokens().compareTo(balanceAfter.getOceanTokens()));
+        assertEquals(-1, balanceBefore.getNeverminedTokens().compareTo(balanceAfter.getNeverminedTokens()));
 
     }
 
@@ -73,8 +73,8 @@ public class TokensApiIT {
 
         log.debug("Balance after: " + balanceAfter.toString());
 
-        BigDecimal before= balanceBefore.getOceanTokens();
-        BigDecimal after= balanceAfter.getOceanTokens();
+        BigDecimal before= balanceBefore.getNeverminedTokens();
+        BigDecimal after= balanceAfter.getNeverminedTokens();
         assertEquals(0, after.compareTo(before.add(BigDecimal.ONE)));
     }
 
