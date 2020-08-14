@@ -42,7 +42,7 @@ public class AccountsManager extends BaseManager {
 
     /**
      * Returns the list of ethereum accounts registered in the Keeper node
-     * If getBalance is true, get the ethereum and ocean balance of each account
+     * If getBalance is true, get the ethereum and nevermined balance of each account
      *
      * @return List of accounts
      * @throws EthereumException if the EVM throws an exception
@@ -103,11 +103,11 @@ public class AccountsManager extends BaseManager {
 
     /**
      * Given an account returns the Ocean balance
-     * Contract: OceanToken
+     * Contract: NeverminedToken
      * Method: balanceOf
      *
      * @param accountAddress account
-     * @return ocean balance
+     * @return nevermined balance
      * @throws EthereumException if the EVM throws an exception
      */
     public BigInteger getOceanAccountBalance(String accountAddress) throws EthereumException {

@@ -9,7 +9,7 @@ public class Balance {
     public enum Unit {
         DROP("drop", 0),
         VODKA("vodka", 0),
-        OCEAN("ocean", 18);
+        NVN("nvn", 18);
 
         private String name;
         private BigInteger factor;
@@ -42,17 +42,17 @@ public class Balance {
         return drops;
     }
 
-    public BigDecimal getOceanTokens() {
-        return dropsToOcean(this.drops);
+    public BigDecimal getNeverminedTokens() {
+        return dropsToNevermined(this.drops);
     }
 
 
-    public static BigDecimal dropsToOcean(BigInteger drops) {
-        return new BigDecimal(drops).divide(new BigDecimal(Unit.OCEAN.factor));
+    public static BigDecimal dropsToNevermined(BigInteger drops) {
+        return new BigDecimal(drops).divide(new BigDecimal(Unit.NVN.factor));
     }
 
-    public static BigInteger oceanToDrops(BigInteger ocean) {
-        return ocean.multiply(Unit.OCEAN.factor);
+    public static BigInteger neverminedToDrops(BigInteger nevermined) {
+        return nevermined.multiply(Unit.NVN.factor);
     }
 
     @Override

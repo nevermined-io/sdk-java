@@ -86,7 +86,7 @@ public class AgreementsManagerIT {
         properties.put(NeverminedConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
         properties.put(NeverminedConfig.ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.AccessSecretStoreCondition.address"));
         properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
-        properties.put(NeverminedConfig.TOKEN_ADDRESS, config.getString("contract.OceanToken.address"));
+        properties.put(NeverminedConfig.TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
         properties.put(NeverminedConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
         properties.put(NeverminedConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.ComputeExecutionCondition.address"));
         properties.put(NeverminedConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.EscrowComputeExecutionTemplate.address"));
@@ -122,9 +122,13 @@ public class AgreementsManagerIT {
         log.debug("DDO registered!");
         neverminedAPIConsumer.getAccountsAPI().requestTokens(BigInteger.valueOf(9000000));
         log.info("Consumer balance: " + neverminedAPIConsumer.getAccountsAPI().balance(neverminedAPIConsumer.getMainAccount()));
-        Flowable<OrderResult> response = neverminedAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_ACCESS_INDEX);
+        OrderResult orderResult = neverminedAPIConsumer.getAssetsAPI().orderDirect(did, Service.DEFAULT_ACCESS_INDEX);
 
-        OrderResult orderResult = response.blockingFirst();
+        neverminedAPIConsumer.getAssetsAPI().consumeBinary(
+                orderResult.getServiceAgreementId(),
+                did,
+                Service.DEFAULT_ACCESS_INDEX,
+                0);
 
         final String serviceAgreementId = orderResult.getServiceAgreementId();
         TimeUnit.SECONDS.sleep(6l);

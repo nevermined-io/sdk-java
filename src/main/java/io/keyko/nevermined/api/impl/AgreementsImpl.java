@@ -29,7 +29,7 @@ public class AgreementsImpl implements AgreementsAPI {
      * Constructor
      *
      * @param agreementsManager the accountsManager
-     * @param neverminedManager an instance of oceanManager
+     * @param neverminedManager an instance of neverminedManager
      */
     public AgreementsImpl(AgreementsManager agreementsManager, NeverminedManager neverminedManager) {
         this.neverminedManager = neverminedManager;

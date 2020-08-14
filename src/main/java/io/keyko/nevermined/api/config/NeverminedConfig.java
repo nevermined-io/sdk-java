@@ -29,7 +29,7 @@ public class NeverminedConfig {
     public static final String ESCROW_ACCESS_SS_CONDITIONS_ADDRESS = "contract.EscrowAccessSecretStoreTemplate.address";
     public static final String TEMPLATE_STORE_MANAGER_ADDRESS = "contract.TemplateStoreManager.address";
     public static final String ACCESS_SS_CONDITIONS_ADDRESS = "contract.AccessSecretStoreCondition.address";
-    public static final String TOKEN_ADDRESS = "contract.OceanToken.address";
+    public static final String TOKEN_ADDRESS = "contract.NeverminedToken.address";
     public static final String DISPENSER_ADDRESS = "contract.Dispenser.address";
     public static final String COMPUTE_EXECUTION_CONDITION_ADDRESS = "contract.ComputeExecutionCondition.address";
     public static final String ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS = "contract.EscrowComputeExecutionTemplate.address";
