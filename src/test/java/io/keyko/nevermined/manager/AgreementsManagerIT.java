@@ -124,6 +124,12 @@ public class AgreementsManagerIT {
         log.info("Consumer balance: " + neverminedAPIConsumer.getAccountsAPI().balance(neverminedAPIConsumer.getMainAccount()));
         OrderResult orderResult = neverminedAPIConsumer.getAssetsAPI().orderDirect(did, Service.DEFAULT_ACCESS_INDEX);
 
+        neverminedAPIConsumer.getAssetsAPI().consumeBinary(
+                orderResult.getServiceAgreementId(),
+                did,
+                Service.DEFAULT_ACCESS_INDEX,
+                0);
+
         final String serviceAgreementId = orderResult.getServiceAgreementId();
         TimeUnit.SECONDS.sleep(6l);
         final Agreement agreement = agreementsManager.getAgreement(serviceAgreementId);
