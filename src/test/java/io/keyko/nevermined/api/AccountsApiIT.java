@@ -41,6 +41,8 @@ public class AccountsApiIT {
     @Test
     public void balance() throws Exception {
 
+        neverminedAPI.getTokensAPI().request(BigInteger.ONE);
+
         Balance balance = neverminedAPI.getAccountsAPI().balance(neverminedAPI.getMainAccount());
         assertNotNull(balance);
 
