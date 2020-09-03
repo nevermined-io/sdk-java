@@ -3,6 +3,7 @@ package io.keyko.nevermined.api;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.config.NeverminedConfig;
 import io.keyko.nevermined.contracts.EscrowAccessSecretStoreTemplate;
@@ -46,6 +47,10 @@ public class AssetsApiIT {
     private static String METADATA_ALG_JSON_CONTENT;
     private static AssetMetadata metadataBaseAlgorithm;
 
+    private static String METADATA_WORKFLOW_JSON_SAMPLE = "src/test/resources/examples/metadata-workflow.json";
+    private static String METADATA_WORKFLOW_JSON_CONTENT;
+    private static AssetMetadata metadataBaseWorkflow;
+
     private static String COMPUTING_PROVIDER_JSON_SAMPLE = "src/test/resources/examples/computing-provider-example.json";
     private static String COMPUTING_PROVIDER_JSON_CONTENT;
     private static ComputingService.Provider computingProvider;
@@ -69,6 +74,10 @@ public class AssetsApiIT {
         METADATA_ALG_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(METADATA_ALG_JSON_SAMPLE)));
         metadataBaseAlgorithm = DDO.fromJSON(new TypeReference<AssetMetadata>() {
         }, METADATA_ALG_JSON_CONTENT);
+
+        METADATA_WORKFLOW_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(METADATA_WORKFLOW_JSON_SAMPLE)));
+        metadataBaseWorkflow = DDO.fromJSON(new TypeReference<AssetMetadata>() {
+        }, METADATA_WORKFLOW_JSON_CONTENT);
 
         COMPUTING_PROVIDER_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(COMPUTING_PROVIDER_JSON_SAMPLE)));
         computingProvider = DDO.fromJSON(new TypeReference<ComputingService.Provider>() {
@@ -144,39 +153,15 @@ public class AssetsApiIT {
     }
 
     @Test
-    public void createComputingService() throws Exception {
+    public void createComputeService() throws Exception {
 
         metadataBaseAlgorithm.attributes.main.dateCreated = new Date();
-        DDO ddo = neverminedAPI.getAssetsAPI().createComputingService(metadataBaseAlgorithm, providerConfig, computingProvider);
+        DDO ddo = neverminedAPI.getAssetsAPI().createComputeService(metadataBaseAlgorithm, providerConfig, computingProvider);
 
         DID did = new DID(ddo.id);
         DDO resolvedDDO = neverminedAPI.getAssetsAPI().resolve(did);
         assertEquals(ddo.id, resolvedDDO.id);
         assertTrue(resolvedDDO.services.size() == 4);
-
-    }
-
-    @Test
-    public void orderComputingService() throws Exception {
-
-        metadataBaseAlgorithm.attributes.main.dateCreated = new Date();
-        String computeServiceEndpoint =   config.getString("gateway.url") + "/api/v1/gateway/services/exec";
-        providerConfig.setAccessEndpoint(computeServiceEndpoint);
-        DDO ddo = neverminedAPI.getAssetsAPI().createComputingService(metadataBaseAlgorithm, providerConfig, computingProvider);
-
-        DID did = new DID(ddo.id);
-        DDO resolvedDDO = neverminedAPI.getAssetsAPI().resolve(did);
-        assertEquals(ddo.id, resolvedDDO.id);
-        assertTrue(resolvedDDO.services.size() == 4);
-
-        OrderResult result = neverminedAPIConsumer.getAssetsAPI().orderDirect(did, Service.DEFAULT_COMPUTING_INDEX);
-
-//        Flowable<OrderResult> response = neverminedAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_COMPUTING_INDEX);
-        TimeUnit.SECONDS.sleep(2l);
-
-//        OrderResult result = response.blockingFirst();
-        assertNotNull(result.getServiceAgreementId());
-        assertEquals(true, result.isAccessGranted());
 
     }
 
@@ -277,6 +262,70 @@ public class AssetsApiIT {
                 neverminedAPIConsumer.getMainAccount().address).size();
         assertEquals(consumedAssetsBefore + 1, consumedAssetsAfter);
     }
+
+
+    // TODO: Automate the Compute use cases e2e
+    // Ignoring test until the e2e compute components are automated
+    @Ignore
+    @Test
+    public void orderAndExecuteComputeService() throws Exception {
+
+        log.info("E2E Compute Scenario");
+
+        // 0. Configure the scenario
+        metadataBase.attributes.main.dateCreated = new Date();
+        metadataBaseAlgorithm.attributes.main.dateCreated = new Date();
+        AssetMetadata metadataWorkflow = DDO.fromJSON(new TypeReference<AssetMetadata>() {
+        }, METADATA_WORKFLOW_JSON_CONTENT);
+        metadataWorkflow.attributes.main.dateCreated = new Date();
+
+        String computeServiceEndpoint = config.getString("gateway.url") + "/api/v1/gateway/services/execute";
+        providerConfig.setAccessEndpoint(computeServiceEndpoint);
+
+        // 1. Publish the compute service
+
+        DDO ddoComputeService = neverminedAPI.getAssetsAPI().createComputeService(metadataBase, providerConfig, computingProvider);
+        DID didComputeService = new DID(ddoComputeService.id);
+        DDO resolvedDDO = neverminedAPI.getAssetsAPI().resolve(didComputeService);
+        assertEquals(ddoComputeService.id, resolvedDDO.id);
+        assertTrue(resolvedDDO.services.size() == 4);
+        log.info("Published Compute Service: " + didComputeService.did);
+
+        // 2. Publish the algorithm
+        DDO ddoAlgorithm = neverminedAPI.getAssetsAPI().create(metadataBaseAlgorithm, providerConfig);
+        DID didAlgorithm = new DID(ddoAlgorithm.id);
+        log.info("Published Algorithm: " + didAlgorithm.did);
+
+        // 3. Publish the workflow
+        metadataWorkflow.attributes.main.workflow.stages.get(0).input.get(0).id = didComputeService;
+        metadataWorkflow.attributes.main.workflow.stages.get(0).transformation.id = didAlgorithm;
+        DDO ddoWorkflow = neverminedAPI.getAssetsAPI().create(metadataWorkflow, providerConfig);
+        DID didWorkflow = new DID(ddoWorkflow.id);
+        log.info("Published Workflow: " + didWorkflow.did);
+
+        // 4. Order the compute service
+        final long startTime = System.currentTimeMillis();
+        OrderResult orderResult = neverminedAPIConsumer.getAssetsAPI().orderDirect(didComputeService, Service.DEFAULT_COMPUTE_INDEX);
+        final long orderTime = System.currentTimeMillis();
+
+//        TimeUnit.SECONDS.sleep(2l);
+        assertTrue(orderResult.isAccessGranted());
+        assertNotNull(orderResult.getServiceAgreementId());
+
+        // 5. Execute
+        final String executionId = neverminedAPIConsumer.getAssetsAPI().execute(
+                EthereumHelper.add0x(orderResult.getServiceAgreementId()),
+                didComputeService,
+                Service.DEFAULT_COMPUTE_INDEX,
+                didWorkflow);
+
+        final long endTime = System.currentTimeMillis();
+        log.debug("Order method took " + (orderTime - startTime) + " milliseconds");
+        log.debug("Execution Request took " + (endTime - startTime) + " milliseconds");
+        assertNotNull(executionId);
+
+    }
+
 
     // This test only makes sense if is executed in combination with the events handler
     // Disabling by default because in the integration tests, the events handler is not executed

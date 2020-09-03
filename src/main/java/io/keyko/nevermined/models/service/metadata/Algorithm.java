@@ -23,17 +23,14 @@ public class Algorithm {
     public String entrypoint;
 
     @JsonProperty
-    public List<Algorithm.Requirement> requirements;
+    public Requirements requirements;
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonPropertyOrder(alphabetic = true)
-    public static class Requirement {
+    public static class Requirements {
 
         @JsonProperty
-        public String requirement;
-
-        @JsonProperty
-        public String version;
+        public Workflow.Container container;
 
     }
 

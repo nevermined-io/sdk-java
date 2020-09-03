@@ -60,7 +60,7 @@ public class GatewayService {
     public static class ServiceExecutionResult {
 
         private Boolean ok;
-        private String executionId;
+        private String workflowId;
         private Integer code;
 
         public Boolean getOk() {
@@ -80,18 +80,19 @@ public class GatewayService {
         }
 
         public String getExecutionId() {
-            return executionId;
+            return workflowId;
         }
 
         public void setExecutionId(String executionId) {
-            this.executionId = executionId;
+            this.workflowId = executionId;
         }
 
     }
 
-    private static final String ACCESS_HEADER_CONSUMER_ADDRESS = "X-Consumer-Address";
-    private static final String ACCESS_HEADER_DID = "X-DID";
-    private static final String ACCESS_HEADER_SIGNATURE = "X-Signature";
+    private static final String HEADER_CONSUMER_ADDRESS = "X-Consumer-Address";
+    private static final String HEADER_SIGNATURE = "X-Signature";
+    private static final String HEADER_DID = "X-DID";
+    private static final String HEADER_WORKFLOW_DID = "X-Workflow-DID";
 
 
     /**
@@ -206,9 +207,9 @@ public class GatewayService {
                                           Integer startRange, Integer endRange ) throws IOException {
 
         Map<String, String> headers = new HashMap<>();
-        headers.put(ACCESS_HEADER_CONSUMER_ADDRESS, consumerAddress);
-        headers.put(ACCESS_HEADER_DID, did);
-        headers.put(ACCESS_HEADER_SIGNATURE, signature);
+        headers.put(HEADER_CONSUMER_ADDRESS, consumerAddress);
+        headers.put(HEADER_DID, did);
+        headers.put(HEADER_SIGNATURE, signature);
 
         String endpoint = serviceEndpoint + "/" + serviceAgreementId + "/" + index;
 
@@ -329,34 +330,30 @@ public class GatewayService {
      * Calls a Gateway endpoint to request the execution of a Compute Service
      *
      * @param serviceEndpoint the serviceEndpoint
-     * @param payload the payload
+     * @param executeService the payload
      * @return an object that indicates if Gateway initialized the Execution of the Service correctly
      */
-    public static ServiceExecutionResult initializeServiceExecution(String serviceEndpoint, ExecuteService payload) {
+    public static ServiceExecutionResult initializeServiceExecution(String serviceEndpoint, ExecuteService executeService) {
 
-        log.debug("Initializing Execution of Service. Agreement Id: [" + payload.agreementId + "]: " + serviceEndpoint);
+        log.debug("Initializing Execution of Service. Agreement Id: [" + executeService.agreementId + "]: " + serviceEndpoint);
 
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put(Service.CONSUMER_ADDRESS_PARAM, payload.consumerAddress);
-        parameters.put(Service.SERVICE_AGREEMENT_PARAM, payload.agreementId);
-        parameters.put(Service.WORKFLOWID_PARAM, payload.workflowId);
-        parameters.put(Service.SIGNATURE_PARAM, payload.signature);
+        Map<String, String> headers = new HashMap<>();
+        headers.put(HEADER_CONSUMER_ADDRESS, executeService.consumerAddress);
+        headers.put(HEADER_WORKFLOW_DID, executeService.workflowId);
+        headers.put(HEADER_SIGNATURE, executeService.signature);
 
-        String endpoint = StringsHelper.formUrl(serviceEndpoint, parameters);
+        String endpoint = serviceEndpoint + "/" + executeService.agreementId;
 
         ServiceExecutionResult result = new ServiceExecutionResult();
         HttpResponse response;
 
         try {
-            String payloadJson = payload.toJson();
-            log.debug(payloadJson);
 
-            response = HttpHelper.httpClientPost(
-                    endpoint, new ArrayList<>(), payloadJson);
+            response = HttpHelper.httpClientPost(endpoint, headers);
 
             result.setCode(response.getStatusCode());
 
-            if (response.getStatusCode() != 200) {
+            if (response.getStatusCode() != 200 && response.getStatusCode() != 201) {
                 log.debug("Unable to Initialize Execution of the Service: " + response.toString());
                 result.setOk(false);
                 return result;

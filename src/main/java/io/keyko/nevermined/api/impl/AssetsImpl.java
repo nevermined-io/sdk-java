@@ -15,7 +15,6 @@ import io.keyko.nevermined.models.service.ProviderConfig;
 import io.keyko.nevermined.models.service.types.ComputingService;
 import io.reactivex.Flowable;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +57,8 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
-    public DDO createComputingService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException {
-        return neverminedManager.registerComputingServiceAsset(metadata, providerConfig, computingProvider);
+    public DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException {
+        return neverminedManager.registerComputeService(metadata, providerConfig, computingProvider);
     }
 
     @Override
@@ -152,7 +151,7 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
-    public String execute(String agreementId, DID did, int index, String workflowDID) throws ServiceException {
+    public String execute(String agreementId, DID did, int index, DID workflowDID) throws ServiceException {
         return neverminedManager.executeComputeService(agreementId, did, index, workflowDID);
     }
 

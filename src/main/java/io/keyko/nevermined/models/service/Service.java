@@ -32,12 +32,26 @@ public class Service extends AbstractModel implements FromJsonToModel {
     /**
      * Type of service in the DDO
      */
-    public enum ServiceTypes {access, metadata, authorization, compute, provenance}
+    public enum ServiceTypes {
+        ACCESS, METADATA, AUTHORIZATION, COMPUTE, PROVENANCE;
+
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase();
+        }
+    }
 
     /**
      * Type of Asset. Represented in the base.type attribute
      */
-    public enum AssetTypes {dataset, algorithm, workflow, service}
+    public enum AssetTypes {
+        DATASET, ALGORITHM, WORKFLOW, SERVICE, FL_COORDINATOR;
+
+        @Override
+        public String toString() {
+            return super.toString().toLowerCase().replace("_", "-");
+        }
+    }
 
 
     @JsonIgnore
@@ -55,7 +69,6 @@ public class Service extends AbstractModel implements FromJsonToModel {
     @JsonIgnore
     public static final String SIGNATURE_PARAM = "signature";
 
-
     @JsonIgnore
     public static final int DEFAULT_METADATA_INDEX = 0;
     @JsonIgnore
@@ -65,7 +78,7 @@ public class Service extends AbstractModel implements FromJsonToModel {
     @JsonIgnore
     public static final int DEFAULT_ACCESS_INDEX = 3;
     @JsonIgnore
-    public static final int DEFAULT_COMPUTING_INDEX = 4;
+    public static final int DEFAULT_COMPUTE_INDEX = 4;
 
     @JsonProperty
     public int index;
@@ -103,7 +116,7 @@ public class Service extends AbstractModel implements FromJsonToModel {
 
     }
 
-    //@JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonPropertyOrder(alphabetic = true)
     public static class ServiceAgreementTemplate {
 
@@ -138,10 +151,18 @@ public class Service extends AbstractModel implements FromJsonToModel {
         public List<String> accessSecretStore = Arrays.asList();
 
         @JsonProperty
+        public List<String> execCompute = Arrays.asList();
+
+        @JsonProperty
         public List<String> escrowReward = Arrays.asList(
                 Condition.ConditionTypes.lockReward.toString(),
                 Condition.ConditionTypes.accessSecretStore.toString());
 
+        public static List<String> defaultComputeEscrowReward() {
+            return Arrays.asList(
+                    Condition.ConditionTypes.lockReward.toString(),
+                    Condition.ConditionTypes.execCompute.toString());
+        }
     }
 
     public Service() {
@@ -157,11 +178,6 @@ public class Service extends AbstractModel implements FromJsonToModel {
         this.attributes.additionalInformation = new ServiceAdditionalInformation();
     }
 
-//    public String getType() {
-//        return getTypeByContract(
-//                this.attributes.serviceAgreementTemplate.contractName)
-//                .name();
-//    }
 
     public String getTemplateId()   {
         try {

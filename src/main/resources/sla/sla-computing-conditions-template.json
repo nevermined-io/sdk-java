@@ -52,7 +52,7 @@
         "name": "Fulfilled",
         "actorType": "publisher",
         "handler": {
-          "moduleName": "execCompute",
+          "moduleName": "accessSecretStore",
           "functionName": "fulfillEscrowRewardCondition",
           "version": "0.1"
         }

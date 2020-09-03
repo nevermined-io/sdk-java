@@ -10,7 +10,6 @@ import io.keyko.nevermined.models.service.types.AuthorizationService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.web3j.crypto.Credentials;
@@ -150,13 +149,10 @@ public class DDOTest {
         Service metadataService = ddo.getMetadataService();
 
         assertEquals("algorithm",  metadataService.attributes.main.type);
-        assertEquals("scala", metadataService.attributes.main.algorithm.language);
-        assertEquals("jar", metadataService.attributes.main.algorithm.format);
+        assertEquals("python", metadataService.attributes.main.algorithm.language);
+        assertEquals("py", metadataService.attributes.main.algorithm.format);
         assertEquals("0.1", metadataService.attributes.main.algorithm.version);
-
-        assertEquals(2, metadataService.attributes.main.algorithm.requirements.size());
-        assertEquals("scala", metadataService.attributes.main.algorithm.requirements.get(0).requirement);
-        assertEquals("1.8", metadataService.attributes.main.algorithm.requirements.get(1).version);
+        assertEquals("latest", metadataService.attributes.main.algorithm.requirements.container.tag);
 
     }
 
@@ -251,7 +247,7 @@ public class DDOTest {
 
         AuthorizationService authorizationService = ddo.getAuthorizationService();
         assertTrue(authorizationService.serviceEndpoint.contains("localhost:8030"));
-        assertEquals(Service.ServiceTypes.authorization.name(), authorizationService.type);
+        assertEquals(Service.ServiceTypes.AUTHORIZATION.toString(), authorizationService.type);
     }
 
     @Test
@@ -275,7 +271,7 @@ public class DDOTest {
         ddo.authentication.add(auth);
         ddo.authentication.add(auth);
 
-        Service metadataService = new Service(Service.ServiceTypes.metadata, "http://disney.com", 0);
+        Service metadataService = new Service(Service.ServiceTypes.METADATA, "http://disney.com", 0);
         metadataService.attributes.main.name = "test name";
 
         AccessService accessService = new AccessService("http://nevermined.io", 1, "0x00000000");

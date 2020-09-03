@@ -18,16 +18,16 @@ public class ProvenanceService extends Service {
 
     public ProvenanceService() {
         this.index = DEFAULT_INDEX;
-        this.type= ServiceTypes.provenance.toString();
+        this.type= ServiceTypes.PROVENANCE.toString();
     }
 
     public ProvenanceService(String serviceEndpoint, int index, String service) {
-        super(ServiceTypes.provenance, serviceEndpoint, index);
+        super(ServiceTypes.PROVENANCE, serviceEndpoint, index);
         this.attributes.main.service = service;
     }
 
     public ProvenanceService(String serviceEndpoint, int index) {
-        super(ServiceTypes.provenance, serviceEndpoint, index);
+        super(ServiceTypes.PROVENANCE, serviceEndpoint, index);
         this.attributes.main.service = DEFAULT_SERVICE;
     }
 

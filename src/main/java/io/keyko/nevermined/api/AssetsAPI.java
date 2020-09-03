@@ -51,7 +51,7 @@ public interface AssetsAPI {
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
-    DDO createComputingService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException;
+    DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException;
 
 
     /**
@@ -202,11 +202,11 @@ public interface AssetsAPI {
      * @param agreementId the agreement id
      * @param did the did
      * @param index the index of the service
-     * @param workflowDID the workflow id
+     * @param workflowDID the workflow did
      * @return an execution id
      * @throws ServiceException ServiceException
      */
-    String execute(String agreementId, DID did, int index, String workflowDID) throws ServiceException;
+    String execute(String agreementId, DID did, int index, DID workflowDID) throws ServiceException;
 
     /**
      * Return the owner of the asset.
