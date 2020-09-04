@@ -57,6 +57,11 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
+    public DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException {
+        return neverminedManager.registerComputeService(metadata, providerConfig, new ComputingService.Provider());
+    }
+
+    @Override
     public DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException {
         return neverminedManager.registerComputeService(metadata, providerConfig, computingProvider);
     }

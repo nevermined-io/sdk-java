@@ -41,6 +41,15 @@ public interface AssetsAPI {
      */
     DDO create(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException;
 
+    /**
+     * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
+     *
+     * @param metadata       the metadata of the DDO
+     * @param providerConfig the endpoints of the DDO's services
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
+    DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException;
 
     /**
      * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
