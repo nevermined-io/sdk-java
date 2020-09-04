@@ -152,7 +152,7 @@ public class DDOTest {
         assertEquals("python", metadataService.attributes.main.algorithm.language);
         assertEquals("py", metadataService.attributes.main.algorithm.format);
         assertEquals("0.1", metadataService.attributes.main.algorithm.version);
-        assertEquals("latest", metadataService.attributes.main.algorithm.requirements.container.tag);
+        assertEquals("3.8-alpine", metadataService.attributes.main.algorithm.requirements.container.tag);
 
     }
 
