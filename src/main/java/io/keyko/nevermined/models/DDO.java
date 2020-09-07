@@ -475,6 +475,16 @@ public class DDO extends AbstractModel implements FromJsonToModel {
         return null;
     }
 
+    @JsonIgnore
+    public ComputingService getComputeService() {
+        for (Service service : services) {
+            if (service.type.equals(Service.ServiceTypes.COMPUTE.toString())) {
+                return (ComputingService) service;
+            }
+        }
+        return null;
+    }
+
 
     @JsonIgnore
     public static DDO cleanFileUrls(DDO ddo) {

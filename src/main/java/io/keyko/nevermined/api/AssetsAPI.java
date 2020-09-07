@@ -8,6 +8,7 @@ import io.keyko.nevermined.models.asset.OrderResult;
 import io.keyko.nevermined.models.metadata.SearchResult;
 import io.keyko.nevermined.models.service.AuthConfig;
 import io.keyko.nevermined.models.service.ProviderConfig;
+import io.keyko.nevermined.models.service.Service;
 import io.keyko.nevermined.models.service.types.ComputingService;
 import io.reactivex.Flowable;
 
@@ -198,6 +199,18 @@ public interface AssetsAPI {
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
      *
      * @param did                 the did of the DDO
+     * @return OrderResult
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
+     */
+    OrderResult orderDirect(DID did) throws OrderException, ServiceException, EscrowRewardException;
+
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did of the DDO
      * @param serviceDefinitionId the service definition id
      * @return OrderResult
      * @throws OrderException OrderException
@@ -205,6 +218,33 @@ public interface AssetsAPI {
      * @throws EscrowRewardException EscrowRewardException
      */
     OrderResult orderDirect(DID did, int serviceDefinitionId) throws OrderException, ServiceException, EscrowRewardException;
+
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did of the DDO
+     * @param serviceTypes service type to order
+     * @return OrderResult
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
+     */
+    OrderResult orderDirect(DID did, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException;
+
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did of the DDO
+     * @param serviceDefinitionId the service definition id
+     * @param serviceTypes service type to order
+     * @return OrderResult
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
+     */
+    OrderResult orderDirect(DID did, int serviceDefinitionId, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException;
 
     /**
      * Executes a remote service associated with an asset and serviceAgreementId

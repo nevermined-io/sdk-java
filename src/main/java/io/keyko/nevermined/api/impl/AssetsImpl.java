@@ -12,6 +12,7 @@ import io.keyko.nevermined.models.asset.OrderResult;
 import io.keyko.nevermined.models.metadata.SearchResult;
 import io.keyko.nevermined.models.service.AuthConfig;
 import io.keyko.nevermined.models.service.ProviderConfig;
+import io.keyko.nevermined.models.service.Service;
 import io.keyko.nevermined.models.service.types.ComputingService;
 import io.reactivex.Flowable;
 
@@ -135,6 +136,19 @@ public class AssetsImpl implements AssetsAPI {
     public Flowable<OrderResult> order(DID did, int serviceDefinitionId) throws OrderException {
         return neverminedManager.purchaseAssetFlowable(did, serviceDefinitionId);
     }
+
+    public OrderResult orderDirect(DID did) throws OrderException, ServiceException, EscrowRewardException {
+        return neverminedManager.purchaseAssetDirect(did);
+    }
+
+    public OrderResult orderDirect(DID did, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException {
+        return neverminedManager.purchaseAssetDirect(did, serviceTypes);
+    }
+
+    public OrderResult orderDirect(DID did, int serviceDefinitionId, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException {
+        return neverminedManager.purchaseAssetDirect(did, serviceDefinitionId, serviceTypes);
+    }
+
 
     public OrderResult orderDirect(DID did, int serviceDefinitionId) throws OrderException, ServiceException, EscrowRewardException {
         return neverminedManager.purchaseAssetDirect(did, serviceDefinitionId);

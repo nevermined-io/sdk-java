@@ -341,6 +341,20 @@ public class NeverminedManager extends BaseManager {
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
      *
      * @param did                 the did
+     * @return true if the asset was purchased successfully, if not false
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
+     */
+    public OrderResult purchaseAssetDirect(DID did)
+            throws OrderException, ServiceException, EscrowRewardException {
+        return purchaseAssetDirect(did, -1, Service.ServiceTypes.ACCESS);
+    }
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did
      * @param serviceIndex the index of the service
      * @return true if the asset was purchased successfully, if not false
      * @throws OrderException OrderException
@@ -348,6 +362,37 @@ public class NeverminedManager extends BaseManager {
      * @throws EscrowRewardException EscrowRewardException
      */
     public OrderResult purchaseAssetDirect(DID did, int serviceIndex)
+            throws OrderException, ServiceException, EscrowRewardException {
+        return purchaseAssetDirect(did, serviceIndex, null);
+    }
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did
+     * @param serviceType Service to purchase
+     * @return true if the asset was purchased successfully, if not false
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
+     */
+    public OrderResult purchaseAssetDirect(DID did, Service.ServiceTypes serviceType)
+            throws OrderException, ServiceException, EscrowRewardException {
+        return purchaseAssetDirect(did, -1, serviceType);
+    }
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did
+     * @param serviceIndex the index of the service
+     * @param serviceType Service to purchase
+     * @return true if the asset was purchased successfully, if not false
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
+     */
+    public OrderResult purchaseAssetDirect(DID did, int serviceIndex, Service.ServiceTypes serviceType)
             throws OrderException, ServiceException, EscrowRewardException {
 
         String serviceAgreementId = ServiceAgreementHandler.generateSlaId();
@@ -361,11 +406,19 @@ public class NeverminedManager extends BaseManager {
             throw new OrderException("Error processing Order with DID " + did.getDid(), e);
         }
 
-        Service service = ddo.getService(serviceIndex);
+        Service service;
+        if (serviceIndex >= 0)
+            service = ddo.getService(serviceIndex);
+        else if (serviceType.toString().equals(Service.ServiceTypes.COMPUTE)) {
+            service = ddo.getComputeService();
+            serviceIndex = service.index;
+        } else {
+            service = ddo.getAccessService();
+            serviceIndex = service.index;
+        }
 
         try {
             // Step 1. We initialize the Service Agreement
-
             final boolean isInitialized = initializeServiceAgreementDirect(ddo, serviceIndex, serviceAgreementId);
             if (!isInitialized)  {
                 throw new ServiceAgreementException(serviceAgreementId, "Service Agreement not Initialized");
@@ -402,7 +455,7 @@ public class NeverminedManager extends BaseManager {
             // Step 2. We fulfull the Lock Reward (we make the payment)
             this.fulfillLockReward(ddo, serviceIndex, eventServiceAgreementId);
             final boolean isFulfilled = isConditionFulfilled(serviceAgreementId, Condition.ConditionTypes.lockReward);
-            orderResult = new OrderResult(serviceAgreementId, isFulfilled, false);
+            orderResult = new OrderResult(serviceAgreementId, isFulfilled, false, serviceIndex);
 
         } catch (LockRewardFulfillException e) {
             this.fulfillEscrowReward(ddo, serviceIndex, serviceAgreementId);
@@ -472,7 +525,7 @@ public class NeverminedManager extends BaseManager {
                             return conditionFulilledEvent;
                         }
                     })
-                    .map(event -> new OrderResult(serviceAgreementId, true, false))
+                    .map(event -> new OrderResult(serviceAgreementId, true, false, serviceIndex))
                     // TODO timout of the condition
                     .timeout(120, TimeUnit.SECONDS)
                     .onErrorReturn(throwable -> {
