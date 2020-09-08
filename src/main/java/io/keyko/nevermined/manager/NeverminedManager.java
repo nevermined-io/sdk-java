@@ -24,7 +24,6 @@ import io.reactivex.Flowable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.crypto.CipherException;
-import org.web3j.crypto.Hash;
 import org.web3j.crypto.Keys;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
@@ -969,7 +968,7 @@ public class NeverminedManager extends BaseManager {
      * @return an execution id
      * @throws ServiceException ServiceException
      */
-    public String executeComputeService(String agreementId, DID did, int index, DID workflowDID) throws ServiceException {
+    public GatewayService.ServiceExecutionResult executeComputeService(String agreementId, DID did, int index, DID workflowDID) throws ServiceException {
 
         DDO ddo;
 
@@ -995,7 +994,7 @@ public class NeverminedManager extends BaseManager {
             if (!result.getOk())
                 throw new ServiceException("There was a problem initializing the execution of the service. HTTP Code: " + result.getCode());
 
-            return result.getExecutionId();
+            return result;
 
         } catch (DDOException e) {
             throw new ServiceException("There was an error resolving the DID ", e);
