@@ -119,9 +119,9 @@ public class ConditionsManager extends BaseManager {
         Tuple2<String, String> agreementData = null;
         TransactionReceipt txReceipt;
 
-        if (service.type.equals(Service.ServiceTypes.access.name())) {
+        if (service.type.equals(Service.ServiceTypes.ACCESS.toString())) {
             agreementData = escrowAccessSecretStoreTemplate.getAgreementData(EncodingHelper.hexStringToBytes(agreementId)).send();
-        } else if (service.type.equals(Service.ServiceTypes.compute.name())) {
+        } else if (service.type.equals(Service.ServiceTypes.COMPUTE.toString())) {
             agreementData = escrowComputeExecutionTemplate.getAgreementData(EncodingHelper.hexStringToBytes(agreementId)).send();
         }
 

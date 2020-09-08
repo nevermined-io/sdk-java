@@ -91,5 +91,20 @@ public class ServiceMain extends AbstractModel {
     @JsonProperty
     public String price;
 
+    @JsonProperty
+    public Parameters parameters;
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    @JsonPropertyOrder(alphabetic = true)
+    public static class Parameters {
+
+        @JsonProperty
+        public int minParticipants;
+
+        @JsonProperty
+        public int participantsRatio;
+
+        @JsonProperty
+        public int rounds;
+    }
 }

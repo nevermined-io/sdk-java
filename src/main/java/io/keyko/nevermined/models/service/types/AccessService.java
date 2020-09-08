@@ -22,13 +22,13 @@ public class AccessService extends Service {
 
     public AccessService() {
         this.index = DEFAULT_INDEX;
-        this.type= ServiceTypes.access.toString();
+        this.type= ServiceTypes.ACCESS.toString();
 
     }
 
     public AccessService(String serviceEndpoint, int index, String templateId) {
-        super(ServiceTypes.access, serviceEndpoint, index);
-        this.type= ServiceTypes.access.toString();
+        super(ServiceTypes.ACCESS, serviceEndpoint, index);
+        this.type= ServiceTypes.ACCESS.toString();
         this.templateId = templateId;
     }
 
@@ -37,8 +37,8 @@ public class AccessService extends Service {
                          ServiceAgreementTemplate serviceAgreementTemplate,
                          String templateId
     ) {
-        super(ServiceTypes.access, serviceEndpoint, index);
-        this.type= ServiceTypes.access.toString();
+        super(ServiceTypes.ACCESS, serviceEndpoint, index);
+        this.type= ServiceTypes.ACCESS.toString();
         this.templateId = templateId;
         this.attributes.serviceAgreementTemplate = serviceAgreementTemplate;
 

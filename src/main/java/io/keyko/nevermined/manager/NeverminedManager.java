@@ -26,7 +26,6 @@ import org.apache.logging.log4j.Logger;
 import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Hash;
 import org.web3j.crypto.Keys;
-import org.web3j.crypto.Sign;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.io.File;
@@ -176,7 +175,7 @@ public class NeverminedManager extends BaseManager {
         try {
             Map<String, Object> configuration = buildBasicAccessServiceConfiguration(providerConfig, metadata.attributes.main.price, getMainAccount().address);
             Service accessService = ServiceBuilder
-                    .getServiceBuilder(Service.ServiceTypes.access)
+                    .getServiceBuilder(Service.ServiceTypes.ACCESS)
                     .buildService(configuration);
 
             return registerAsset(metadata, providerConfig, accessService, authConfig);
@@ -197,15 +196,14 @@ public class NeverminedManager extends BaseManager {
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
-    public DDO registerComputingServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException {
+    public DDO registerComputeService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException {
 
         try {
 
             Map<String, Object> configuration = buildBasicComputingServiceConfiguration(providerConfig, computingProvider, metadata.attributes.main.price, getMainAccount().address);
             Service computingService = ServiceBuilder
-                    .getServiceBuilder(Service.ServiceTypes.compute)
+                    .getServiceBuilder(Service.ServiceTypes.COMPUTE)
                     .buildService(configuration);
-
 
             return registerAsset(metadata, providerConfig, computingService, new AuthConfig(providerConfig.getGatewayUrl()));
 
@@ -270,7 +268,7 @@ public class NeverminedManager extends BaseManager {
             // Add authentication
             ddo.addAuthentication(ddo.id);
 
-            if (service instanceof AccessService)   {
+            if (service instanceof AccessService || service instanceof ComputingService)   {
                 if (authConfig.getService().equals(AuthorizationService.AuthTypes.SECRET_STORE))
                     ddo.secretStoreLocalEncryptFiles(getSecretStoreManager(), authConfig);
                 else if (authConfig.getService().equals(AuthorizationService.AuthTypes.PSK_ECDSA) ||
@@ -343,6 +341,20 @@ public class NeverminedManager extends BaseManager {
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
      *
      * @param did                 the did
+     * @return true if the asset was purchased successfully, if not false
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
+     */
+    public OrderResult purchaseAssetDirect(DID did)
+            throws OrderException, ServiceException, EscrowRewardException {
+        return purchaseAssetDirect(did, -1, Service.ServiceTypes.ACCESS);
+    }
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did
      * @param serviceIndex the index of the service
      * @return true if the asset was purchased successfully, if not false
      * @throws OrderException OrderException
@@ -350,6 +362,37 @@ public class NeverminedManager extends BaseManager {
      * @throws EscrowRewardException EscrowRewardException
      */
     public OrderResult purchaseAssetDirect(DID did, int serviceIndex)
+            throws OrderException, ServiceException, EscrowRewardException {
+        return purchaseAssetDirect(did, serviceIndex, null);
+    }
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did
+     * @param serviceType Service to purchase
+     * @return true if the asset was purchased successfully, if not false
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
+     */
+    public OrderResult purchaseAssetDirect(DID did, Service.ServiceTypes serviceType)
+            throws OrderException, ServiceException, EscrowRewardException {
+        return purchaseAssetDirect(did, -1, serviceType);
+    }
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did
+     * @param serviceIndex the index of the service
+     * @param serviceType Service to purchase
+     * @return true if the asset was purchased successfully, if not false
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
+     */
+    public OrderResult purchaseAssetDirect(DID did, int serviceIndex, Service.ServiceTypes serviceType)
             throws OrderException, ServiceException, EscrowRewardException {
 
         String serviceAgreementId = ServiceAgreementHandler.generateSlaId();
@@ -363,11 +406,19 @@ public class NeverminedManager extends BaseManager {
             throw new OrderException("Error processing Order with DID " + did.getDid(), e);
         }
 
-        Service service = ddo.getService(serviceIndex);
+        Service service;
+        if (serviceIndex >= 0)
+            service = ddo.getService(serviceIndex);
+        else if (serviceType.toString().equals(Service.ServiceTypes.COMPUTE)) {
+            service = ddo.getComputeService();
+            serviceIndex = service.index;
+        } else {
+            service = ddo.getAccessService();
+            serviceIndex = service.index;
+        }
 
         try {
             // Step 1. We initialize the Service Agreement
-
             final boolean isInitialized = initializeServiceAgreementDirect(ddo, serviceIndex, serviceAgreementId);
             if (!isInitialized)  {
                 throw new ServiceAgreementException(serviceAgreementId, "Service Agreement not Initialized");
@@ -404,7 +455,7 @@ public class NeverminedManager extends BaseManager {
             // Step 2. We fulfull the Lock Reward (we make the payment)
             this.fulfillLockReward(ddo, serviceIndex, eventServiceAgreementId);
             final boolean isFulfilled = isConditionFulfilled(serviceAgreementId, Condition.ConditionTypes.lockReward);
-            orderResult = new OrderResult(serviceAgreementId, isFulfilled, false);
+            orderResult = new OrderResult(serviceAgreementId, isFulfilled, false, serviceIndex);
 
         } catch (LockRewardFulfillException e) {
             this.fulfillEscrowReward(ddo, serviceIndex, serviceAgreementId);
@@ -464,9 +515,9 @@ public class NeverminedManager extends BaseManager {
                             this.fulfillLockReward(ddo, serviceIndex, eventServiceAgreementId);
                             Flowable<String> conditionFulilledEvent = null;
 
-                            if (service.type.equals(Service.ServiceTypes.access.name()))
+                            if (service.type.equals(Service.ServiceTypes.ACCESS.toString()))
                                 conditionFulilledEvent = ServiceAgreementHandler.listenForFulfilledEvent(accessSecretStoreCondition, serviceAgreementId);
-                            else if  (service.type.equals(Service.ServiceTypes.compute.name()))
+                            else if  (service.type.equals(Service.ServiceTypes.COMPUTE.toString()))
                                 conditionFulilledEvent = ServiceAgreementHandler.listenForFulfilledEvent(computeExecutionCondition, serviceAgreementId);
                             else
                                 throw new ServiceAgreementException(serviceAgreementId, "Service type not supported");
@@ -474,7 +525,7 @@ public class NeverminedManager extends BaseManager {
                             return conditionFulilledEvent;
                         }
                     })
-                    .map(event -> new OrderResult(serviceAgreementId, true, false))
+                    .map(event -> new OrderResult(serviceAgreementId, true, false, serviceIndex))
                     // TODO timout of the condition
                     .timeout(120, TimeUnit.SECONDS)
                     .onErrorReturn(throwable -> {
@@ -507,11 +558,11 @@ public class NeverminedManager extends BaseManager {
         conditionsAddresses.put("escrowRewardAddress", escrowReward.getContractAddress());
         conditionsAddresses.put("lockRewardConditionAddress", lockRewardCondition.getContractAddress());
 
-        if (service.type.equals(Service.ServiceTypes.access.name())) {
+        if (service.type.equals(Service.ServiceTypes.ACCESS.toString())) {
             conditionsAddresses.put("accessSecretStoreConditionAddress", accessSecretStoreCondition.getContractAddress());
             service = (AccessService)service;
         }
-        else if  (service.type.equals(Service.ServiceTypes.compute.name()))
+        else if  (service.type.equals(Service.ServiceTypes.COMPUTE.toString()))
         {
             conditionsAddresses.put("computeExecutionConditionAddress", computeExecutionCondition.getContractAddress());
             service = (ComputingService)service;
@@ -567,14 +618,14 @@ public class NeverminedManager extends BaseManager {
                     ddo,
                     serviceIndex);
 
-            if (service.type.equals(Service.ServiceTypes.access.name()))
+            if (service.type.equals(Service.ServiceTypes.ACCESS.toString()))
                 result = this.agreementsManager.createAccessAgreement(serviceAgreementId,
                         ddo,
                         conditionsId,
                         Keys.toChecksumAddress(getMainAccount().getAddress()),
                         service
                 );
-            else if  (service.type.equals(Service.ServiceTypes.compute.name()))
+            else if  (service.type.equals(Service.ServiceTypes.COMPUTE.toString()))
                 result = this.agreementsManager.createComputeAgreement(serviceAgreementId,
                         ddo,
                         conditionsId,
@@ -641,9 +692,9 @@ public class NeverminedManager extends BaseManager {
         // 4. Listening of events
         Flowable<String> executeAgreementFlowable = null;
 
-        if (service.type.equals(Service.ServiceTypes.access.name()))
+        if (service.type.equals(Service.ServiceTypes.ACCESS.toString()))
             executeAgreementFlowable = ServiceAgreementHandler.listenExecuteAgreement(escrowAccessSecretStoreTemplate, serviceAgreementId);
-        else if  (service.type.equals(Service.ServiceTypes.compute.name()))
+        else if  (service.type.equals(Service.ServiceTypes.COMPUTE.toString()))
             executeAgreementFlowable = ServiceAgreementHandler.listenExecuteAgreement(escrowComputeExecutionTemplate, serviceAgreementId);
         else
             throw new ServiceAgreementException(serviceAgreementId, "Service type not supported");
@@ -719,11 +770,11 @@ public class NeverminedManager extends BaseManager {
             String conditionAddress;
             String conditionName;
 
-            if (service.type.equals(Service.ServiceTypes.access.name())) {
+            if (service.type.equals(Service.ServiceTypes.ACCESS.toString())) {
                 conditionAddress =  accessSecretStoreCondition.getContractAddress();
                 conditionName = "accessSecretStore";
             }
-            else if  (service.type.equals(Service.ServiceTypes.compute.name())) {
+            else if  (service.type.equals(Service.ServiceTypes.COMPUTE.toString())) {
                 conditionAddress =  computeExecutionCondition.getContractAddress();
                 conditionName = "computeExecution";
             }
@@ -914,32 +965,39 @@ public class NeverminedManager extends BaseManager {
      * @param agreementId the agreement id
      * @param did the did
      * @param index the index of the service
-     * @param workflowId the workflow id
+     * @param workflowDID the workflow id
      * @return an execution id
      * @throws ServiceException ServiceException
      */
-    public String executeComputeService(String agreementId, DID did, int index, String workflowId) throws ServiceException {
+    public String executeComputeService(String agreementId, DID did, int index, DID workflowDID) throws ServiceException {
 
-        DDO ddo = null;
+        DDO ddo;
 
         try {
-
             ddo = resolveDID(did);
 
             Service service = ddo.getService(index);
             String checkConsumerAddress = Keys.toChecksumAddress(getMainAccount().address);
 
-            String hash =  Hash.sha3(EthereumHelper.add0x(agreementId));
-            String signature = EthereumHelper.ethSignMessage(this.getKeeperService().getWeb3(), hash, getMainAccount().address, getMainAccount().password);
+            String signature;
+            try {
+                signature = generateSignature(agreementId);
+            } catch (IOException | CipherException e) {
+                final String msg = "Unable to generate service agreement signature";
+                log.error(msg + ": " + e.getMessage());
+                throw new ServiceException(msg, e);
+            }
+//            String hash =  Hash.sha3(EthereumHelper.add0x(agreementId));
+//            String signature = EthereumHelper.ethSignMessage(this.getKeeperService().getWeb3(), hash, getMainAccount().address, getMainAccount().password);
 
-            ExecuteService executeService = new ExecuteService(agreementId, workflowId, checkConsumerAddress, signature);
+            ExecuteService executeService = new ExecuteService(agreementId, workflowDID.did, checkConsumerAddress, signature);
             GatewayService.ServiceExecutionResult result = GatewayService.initializeServiceExecution(service.serviceEndpoint, executeService);
             if (!result.getOk())
                 throw new ServiceException("There was a problem initializing the execution of the service. HTTP Code: " + result.getCode());
 
             return result.getExecutionId();
 
-        } catch (DDOException|IOException e) {
+        } catch (DDOException e) {
             throw new ServiceException("There was an error resolving the DID ", e);
         }
 

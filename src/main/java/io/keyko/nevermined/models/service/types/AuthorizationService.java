@@ -3,11 +3,7 @@ package io.keyko.nevermined.models.service.types;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import io.keyko.nevermined.external.GatewayService;
-import io.keyko.nevermined.models.gateway.Status;
 import io.keyko.nevermined.models.service.Service;
-
-import java.io.IOException;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder(alphabetic = true)
@@ -47,8 +43,8 @@ public class AuthorizationService extends Service {
     }
 
     public AuthorizationService(String serviceEndpoint, int index, AuthTypes service) {
-        super(ServiceTypes.authorization, serviceEndpoint, index);
-        this.type= ServiceTypes.authorization.toString();
+        super(ServiceTypes.AUTHORIZATION, serviceEndpoint, index);
+        this.type= ServiceTypes.AUTHORIZATION.toString();
         this.attributes.main.service = service.name;
     }
 

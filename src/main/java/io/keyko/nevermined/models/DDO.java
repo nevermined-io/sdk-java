@@ -9,7 +9,6 @@ import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.nevermined.exceptions.DDOException;
 import io.keyko.nevermined.exceptions.DIDFormatException;
-import io.keyko.nevermined.exceptions.EncryptionException;
 import io.keyko.nevermined.exceptions.ServiceException;
 import io.keyko.nevermined.external.GatewayService;
 import io.keyko.nevermined.manager.SecretStoreManager;
@@ -254,15 +253,15 @@ public class DDO extends AbstractModel implements FromJsonToModel {
         try {
             for (LinkedHashMap service : services) {
                 if (service.containsKey("type")) {
-                    if (service.get("type").equals(Service.ServiceTypes.metadata.toString()) && service.containsKey("metadata")) {
+                    if (service.get("type").equals(Service.ServiceTypes.METADATA.toString()) && service.containsKey("metadata")) {
                         this.services.add(getMapperInstance().convertValue(service, MetadataService.class));
-                    } else if (service.get("type").equals(Service.ServiceTypes.provenance.toString())) {
+                    } else if (service.get("type").equals(Service.ServiceTypes.PROVENANCE.toString())) {
                         this.services.add(getMapperInstance().convertValue(service, ProvenanceService.class));
-                    } else if (service.get("type").equals(Service.ServiceTypes.access.toString())) {
+                    } else if (service.get("type").equals(Service.ServiceTypes.ACCESS.toString())) {
                         this.services.add(getMapperInstance().convertValue(service, AccessService.class));
-                    } else if (service.get("type").equals(Service.ServiceTypes.compute.toString())) {
+                    } else if (service.get("type").equals(Service.ServiceTypes.COMPUTE.toString())) {
                         this.services.add(getMapperInstance().convertValue(service, ComputingService.class));
-                    } else if (service.get("type").equals(Service.ServiceTypes.authorization.toString())) {
+                    } else if (service.get("type").equals(Service.ServiceTypes.AUTHORIZATION.toString())) {
                         this.services.add(getMapperInstance().convertValue(service, AuthorizationService.class));
                     } else {
                         this.services.add(getMapperInstance().convertValue(service, Service.class));
@@ -407,7 +406,7 @@ public class DDO extends AbstractModel implements FromJsonToModel {
 
     public AccessService getAccessService(int index) throws ServiceException {
         for (Service service : services) {
-            if (service.index == index && service.type.equals(Service.ServiceTypes.access.toString())) {
+            if (service.index == index && service.type.equals(Service.ServiceTypes.ACCESS.toString())) {
                 return (AccessService) service;
             }
         }
@@ -438,7 +437,7 @@ public class DDO extends AbstractModel implements FromJsonToModel {
     @JsonIgnore
     public AuthorizationService getAuthorizationService(int serviceDefinitionId) {
         for (Service service : services) {
-            if (service.index == serviceDefinitionId && service.type.equals(Service.ServiceTypes.authorization.toString())) {
+            if (service.index == serviceDefinitionId && service.type.equals(Service.ServiceTypes.AUTHORIZATION.toString())) {
                 return (AuthorizationService) service;
             }
         }
@@ -448,7 +447,7 @@ public class DDO extends AbstractModel implements FromJsonToModel {
     @JsonIgnore
     public AuthorizationService getAuthorizationService() {
         for (Service service : services) {
-            if (service.type.equals(Service.ServiceTypes.authorization.toString())) {
+            if (service.type.equals(Service.ServiceTypes.AUTHORIZATION.toString())) {
                 return (AuthorizationService) service;
             }
         }
@@ -459,7 +458,7 @@ public class DDO extends AbstractModel implements FromJsonToModel {
     @JsonIgnore
     public Service getMetadataService() {
         for (Service service : services) {
-            if (service.type.equals(Service.ServiceTypes.metadata.toString())) {
+            if (service.type.equals(Service.ServiceTypes.METADATA.toString())) {
                 return service;
             }
         }
@@ -469,8 +468,18 @@ public class DDO extends AbstractModel implements FromJsonToModel {
     @JsonIgnore
     public AccessService getAccessService() {
         for (Service service : services) {
-            if (service.type.equals(Service.ServiceTypes.access.toString())) {
+            if (service.type.equals(Service.ServiceTypes.ACCESS.toString())) {
                 return (AccessService) service;
+            }
+        }
+        return null;
+    }
+
+    @JsonIgnore
+    public ComputingService getComputeService() {
+        for (Service service : services) {
+            if (service.type.equals(Service.ServiceTypes.COMPUTE.toString())) {
+                return (ComputingService) service;
             }
         }
         return null;
@@ -481,7 +490,7 @@ public class DDO extends AbstractModel implements FromJsonToModel {
     public static DDO cleanFileUrls(DDO ddo) {
 
         ddo.services.forEach(service -> {
-            if (service.type.equals(Service.ServiceTypes.metadata.toString())) {
+            if (service.type.equals(Service.ServiceTypes.METADATA.toString())) {
                service.attributes.main.files.forEach(f -> {
                     f.url = null;
                 });

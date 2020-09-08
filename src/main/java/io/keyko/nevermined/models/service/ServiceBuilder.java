@@ -17,8 +17,8 @@ public interface ServiceBuilder {
     static ServiceBuilder getServiceBuilder(Service.ServiceTypes serviceType) throws ServiceException {
 
         switch (serviceType) {
-            case access: return accessServiceBuilder();
-            case compute: return computingServiceBuilder();
+            case ACCESS: return accessServiceBuilder();
+            case COMPUTE: return computingServiceBuilder();
             default: throw new ServiceException("Invalid Service definition");
 
         }
@@ -43,7 +43,11 @@ public interface ServiceBuilder {
 
         // Definition of a DEFAULT ServiceAgreement Contract
         ComputingService.ServiceAgreementTemplate serviceAgreementTemplate = new ComputingService.ServiceAgreementTemplate();
-        serviceAgreementTemplate.contractName = "EscrowExecComputeTemplate";
+        serviceAgreementTemplate.contractName = "EscrowComputeExecutionTemplate";
+        serviceAgreementTemplate.fulfillmentOrder = Arrays.asList(
+                "lockReward.fulfill",
+                "execCompute.fulfill",
+                "escrowReward.fulfill");
 
         // AgreementCreated Event
         Condition.Event executeAgreementEvent = new Condition.Event();
@@ -51,22 +55,26 @@ public interface ServiceBuilder {
         executeAgreementEvent.actorType = "consumer";
         // Handler
         Condition.Handler handler = new Condition.Handler();
-        handler.moduleName = "escrowExecComputeTemplate";
+        handler.moduleName = "EscrowComputeExecutionTemplate";
         handler.functionName = "fulfillLockRewardCondition";
         handler.version = "0.1";
         executeAgreementEvent.handler = handler;
 
+        Service.ConditionDependency conditionDependency = new Service.ConditionDependency();
+        conditionDependency.escrowReward = Service.ConditionDependency.defaultComputeEscrowReward();
+        conditionDependency.accessSecretStore = null;
+        serviceAgreementTemplate.conditionDependency = conditionDependency;
         serviceAgreementTemplate.events = Arrays.asList(executeAgreementEvent);
 
         // The templateId of the AccessService is the address of the escrowAccessSecretStoreTemplate contract
         ComputingService computingService = new ComputingService(providerConfig.getAccessEndpoint(),
-                Service.DEFAULT_COMPUTING_INDEX,
+                Service.DEFAULT_COMPUTE_INDEX,
                 serviceAgreementTemplate,
                 computingServiceTemplateId);
 
         computingService.attributes.main.provider = computingProvider;
 
-        computingService.attributes.main.name = "dataAssetAccessServiceAgreement";
+        computingService.attributes.main.name = "dataAssetComputeServiceAgreement";
         computingService.attributes.main.price = price;
         computingService.attributes.main.creator = creator;
         computingService.attributes.main.datePublished = new Date();

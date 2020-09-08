@@ -60,14 +60,14 @@ public class AgreementsImpl implements AgreementsAPI {
 
             List<byte[]> conditionsId = neverminedManager.generateServiceConditionsId(agreementId, Keys.toChecksumAddress(consumerAddress), ddo, index);
 
-            if (service.type.equals(Service.ServiceTypes.access.name()))
+            if (service.type.equals(Service.ServiceTypes.ACCESS.toString()))
                 return agreementsManager.createAccessAgreement(agreementId,
                         ddo,
                         conditionsId,
                         Keys.toChecksumAddress(consumerAddress),
                         service
                 );
-            else if (service.type.equals(Service.ServiceTypes.compute.name()))
+            else if (service.type.equals(Service.ServiceTypes.COMPUTE.toString()))
                 return agreementsManager.createComputeAgreement(agreementId,
                         ddo,
                         conditionsId,
@@ -100,11 +100,11 @@ public class AgreementsImpl implements AgreementsAPI {
         conditionsAddresses.put("escrowRewardAddress", this.agreementsManager.getEscrowReward().getContractAddress());
         conditionsAddresses.put("lockRewardConditionAddress", this.agreementsManager.getLockRewardCondition().getContractAddress());
 
-        if (service.type.equals(Service.ServiceTypes.access.name())) {
+        if (service.type.equals(Service.ServiceTypes.ACCESS.toString())) {
             service = (AccessService) service;
             conditionsAddresses.put("accessSecretStoreConditionAddress",  this.agreementsManager.getAccessSecretStoreCondition().getContractAddress());
         }
-        else if (service.type.equals(Service.ServiceTypes.compute.name())) {
+        else if (service.type.equals(Service.ServiceTypes.COMPUTE.toString())) {
             service = (ComputingService) service;
             conditionsAddresses.put("computeExecutionCondition", this.agreementsManager.getComputeExecutionCondition().getContractAddress());
         }

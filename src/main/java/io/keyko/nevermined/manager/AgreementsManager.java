@@ -152,7 +152,7 @@ public class AgreementsManager extends BaseManager {
         if (this.lockRewardCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.lockReward.toString();
         else if (this.accessSecretStoreCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.accessSecretStore.toString();
         else if (this.escrowReward.getContractAddress().equals(address)) return Condition.ConditionTypes.escrowReward.toString();
-        else if (this.computeExecutionCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.computeExecution.toString();
+        else if (this.computeExecutionCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.execCompute.toString();
         else log.error("The current address" + address + "is not a condition address.");
         throw new ConditionNotFoundException("The current address" + address + "is not a condition address.");
     }

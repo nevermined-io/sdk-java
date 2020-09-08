@@ -8,6 +8,7 @@ import io.keyko.nevermined.models.asset.OrderResult;
 import io.keyko.nevermined.models.metadata.SearchResult;
 import io.keyko.nevermined.models.service.AuthConfig;
 import io.keyko.nevermined.models.service.ProviderConfig;
+import io.keyko.nevermined.models.service.Service;
 import io.keyko.nevermined.models.service.types.ComputingService;
 import io.reactivex.Flowable;
 
@@ -41,6 +42,15 @@ public interface AssetsAPI {
      */
     DDO create(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException;
 
+    /**
+     * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
+     *
+     * @param metadata       the metadata of the DDO
+     * @param providerConfig the endpoints of the DDO's services
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
+    DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException;
 
     /**
      * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
@@ -51,7 +61,7 @@ public interface AssetsAPI {
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
-    DDO createComputingService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException;
+    DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException;
 
 
     /**
@@ -189,6 +199,18 @@ public interface AssetsAPI {
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
      *
      * @param did                 the did of the DDO
+     * @return OrderResult
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
+     */
+    OrderResult orderDirect(DID did) throws OrderException, ServiceException, EscrowRewardException;
+
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did of the DDO
      * @param serviceDefinitionId the service definition id
      * @return OrderResult
      * @throws OrderException OrderException
@@ -197,16 +219,43 @@ public interface AssetsAPI {
      */
     OrderResult orderDirect(DID did, int serviceDefinitionId) throws OrderException, ServiceException, EscrowRewardException;
 
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did of the DDO
+     * @param serviceTypes service type to order
+     * @return OrderResult
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
+     */
+    OrderResult orderDirect(DID did, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException;
+
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did of the DDO
+     * @param serviceDefinitionId the service definition id
+     * @param serviceTypes service type to order
+     * @return OrderResult
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
+     */
+    OrderResult orderDirect(DID did, int serviceDefinitionId, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException;
+
     /**
      * Executes a remote service associated with an asset and serviceAgreementId
      * @param agreementId the agreement id
      * @param did the did
      * @param index the index of the service
-     * @param workflowDID the workflow id
+     * @param workflowDID the workflow did
      * @return an execution id
      * @throws ServiceException ServiceException
      */
-    String execute(String agreementId, DID did, int index, String workflowDID) throws ServiceException;
+    String execute(String agreementId, DID did, int index, DID workflowDID) throws ServiceException;
 
     /**
      * Return the owner of the asset.

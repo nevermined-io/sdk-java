@@ -27,12 +27,14 @@ public class DdoIT {
     private static final String ACCESS_DATASET_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/docs/architecture/specs/examples/metadata/v0.1/ddo-example-access.json";
     private static final String ACCESS_ALGORITHM_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/docs/architecture/specs/examples/metadata/v0.1/ddo-example-algorithm.json";
     private static final String ACCESS_WORKFLOW_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/docs/architecture/specs/examples/metadata/v0.1/ddo-example-workflow.json";
+    private static final String ACCESS_WORKFLOW_COORDINATOR_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/docs/architecture/specs/examples/compute/v0.1/ddo_workflow_coordinator.json";
     private static final String ACCESS_SERVICE_EXAMPLE_URL = "https://github.com/keyko-io/nevermined-docs/raw/master/docs/architecture/specs/examples/metadata/v0.1/ddo-example-service.json";
 
     private static  String ACCESS_DATASET_EXAMPLE_CONTENT;
     private static  String ACCESS_ALGORITHM_EXAMPLE_CONTENT;
     private static  String COMPUTE_COMPUTING_EXAMPLE_CONTENT;
     private static  String COMPUTE_WORKFLOW_EXAMPLE_CONTENT;
+    private static  String COMPUTE_WORKFLOW_COORDINATOR_EXAMPLE_CONTENT;
     private static  String ACCESS_WORKFLOW_EXAMPLE_CONTENT;
     private static  String ACCESS_SERVICE_EXAMPLE_CONTENT;
 
@@ -48,6 +50,7 @@ public class DdoIT {
         ACCESS_ALGORITHM_EXAMPLE_CONTENT = IOUtils.toString(new URI(ACCESS_ALGORITHM_EXAMPLE_URL), "utf-8");
         COMPUTE_COMPUTING_EXAMPLE_CONTENT = IOUtils.toString(new URI(DDO_COMPUTING_EXAMPLE_URL), "utf-8");
         COMPUTE_WORKFLOW_EXAMPLE_CONTENT = IOUtils.toString(new URI(DDO_WORKFLOW_EXAMPLE_URL), "utf-8");
+        COMPUTE_WORKFLOW_COORDINATOR_EXAMPLE_CONTENT = IOUtils.toString(new URI(ACCESS_WORKFLOW_COORDINATOR_EXAMPLE_URL), "utf-8");
 
         ACCESS_WORKFLOW_EXAMPLE_CONTENT = IOUtils.toString(new URI(ACCESS_WORKFLOW_EXAMPLE_URL), "utf-8");
         ACCESS_SERVICE_EXAMPLE_CONTENT = IOUtils.toString(new URI(ACCESS_SERVICE_EXAMPLE_URL), "utf-8");
@@ -65,7 +68,7 @@ public class DdoIT {
         DDO ddo= ddoFromJson.integrityBuilder(credentials);
 
         Assert.assertEquals("metadata", ddo.services.get(0).type);
-        Assert.assertEquals("access", ddo.services.get(1).type);
+        Assert.assertEquals("provenance", ddo.services.get(1).type);
 
         Assert.assertEquals(0, ddo.services.get(0).index);
         Assert.assertEquals(1, ddo.services.get(1).index);
@@ -77,14 +80,14 @@ public class DdoIT {
         log.debug("testAccessDatasetMetadata");
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, ACCESS_DATASET_EXAMPLE_CONTENT);
         SortedMap<String, String> checksums = ddo.generateChecksums();
-        assertEquals(2, checksums.size());
-        assertEquals("9ca5f006901cced5d5b02fd3691b12b619d6a083bb3fca39b8c90bd60f194cf9", checksums.get("0"));
-        assertEquals("4294cb191438237940fe389fee1dcb5a0806432ac92622d50375a01d3406fa62", checksums.get("1"));
+        assertEquals(4, checksums.size());
+        assertEquals("cee6bb798004f460b3dc4d5d96d7741c7be6615bb6ed43079b14cee5d9ffdbc9", checksums.get("0"));
+        assertEquals("e4ac07c241b4a113e1ad6ef046b8fdf61c5e2c6e6a1745d352f8f30ffa84d704", checksums.get("1"));
 
         DID did = DID.builder(ddo.toJson(ddo.proof.checksum));
         log.debug("Did generated from checksums: " + did.did);
         assertEquals(64, did.getHash().length());
-        assertEquals("did:nv:138fccf336883ae6312c9b8b375745a90be369454080e90985fb3e314ab0df25", did.did);
+        assertEquals("did:nv:3b5607872397a527cd69e41743b07ddbeeb8aa865f3decd1fab4be679e6c6eef", did.did);
 
     }
 
@@ -94,13 +97,13 @@ public class DdoIT {
         log.debug("testAccessAlgorithmMetadata");
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, ACCESS_ALGORITHM_EXAMPLE_CONTENT);
         SortedMap<String, String> checksums = ddo.generateChecksums();
-        assertEquals(1, checksums.size());
-        assertEquals("955892c1ed06ce0f0c6dd05b73f134d56028f873cad393b885425143122b635d", checksums.get("0"));
+        assertEquals(4, checksums.size());
+        assertEquals("7db297971665c115f5d2665d1ac11846648eb4474053078dfca79ca531e6c7b1", checksums.get("0"));
 
         DID did = DID.builder(ddo.toJson(ddo.proof.checksum));
         log.debug("Did generated from checksums: " + did.did);
         assertEquals(64, did.getHash().length());
-        assertEquals("did:nv:138fccf336883ae6312c9b8b375745a90be369454080e90985fb3e314ab0df25", did.did);
+        assertEquals("did:nv:072d545ec7a4937bcf95f69abc939a8386e0f7d2dd3900d2e1bd55fb78dfdf38", did.did);
 
     }
 
@@ -112,7 +115,7 @@ public class DdoIT {
         SortedMap<String, String> checksums = ddo.generateChecksums();
         assertEquals(2, checksums.size());
         assertEquals("574b45e304c190c293855548f19b02ad0c826aee4b76fb3b3c25b27d8317efd7", checksums.get("0"));
-        assertEquals("603317133c7949ea3ba57255dcdb2a44b3427aea6af3dd358a19a0c9ce4193d3", checksums.get("2"));
+        assertEquals("603317133c7949ea3ba57255dcdb2a44b3427aea6af3dd358a19a0c9ce4193d3", checksums.get("4"));
 
         DID did = DID.builder(ddo.toJson(ddo.proof.checksum));
         log.debug("Did generated from checksums: " + did.did);
@@ -137,6 +140,27 @@ public class DdoIT {
 
     }
 
+    @Test
+    public void testComputeWorkflowCoordinatorMetadata() throws Exception {
+
+        log.debug("testComputeWorkflowCoordinatorMetadata");
+        DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, COMPUTE_WORKFLOW_COORDINATOR_EXAMPLE_CONTENT);
+
+        assertEquals("fl-coordinator", ddo.getMetadataService().attributes.main.type);
+        assertEquals(1, ddo.getMetadataService().attributes.main.parameters.minParticipants);
+        assertEquals(1, ddo.getMetadataService().attributes.main.parameters.participantsRatio);
+        assertEquals(10, ddo.getMetadataService().attributes.main.parameters.rounds);
+
+        SortedMap<String, String> checksums = ddo.generateChecksums();
+        assertEquals(1, checksums.size());
+        assertEquals("19ee855b845ac33ceaffcf455052e654e21f0fa189c3d5d8fddd30ab3a9ffd93", checksums.get("0"));
+
+        DID did = DID.builder(ddo.toJson(ddo.proof.checksum));
+        log.debug("Did generated from checksums: " + did.did);
+        assertEquals(64, did.getHash().length());
+        assertEquals("did:nv:bd67293754f14420b3ffe7de97f085f723ffa33e57c54eb4b2cc64da599cf239", did.did);
+
+    }
 
     @Test
     public void testAccessWorkflowMetadata() throws Exception {
@@ -145,12 +169,12 @@ public class DdoIT {
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, ACCESS_WORKFLOW_EXAMPLE_CONTENT);
         SortedMap<String, String> checksums = ddo.generateChecksums();
         assertEquals(1, checksums.size());
-        assertEquals("3c52cc15f444afcdace3643358212bb3b5dcc2bcda7bd16fe5624c75f1509c98", checksums.get("0"));
+        assertEquals("2509a6cac6d8d3e50a1a8ea8a81704cdee42f136c548a4721547c4fedd576850", checksums.get("0"));
 
         DID did = DID.builder(ddo.toJson(ddo.proof.checksum));
         log.debug("Did generated from checksums: " + did.did);
         assertEquals(64, did.getHash().length());
-        assertEquals("did:nv:138fccf336883ae6312c9b8b375745a90be369454080e90985fb3e314ab0df25", did.did);
+        assertEquals("did:nv:bd67293754f14420b3ffe7de97f085f723ffa33e57c54eb4b2cc64da599cf239", did.did);
 
     }
 
