@@ -116,7 +116,8 @@ public class InitializationHelper {
      * @throws CipherException CipherException
      */
     public AccountsManager getAccountsManager(KeeperService keeperService, MetadataApiService metadataApiService) throws IOException, CipherException {
-        return AccountsManager.getInstance(keeperService, metadataApiService);
+        return AccountsManager.getInstance(keeperService, metadataApiService)
+                .setFaucetUrl(neverminedConfig.getFaucetUrl());
     }
 
     /**

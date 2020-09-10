@@ -8,6 +8,7 @@ import java.util.List;
 public class ProviderConfig {
 
     private String accessEndpoint;
+    private String executeEndpoint;
     private String metadataEndpoint;
     private String provenanceEndpoint;
     private String secretStoreEndpoint;
@@ -83,6 +84,15 @@ public class ProviderConfig {
 
     public ProviderConfig setProvenanceEndpoint(String provenanceEndpoint) {
         this.provenanceEndpoint = provenanceEndpoint;
+        return this;
+    }
+
+    public String getExecuteEndpoint() {
+        return executeEndpoint;
+    }
+
+    public ProviderConfig setExecuteEndpoint(String executeEndpoint) {
+        this.executeEndpoint = executeEndpoint;
         return this;
     }
 

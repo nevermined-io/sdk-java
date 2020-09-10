@@ -14,12 +14,12 @@
 
 ## Table of Contents
 
-   * [Keyko Java API for Nevermined](#keyko-java-api-for-nevermined)
+   * [Java API for Nevermined Data platform](#java-api-for-nevermined-data-platform)
       * [Table of Contents](#table-of-contents)
       * [Features](#features)
       * [Installation](#installation)
       * [Configuration](#configuration)
-         * [Using Squid-Java with Barge](#using-squid-java-with-barge)
+         * [Using the SDK with the Nevermined Tools](#using-the-sdk-with-the-nevermined-tools)
          * [Dealing with Flowables](#dealing-with-flowables)
       * [Documentation](#documentation)
       * [Testing](#testing)
@@ -31,6 +31,7 @@
       * [New Release](#new-release)
       * [Attribution](#attribution)
       * [License](#license)
+
 
 ---
 
@@ -46,7 +47,7 @@ Typically in Maven you can add nevermined sdk as a dependency:
 <dependency>
   <groupId>io.keyko.nevermined</groupId>
   <artifactId>api</artifactId>
-  <version>0.3.0</version>
+  <version>0.3.2</version>
 </dependency>
 ```
 
@@ -259,7 +260,7 @@ mvn clean verify -P all-tests
 
 You can run the integration tests in Nile environment using the command:
 ```bash
-mvn verify  -P integration-test -Dconfig.file=src/test/resources/networks/nile-application.conf
+mvn verify  -P integration-test -Dconfig.file=src/test/resources/networks/integration-application.conf
 ```
 
 ### Code Coverage

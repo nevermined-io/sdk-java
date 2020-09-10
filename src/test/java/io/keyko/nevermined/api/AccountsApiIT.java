@@ -2,8 +2,10 @@ package io.keyko.nevermined.api;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import io.keyko.nevermined.api.helper.AccountsHelper;
 import io.keyko.nevermined.models.Account;
 import io.keyko.nevermined.models.Balance;
+import io.keyko.nevermined.models.faucet.FaucetResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
@@ -54,4 +56,11 @@ public class AccountsApiIT {
         assertEquals(1, balance.getDrops().compareTo(BigInteger.ZERO));
     }
 
+    @Test
+    public void faucet() throws Exception {
+        String address = AccountsHelper.getAddressFromFilePath(
+                AccountsHelper.createAccount("1234", "/tmp"));
+        final FaucetResponse faucetResponse = neverminedAPI.getAccountsAPI().requestEthFromFaucet(address);
+        assertTrue(faucetResponse.success);
+    }
 }

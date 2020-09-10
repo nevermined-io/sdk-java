@@ -7,6 +7,7 @@ import io.keyko.common.helpers.HttpHelper.DownloadResult;
 import io.keyko.common.helpers.StringsHelper;
 import io.keyko.common.models.HttpResponse;
 import io.keyko.nevermined.exceptions.ServiceException;
+import io.keyko.nevermined.models.AbstractModel;
 import io.keyko.nevermined.models.gateway.*;
 import io.keyko.nevermined.models.service.Service;
 import io.keyko.nevermined.models.service.types.AuthorizationService;
@@ -57,7 +58,7 @@ public class GatewayService {
         }
     }
 
-    public static class ServiceExecutionResult {
+    public static class ServiceExecutionResult extends AbstractModel {
 
         private Boolean ok;
         private String workflowId;
@@ -263,7 +264,7 @@ public class GatewayService {
             if (httpResponse.getStatusCode() != 200) {
                 throw new IOException("Invalid http response from Gateway: " + httpResponse.getStatusCode());
             }
-            return Status.fromJSON(new TypeReference<Status>() {}, httpResponse.getBody());
+            return Status.fromJSON(new TypeReference<>() {}, httpResponse.getBody());
         } catch (HttpException e) {
             throw new IOException("Unable to fetch status page", e);
         } catch (Exception e) {
@@ -317,7 +318,7 @@ public class GatewayService {
                 log.error("Unable to Encrypt Message: " + response.toString());
                 throw new ServiceException("Unable to Encrypt Message");
             }
-            return EncryptionResponse.fromJSON(new TypeReference<EncryptionResponse>() {}, response.getBody());
+            return EncryptionResponse.fromJSON(new TypeReference<>() {}, response.getBody());
 
         } catch (Exception e) {
             log.error("Error encrypting message: " + e.getMessage());

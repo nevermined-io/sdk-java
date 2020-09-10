@@ -17,6 +17,7 @@ public class NeverminedConfig {
     public static final String KEEPER_TX_SLEEPDURATION = "keeper.tx.sleepDuration";
     public static final String METADATA_URL = "metadata.url";
     public static final String SECRETSTORE_URL = "secretstore.url";
+    public static final String FAUCET_URL = "faucet.url";
     public static final String PROVIDER_ADDRESS = "provider.address";
     public static final String MAIN_ACCOUNT_ADDRESS = "account.main.address";
     public static final String MAIN_ACCOUNT_PASSWORD = "account.main.password";
@@ -42,6 +43,7 @@ public class NeverminedConfig {
     private long keeperTxSleepDuration;
     private String metadataUrl;
     private String secretStoreUrl;
+    private String faucetUrl;
     private String providerAddress;
     private String mainAccountAddress;
     private String mainAccountPassword;
@@ -249,6 +251,15 @@ public class NeverminedConfig {
     public NeverminedConfig setSecretStoreUrl(String secretStoreUrl) {
         this.secretStoreUrl = secretStoreUrl;
         return this;
+    }
+
+    public NeverminedConfig setFaucetUrl(String faucetUrl) {
+        this.faucetUrl = faucetUrl;
+        return this;
+    }
+
+    public String getFaucetUrl() {
+        return faucetUrl;
     }
 
     public String getDidRegistryAddress() {

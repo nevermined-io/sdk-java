@@ -204,6 +204,7 @@ public class NeverminedManager extends BaseManager {
                     .getServiceBuilder(Service.ServiceTypes.COMPUTE)
                     .buildService(configuration);
 
+            computingService.serviceEndpoint = providerConfig.getExecuteEndpoint();
             return registerAsset(metadata, providerConfig, computingService, new AuthConfig(providerConfig.getGatewayUrl()));
 
         } catch ( ServiceException e) {
@@ -408,7 +409,7 @@ public class NeverminedManager extends BaseManager {
         Service service;
         if (serviceIndex >= 0)
             service = ddo.getService(serviceIndex);
-        else if (serviceType.toString().equals(Service.ServiceTypes.COMPUTE)) {
+        else if (serviceType.toString().equalsIgnoreCase(Service.ServiceTypes.COMPUTE.toString())) {
             service = ddo.getComputeService();
             serviceIndex = service.index;
         } else {

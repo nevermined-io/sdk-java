@@ -519,7 +519,6 @@ public abstract class BaseManager {
         return this;
     }
 
-
     public String getProviderAddress() {
         return providerAddress;
     }
