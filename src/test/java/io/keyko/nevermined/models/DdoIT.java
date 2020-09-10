@@ -81,7 +81,7 @@ public class DdoIT {
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, ACCESS_DATASET_EXAMPLE_CONTENT);
         SortedMap<String, String> checksums = ddo.generateChecksums();
         assertEquals(4, checksums.size());
-        assertEquals("cee6bb798004f460b3dc4d5d96d7741c7be6615bb6ed43079b14cee5d9ffdbc9", checksums.get("0"));
+        assertEquals("e8cf331dc623f4c470698fea8eec786f5e77850e9b5119bbe1eef3f1fc3fa8a5", checksums.get("0"));
         assertEquals("e4ac07c241b4a113e1ad6ef046b8fdf61c5e2c6e6a1745d352f8f30ffa84d704", checksums.get("1"));
 
         DID did = DID.builder(ddo.toJson(ddo.proof.checksum));

@@ -18,6 +18,7 @@ public class NeverminedConfigFactory {
     private static final BigInteger DEFAULT_KEEPER_GAS_PRICE = BigInteger.valueOf(100000000000l);
     private static final String DEFAULT_METADATA_URL = "http://localhost:5000";
     private static final String DEFAULT_SECRET_STORE_URL = "http://localhost:12001";
+    private static final String DEFAULT_FAUCET_URL = "http://localhost:3001";
     private static final String DEFAULT_CONSUME_PATH = "/tmp";
 
 
@@ -47,6 +48,7 @@ public class NeverminedConfigFactory {
 
         neverminedConfig.setMetadataUrl((String) properties.getOrDefault(NeverminedConfig.METADATA_URL, DEFAULT_METADATA_URL));
         neverminedConfig.setSecretStoreUrl((String) properties.getOrDefault(NeverminedConfig.SECRETSTORE_URL, DEFAULT_SECRET_STORE_URL));
+        neverminedConfig.setFaucetUrl((String) properties.getOrDefault(NeverminedConfig.FAUCET_URL, DEFAULT_FAUCET_URL));
         neverminedConfig.setProviderAddress((String) properties.getOrDefault(NeverminedConfig.PROVIDER_ADDRESS, ""));
         neverminedConfig.setDidRegistryAddress((String) properties.getOrDefault(NeverminedConfig.DID_REGISTRY_ADDRESS, ""));
         neverminedConfig.setEscrowRewardConditionsAddress((String) properties.getOrDefault(NeverminedConfig.ESCROWREWARD_CONDITIONS_ADDRESS, ""));

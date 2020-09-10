@@ -49,11 +49,14 @@ public abstract class BaseOceanExecutor implements Executor {
 
         String metadataUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/ddo/{did}";
         String provenanceUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/provenance/{did}";
-        String consumeUrl= config.getString("gateway.url") + "/api/v1/gateway/services/access";
+        String accessUrl= config.getString("gateway.url") + "/api/v1/gateway/services/access";
+        String executeUrl= config.getString("gateway.url") + "/api/v1/gateway/services/execute";
         String secretStoreEndpoint= config.getString("secretstore.url");
         String providerAddress= config.getString("provider.address");
 
-        providerConfig = new ProviderConfig(consumeUrl, metadataUrl, provenanceUrl, secretStoreEndpoint, providerAddress);
+        providerConfig = new ProviderConfig(
+                accessUrl, metadataUrl, provenanceUrl, secretStoreEndpoint, providerAddress)
+                .setExecuteEndpoint(executeUrl);
 
         try {
 

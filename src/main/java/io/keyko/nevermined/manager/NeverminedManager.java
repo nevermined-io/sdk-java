@@ -24,7 +24,6 @@ import io.reactivex.Flowable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.crypto.CipherException;
-import org.web3j.crypto.Hash;
 import org.web3j.crypto.Keys;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
@@ -205,6 +204,7 @@ public class NeverminedManager extends BaseManager {
                     .getServiceBuilder(Service.ServiceTypes.COMPUTE)
                     .buildService(configuration);
 
+            computingService.serviceEndpoint = providerConfig.getExecuteEndpoint();
             return registerAsset(metadata, providerConfig, computingService, new AuthConfig(providerConfig.getGatewayUrl()));
 
         } catch ( ServiceException e) {
@@ -409,7 +409,7 @@ public class NeverminedManager extends BaseManager {
         Service service;
         if (serviceIndex >= 0)
             service = ddo.getService(serviceIndex);
-        else if (serviceType.toString().equals(Service.ServiceTypes.COMPUTE)) {
+        else if (serviceType.toString().equalsIgnoreCase(Service.ServiceTypes.COMPUTE.toString())) {
             service = ddo.getComputeService();
             serviceIndex = service.index;
         } else {
@@ -969,7 +969,7 @@ public class NeverminedManager extends BaseManager {
      * @return an execution id
      * @throws ServiceException ServiceException
      */
-    public String executeComputeService(String agreementId, DID did, int index, DID workflowDID) throws ServiceException {
+    public GatewayService.ServiceExecutionResult executeComputeService(String agreementId, DID did, int index, DID workflowDID) throws ServiceException {
 
         DDO ddo;
 
@@ -995,7 +995,7 @@ public class NeverminedManager extends BaseManager {
             if (!result.getOk())
                 throw new ServiceException("There was a problem initializing the execution of the service. HTTP Code: " + result.getCode());
 
-            return result.getExecutionId();
+            return result;
 
         } catch (DDOException e) {
             throw new ServiceException("There was an error resolving the DID ", e);

@@ -9,6 +9,7 @@ import io.keyko.nevermined.api.config.NeverminedConfig;
 import io.keyko.nevermined.contracts.EscrowAccessSecretStoreTemplate;
 import io.keyko.nevermined.contracts.TemplateStoreManager;
 import io.keyko.nevermined.exceptions.DDOException;
+import io.keyko.nevermined.external.GatewayService;
 import io.keyko.nevermined.manager.ManagerHelper;
 import io.keyko.nevermined.models.Balance;
 import io.keyko.nevermined.models.DDO;
@@ -313,7 +314,7 @@ public class AssetsApiIT {
         assertNotNull(orderResult.getServiceAgreementId());
 
         // 5. Execute
-        final String executionId = neverminedAPIConsumer.getAssetsAPI().execute(
+        GatewayService.ServiceExecutionResult executionResult = neverminedAPIConsumer.getAssetsAPI().execute(
                 EthereumHelper.add0x(orderResult.getServiceAgreementId()),
                 didComputeService,
                 Service.DEFAULT_COMPUTE_INDEX,
@@ -322,7 +323,7 @@ public class AssetsApiIT {
         final long endTime = System.currentTimeMillis();
         log.debug("Order method took " + (orderTime - startTime) + " milliseconds");
         log.debug("Execution Request took " + (endTime - startTime) + " milliseconds");
-        assertNotNull(executionId);
+        assertNotNull(executionResult.getExecutionId());
 
     }
 

@@ -1,10 +1,17 @@
 package io.keyko.nevermined.manager;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import io.keyko.common.helpers.HttpHelper;
+import io.keyko.common.models.HttpResponse;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.exceptions.EthereumException;
+import io.keyko.nevermined.exceptions.ServiceException;
 import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.models.Account;
 import io.keyko.nevermined.models.Balance;
+import io.keyko.nevermined.models.faucet.FaucetRequest;
+import io.keyko.nevermined.models.faucet.FaucetResponse;
+import org.apache.http.HttpStatus;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.protocol.core.DefaultBlockParameterName;
@@ -22,6 +29,8 @@ import java.util.List;
 public class AccountsManager extends BaseManager {
 
     private static final Logger log = LogManager.getLogger(AccountsManager.class);
+
+    private String faucetUrl;
 
     private AccountsManager(KeeperService keeperService, MetadataApiService metadataApiService) {
         super(keeperService, metadataApiService);
@@ -77,7 +86,7 @@ public class AccountsManager extends BaseManager {
     public Balance getAccountBalance(String accountAddress) throws EthereumException {
         return new Balance(
                 getEthAccountBalance(accountAddress),
-                getOceanAccountBalance(accountAddress)
+                getNeverminedAccountBalance(accountAddress)
         );
     }
 
@@ -110,7 +119,7 @@ public class AccountsManager extends BaseManager {
      * @return nevermined balance
      * @throws EthereumException if the EVM throws an exception
      */
-    public BigInteger getOceanAccountBalance(String accountAddress) throws EthereumException {
+    public BigInteger getNeverminedAccountBalance(String accountAddress) throws EthereumException {
         try {
             return tokenContract.balanceOf(accountAddress).send();
         } catch (Exception ex) {
@@ -120,11 +129,8 @@ public class AccountsManager extends BaseManager {
         }
     }
 
-
     /**
-     * Requests Ocean Tokens from the Dispenser Smart Contract
-     * Contract: OceanMarket
-     * Method: requestTokens
+     * Requests Nevermined Tokens from the Dispenser Smart Contract
      *
      * @param amount amount of tokens requests
      * @return TransactionReceipt
@@ -158,4 +164,11 @@ public class AccountsManager extends BaseManager {
         }
     }
 
+    public String getFaucetUrl()   {
+        return this.faucetUrl;
+    }
+    public AccountsManager setFaucetUrl(String faucetUrl) {
+        this.faucetUrl = faucetUrl;
+        return this;
+    }
 }

@@ -1,6 +1,7 @@
 package io.keyko.nevermined.api;
 
 import io.keyko.nevermined.exceptions.*;
+import io.keyko.nevermined.external.GatewayService;
 import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
@@ -255,7 +256,7 @@ public interface AssetsAPI {
      * @return an execution id
      * @throws ServiceException ServiceException
      */
-    String execute(String agreementId, DID did, int index, DID workflowDID) throws ServiceException;
+    GatewayService.ServiceExecutionResult execute(String agreementId, DID did, int index, DID workflowDID) throws ServiceException;
 
     /**
      * Return the owner of the asset.

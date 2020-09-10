@@ -2,6 +2,7 @@ package io.keyko.nevermined.api.impl;
 
 import io.keyko.nevermined.api.AssetsAPI;
 import io.keyko.nevermined.exceptions.*;
+import io.keyko.nevermined.external.GatewayService;
 import io.keyko.nevermined.manager.AgreementsManager;
 import io.keyko.nevermined.manager.AssetsManager;
 import io.keyko.nevermined.manager.NeverminedManager;
@@ -170,7 +171,7 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
-    public String execute(String agreementId, DID did, int index, DID workflowDID) throws ServiceException {
+    public GatewayService.ServiceExecutionResult execute(String agreementId, DID did, int index, DID workflowDID) throws ServiceException {
         return neverminedManager.executeComputeService(agreementId, did, index, workflowDID);
     }
 
