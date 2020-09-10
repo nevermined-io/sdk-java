@@ -73,7 +73,7 @@ metadata-internal.url="http://172.15.0.15:5000" # Running Nevermined tools
 # metadata-internal.url="http://localhost:5000" # Running local metadata
 gateway.url="http://localhost:8030"
 secretstore.url="http://localhost:12001"
-#secretstore.url="https://secret-store.dev-drops.com"
+faucet.url="http://localhost:3001"
 
 provider.address="0x068ed00cf0441e4829d9784fcbe7b9e26d4bd8d0"
 
