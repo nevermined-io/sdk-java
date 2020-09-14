@@ -134,7 +134,7 @@ public class AssetsImpl implements AssetsAPI {
     }
 
 
-    public Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws OrderException, ServiceException, ConsumeServiceException {
+    public Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws ServiceException, ConsumeServiceException {
         return neverminedManager.downloadAssetByOwner(did, serviceIndex, basePath);
     }
 

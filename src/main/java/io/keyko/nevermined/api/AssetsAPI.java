@@ -259,7 +259,7 @@ public interface AssetsAPI {
      * @throws ConsumeServiceException ConsumeServiceException
      * @throws EscrowRewardException EscrowRewardException
      */
-    Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws OrderException, ServiceException, ConsumeServiceException, EscrowRewardException;
+    Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws ServiceException, ConsumeServiceException;
 
 
 

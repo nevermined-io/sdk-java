@@ -563,7 +563,7 @@ public class NeverminedManager extends BaseManager {
      * @throws EscrowRewardException EscrowRewardException
      */
     public boolean downloadAssetByOwner(DID did, int serviceIndex, String basePath)
-            throws OrderException, ServiceException, ConsumeServiceException {
+            throws ServiceException, ConsumeServiceException {
 
         Service service;
         DDO ddo;
@@ -572,7 +572,7 @@ public class NeverminedManager extends BaseManager {
             ddo = resolveDID(did);
         } catch (DDOException  e) {
             log.error("Error resolving did[" + did.getHash() + "]: " + e.getMessage());
-            throw new OrderException("Error processing Order with DID " + did.getDid(), e);
+            throw new ConsumeServiceException("Error resolving did " + did.getDid(), e);
         }
 
         if (serviceIndex >= 0)  {
