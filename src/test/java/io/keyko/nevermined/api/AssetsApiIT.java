@@ -278,7 +278,7 @@ public class AssetsApiIT {
         Boolean shouldntBeDownloaded = false;
         try {
             shouldntBeDownloaded = neverminedAPIConsumer.getAssetsAPI().ownerDownload(did, Service.DEFAULT_ACCESS_INDEX, "/tmp");
-        } catch (OrderException | ServiceException | ConsumeServiceException | EscrowRewardException e) {
+        } catch (ServiceException | ConsumeServiceException e) {
         }
         assertFalse(shouldntBeDownloaded);
     }
