@@ -133,6 +133,11 @@ public class AssetsImpl implements AssetsAPI {
         return neverminedManager.consumeBinary(serviceAgreementId, did, serviceDefinitionId, fileIndex, true, rangeStart, rangeEnd);
     }
 
+
+    public Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws OrderException, ServiceException, ConsumeServiceException {
+        return neverminedManager.downloadAssetByOwner(did, serviceIndex, basePath);
+    }
+
     @Override
     public Flowable<OrderResult> order(DID did, int serviceDefinitionId) throws OrderException {
         return neverminedManager.purchaseAssetFlowable(did, serviceDefinitionId);

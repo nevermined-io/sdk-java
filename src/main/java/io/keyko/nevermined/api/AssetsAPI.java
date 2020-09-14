@@ -247,6 +247,22 @@ public interface AssetsAPI {
      */
     OrderResult orderDirect(DID did, int serviceDefinitionId, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException;
 
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did of the DDO
+     * @param serviceIndex the service definition id
+     * @param basePath            the path where the asset will be downloaded
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws EscrowRewardException EscrowRewardException
+     */
+    Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws OrderException, ServiceException, ConsumeServiceException, EscrowRewardException;
+
+
+
     /**
      * Executes a remote service associated with an asset and serviceAgreementId
      * @param agreementId the agreement id
