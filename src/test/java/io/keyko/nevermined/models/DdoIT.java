@@ -98,7 +98,7 @@ public class DdoIT {
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, ACCESS_ALGORITHM_EXAMPLE_CONTENT);
         SortedMap<String, String> checksums = ddo.generateChecksums();
         assertEquals(4, checksums.size());
-        assertEquals("7db297971665c115f5d2665d1ac11846648eb4474053078dfca79ca531e6c7b1", checksums.get("0"));
+        assertEquals("1715f110cbdf0222caef2ebf9fc36b36df802615916917a5a30640a2cc264af4", checksums.get("0"));
 
         DID did = DID.builder(ddo.toJson(ddo.proof.checksum));
         log.debug("Did generated from checksums: " + did.did);

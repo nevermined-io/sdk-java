@@ -8,7 +8,7 @@ import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.config.NeverminedConfig;
 import io.keyko.nevermined.contracts.EscrowAccessSecretStoreTemplate;
 import io.keyko.nevermined.contracts.TemplateStoreManager;
-import io.keyko.nevermined.exceptions.DDOException;
+import io.keyko.nevermined.exceptions.*;
 import io.keyko.nevermined.external.GatewayService;
 import io.keyko.nevermined.manager.ManagerHelper;
 import io.keyko.nevermined.models.Balance;
@@ -262,6 +262,25 @@ public class AssetsApiIT {
         int consumedAssetsAfter = neverminedAPI.getAssetsAPI().consumerAssets(
                 neverminedAPIConsumer.getMainAccount().address).size();
         assertEquals(consumedAssetsBefore + 1, consumedAssetsAfter);
+    }
+
+    @Test
+    public void ownerDownload() throws Exception {
+
+        metadataBase.attributes.main.dateCreated = new Date();
+        DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
+        DID did = new DID(ddo.id);
+
+
+        final Boolean downloaded = neverminedAPI.getAssetsAPI().ownerDownload(did, Service.DEFAULT_ACCESS_INDEX, "/tmp");
+        assertTrue(downloaded);
+
+        Boolean shouldntBeDownloaded = false;
+        try {
+            shouldntBeDownloaded = neverminedAPIConsumer.getAssetsAPI().ownerDownload(did, Service.DEFAULT_ACCESS_INDEX, "/tmp");
+        } catch (ServiceException | ConsumeServiceException e) {
+        }
+        assertFalse(shouldntBeDownloaded);
     }
 
 

@@ -32,7 +32,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -550,6 +553,84 @@ public class NeverminedManager extends BaseManager {
     }
 
 
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did
+     * @return true if the asset was purchased successfully, if not false
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowRewardException EscrowRewardException
+     */
+    public boolean downloadAssetByOwner(DID did, int serviceIndex, String basePath)
+            throws ServiceException, ConsumeServiceException {
+
+        Service service;
+        DDO ddo;
+        // Checking if DDO is already there and serviceDefinitionId is included
+        try {
+            ddo = resolveDID(did);
+        } catch (DDOException  e) {
+            log.error("Error resolving did[" + did.getHash() + "]: " + e.getMessage());
+            throw new ConsumeServiceException("Error resolving did " + did.getDid(), e);
+        }
+
+        if (serviceIndex >= 0)  {
+            service = ddo.getService(serviceIndex);
+        } else {
+            service = ddo.getAccessService();
+            serviceIndex = service.index;
+        }
+
+
+        Map<String, Object> consumeData = fetchAssetDataBeforeConsume(did, serviceIndex);
+        // For direct access by owners we replace the /access URI by /download
+        String serviceEndpoint = ((String) consumeData.get("serviceEndpoint"))
+                .replace("/access", "/download");
+
+        List<AssetMetadata.File> files = (List<AssetMetadata.File>) consumeData.get("files");
+
+        String checkConsumerAddress = Keys.toChecksumAddress(getMainAccount().address);
+
+        //  getConsumeData returns a list with only one file in case of consuming by index
+
+        try {
+
+            String signature = generateSignature(did.getDid());
+            log.info("Signature: " + signature);
+
+            for (AssetMetadata.File file : files) {
+
+                try {
+                    String destinationPath = basePath + File.separator + did.getHash() + File.separator;
+                    if (null != file.name && !file.name.isEmpty())
+                        destinationPath = destinationPath + file.name;
+                    else
+                        destinationPath = destinationPath + file.index;
+
+                    GatewayService.downloadUrlByOwner(serviceEndpoint, checkConsumerAddress,
+                            did.getDid(), file.index, signature, false, 0, 0);
+
+                } catch (IOException e) {
+                    String msg = "Error downloading asset by owner with DID " + did.getDid();
+
+                    log.error(msg + ": " + e.getMessage());
+                    throw new ConsumeServiceException(msg, e);
+                }
+
+            }
+
+
+        } catch (IOException | CipherException e) {
+            String msg = "Error downloading asset with DID " + did.getDid();
+
+            log.error(msg + ": " + e.getMessage());
+            throw new ConsumeServiceException(msg, e);
+        }
+
+        return true;
+    }
+
     public List<byte[]> generateServiceConditionsId(String serviceAgreementId, String consumerAddress, DDO ddo, int serviceIndex) throws ServiceAgreementException, ServiceException {
 
         Service service = ddo.getService(serviceIndex);
@@ -901,7 +982,7 @@ public class NeverminedManager extends BaseManager {
 
     public String generateSignature(String message) throws IOException, CipherException {
         return EncodingHelper.signatureToString(
-            EthereumHelper.signMessage(message, getKeeperService().getCredentials()));
+                EthereumHelper.signMessage(message, getKeeperService().getCredentials()));
     }
 
     /**
