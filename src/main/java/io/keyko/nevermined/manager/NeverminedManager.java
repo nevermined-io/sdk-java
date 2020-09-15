@@ -556,7 +556,9 @@ public class NeverminedManager extends BaseManager {
     /**
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
      *
-     * @param did                 the did
+     * @param did  the did
+     * @param serviceIndex the service index in the ddo to download
+     * @param basePath path where we want to download the asset files
      * @return true if the asset was purchased successfully, if not false
      * @throws ServiceException ServiceException
      * @throws ConsumeServiceException ConsumeServiceException

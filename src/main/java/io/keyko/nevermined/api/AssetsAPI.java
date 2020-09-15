@@ -254,10 +254,9 @@ public interface AssetsAPI {
      * @param did                 the did of the DDO
      * @param serviceIndex the service definition id
      * @param basePath            the path where the asset will be downloaded
-     * @throws OrderException OrderException
+     * @return true if asset was downloaded correctly
      * @throws ServiceException ServiceException
      * @throws ConsumeServiceException ConsumeServiceException
-     * @throws EscrowRewardException EscrowRewardException
      */
     Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws ServiceException, ConsumeServiceException;
 

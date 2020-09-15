@@ -25,8 +25,9 @@ public class FaucetService {
     /**
      * Requests Network ETH to the faucet for paying the transactions gas
      *
+     * @param faucetUrl Faucet endpoint
      * @param address address requesting ETH from the faucet
-     * @return boolean
+     * @return FaucetResponse
      * @throws ServiceException if there is an error communicating with the Faucet
      */
     public static FaucetResponse requestEthFromFaucet(String faucetUrl, String address) throws ServiceException {
