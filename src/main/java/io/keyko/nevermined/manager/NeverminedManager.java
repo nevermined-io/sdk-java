@@ -558,9 +558,8 @@ public class NeverminedManager extends BaseManager {
      *
      * @param did                 the did
      * @return true if the asset was purchased successfully, if not false
-     * @throws OrderException OrderException
      * @throws ServiceException ServiceException
-     * @throws EscrowRewardException EscrowRewardException
+     * @throws ConsumeServiceException ConsumeServiceException
      */
     public boolean downloadAssetByOwner(DID did, int serviceIndex, String basePath)
             throws ServiceException, ConsumeServiceException {
