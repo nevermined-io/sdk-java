@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.keyko.nevermined</groupId>
     <artifactId>api</artifactId>
-    <version>0.3.3</version>
+    <version>0.3.4</version>
     <packaging>jar</packaging>
     <name>Nevermined Data Platform Java SDK</name>
     <url>https://github.com/keyko-io/nevermined-sdk-java</url>
