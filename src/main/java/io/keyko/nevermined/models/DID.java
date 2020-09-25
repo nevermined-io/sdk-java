@@ -1,7 +1,7 @@
 package io.keyko.nevermined.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.nevermined.exceptions.DIDFormatException;
@@ -11,7 +11,6 @@ import java.util.UUID;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DID {
 
-    @JsonProperty
     public String did;
 
     public static final String PREFIX = "did:nv:";
@@ -42,6 +41,7 @@ public class DID {
         return new DID(PREFIX + hash);
     }
 
+    @JsonValue
     public String getDid() {
         return did;
     }
