@@ -1,6 +1,7 @@
 package io.keyko.nevermined.models;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import org.apache.commons.io.IOUtils;
@@ -98,7 +99,7 @@ public class DdoIT {
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, ACCESS_ALGORITHM_EXAMPLE_CONTENT);
         SortedMap<String, String> checksums = ddo.generateChecksums();
         assertEquals(4, checksums.size());
-        assertEquals("1715f110cbdf0222caef2ebf9fc36b36df802615916917a5a30640a2cc264af4", checksums.get("0"));
+        assertEquals("1d9d75356a502bcead9da02cc2408562d169d2cdaec4de5398b19f1deea67fc2", checksums.get("0"));
 
         DID did = DID.builder(ddo.toJson(ddo.proof.checksum));
         log.debug("Did generated from checksums: " + did.did);
@@ -131,7 +132,7 @@ public class DdoIT {
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, COMPUTE_WORKFLOW_EXAMPLE_CONTENT);
         SortedMap<String, String> checksums = ddo.generateChecksums();
         assertEquals(1, checksums.size());
-        assertEquals("4c17580e13c74d5244dfe5bc574595978e43d9a544e8dd9287707d01a4a9687c", checksums.get("0"));
+        assertEquals("1e289b3e8e73332eb5d07c57c55b24c1b812581339f01dc5624c524bd77d1f16", checksums.get("0"));
 
         DID did = DID.builder(ddo.toJson(ddo.proof.checksum));
         log.debug("Did generated from checksums: " + did.did);
@@ -169,7 +170,7 @@ public class DdoIT {
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, ACCESS_WORKFLOW_EXAMPLE_CONTENT);
         SortedMap<String, String> checksums = ddo.generateChecksums();
         assertEquals(1, checksums.size());
-        assertEquals("2509a6cac6d8d3e50a1a8ea8a81704cdee42f136c548a4721547c4fedd576850", checksums.get("0"));
+        assertEquals("9c5744f6bef2d478a04a452a84046b96b95bcec35dcdfe1c094ed91bee1c6117", checksums.get("0"));
 
         DID did = DID.builder(ddo.toJson(ddo.proof.checksum));
         log.debug("Did generated from checksums: " + did.did);

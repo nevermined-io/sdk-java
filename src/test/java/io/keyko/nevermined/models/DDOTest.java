@@ -124,7 +124,11 @@ public class DDOTest {
 
     @Test
     public void testWorkflow() throws Exception {
+        // This tests both serialization and deserialization
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, DDO_JSON_WORKFLOW_CONTENT);
+        String ddoJson = ddo.toJson(ddo);
+        ddo = DDO.fromJSON(new TypeReference<DDO>() {
+        }, ddoJson);
 
         Service metadataService = ddo.getMetadataService();
 
