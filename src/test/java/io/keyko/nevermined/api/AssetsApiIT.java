@@ -22,11 +22,10 @@ import io.keyko.nevermined.models.service.types.ComputingService;
 import io.reactivex.Flowable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 
+import java.io.File;
 import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
@@ -62,6 +61,9 @@ public class AssetsApiIT {
     private static KeeperService keeper;
 
     private static Config config;
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -271,13 +273,19 @@ public class AssetsApiIT {
         DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
         DID did = new DID(ddo.id);
 
+        final Boolean downloaded = neverminedAPI.getAssetsAPI().ownerDownload(did, Service.DEFAULT_ACCESS_INDEX,
+                tempFolder.getRoot().getAbsolutePath());
 
-        final Boolean downloaded = neverminedAPI.getAssetsAPI().ownerDownload(did, Service.DEFAULT_ACCESS_INDEX, "/tmp");
+        String expectedDestinationPath = tempFolder.getRoot().getAbsolutePath() + File.separator + "datafile."
+                + did.getHash() + ".0" + File.separator + "shs_dataset_test.txt";
         assertTrue(downloaded);
+        assertTrue(new File(expectedDestinationPath).exists());
+
 
         Boolean shouldntBeDownloaded = false;
         try {
-            shouldntBeDownloaded = neverminedAPIConsumer.getAssetsAPI().ownerDownload(did, Service.DEFAULT_ACCESS_INDEX, "/tmp");
+            shouldntBeDownloaded = neverminedAPIConsumer.getAssetsAPI().ownerDownload(did, Service.DEFAULT_ACCESS_INDEX,
+                    tempFolder.getRoot().getAbsolutePath());
         } catch (ServiceException | ConsumeServiceException e) {
         }
         assertFalse(shouldntBeDownloaded);

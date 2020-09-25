@@ -282,6 +282,34 @@ public class GatewayService {
     /**
      * Calls a Gateway endpoint to download an asset
      * @param serviceEndpoint the service endpoint
+     * @param consumerAddress the address of the consumer
+     * @param did asset decentralized identifier
+     * @param index index position of the file in the DDO
+     * @param signature User signature of the service agreement
+     * @param destinationPath path where the downloaded asset will be stored
+     * @param startRange  the start of the bytes range
+     * @param endRange  the end of the bytes range
+     * @param isRangeRequest indicates if is a range request
+     * @throws IOException Exception during the download process
+     */
+    public static void downloadToPathByOwner(String serviceEndpoint, String consumerAddress, String did, int index,
+                                             String signature, String destinationPath, Boolean isRangeRequest,
+                                             Integer startRange, Integer endRange) throws IOException {
+
+
+        InputStream inputStream = downloadUrlByOwner(serviceEndpoint, consumerAddress, did, index, signature,
+                isRangeRequest, startRange, endRange);
+        ReadableByteChannel readableByteChannel = Channels.newChannel(inputStream);
+        FileOutputStream fileOutputStream = FileUtils.openOutputStream(new File(destinationPath));
+
+        fileOutputStream.getChannel()
+                .transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+
+    }
+
+    /**
+     * Calls a Gateway endpoint to download an asset
+     * @param serviceEndpoint the service endpoint
      * @return an InputStream that represents the binary content
      * @throws IOException Exception during the download process
      */
