@@ -1,9 +1,7 @@
 package io.keyko.nevermined.models.asset;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.*;
 import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.nevermined.models.AbstractModel;
 import io.keyko.nevermined.models.service.Service;
@@ -12,7 +10,6 @@ import io.keyko.nevermined.models.service.attributes.ServiceCuration;
 import io.keyko.nevermined.models.service.attributes.ServiceMain;
 
 import java.util.stream.Collectors;
-
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder(alphabetic = true)
@@ -81,6 +78,12 @@ public class AssetMetadata extends AbstractModel {
 
         @JsonProperty
         public String resourceId;
+
+        @JsonSetter("url")
+        public void setUrl(String url) {
+            this.name = new java.io.File(url).getName();
+            this.url = url;
+        }
 
 
         public File() {

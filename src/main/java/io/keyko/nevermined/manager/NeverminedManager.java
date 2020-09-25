@@ -552,18 +552,34 @@ public class NeverminedManager extends BaseManager {
 
     }
 
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did          the did
+     * @param serviceIndex the service index in the ddo to download
+     * @param basePath     path where we want to download the asset files
+     * @return true if the asset was purchased successfully, if not false
+     * @throws ServiceException        ServiceException
+     * @throws ConsumeServiceException ConsumeServiceException
+     */
+    public boolean downloadAssetByOwner(DID did, int serviceIndex, String basePath)
+            throws ServiceException, ConsumeServiceException {
+        return downloadAssetByOwner(did, serviceIndex, basePath, 0);
+    }
+
 
     /**
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
      *
-     * @param did  the did
+     * @param did          the did
      * @param serviceIndex the service index in the ddo to download
-     * @param basePath path where we want to download the asset files
+     * @param basePath     path where we want to download the asset files
+     * @param fileIndex    index of the file inside the files definition in metadata
      * @return true if the asset was purchased successfully, if not false
-     * @throws ServiceException ServiceException
+     * @throws ServiceException        ServiceException
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    public boolean downloadAssetByOwner(DID did, int serviceIndex, String basePath)
+    public boolean downloadAssetByOwner(DID did, int serviceIndex, String basePath, int fileIndex)
             throws ServiceException, ConsumeServiceException {
 
         Service service;
@@ -603,14 +619,10 @@ public class NeverminedManager extends BaseManager {
             for (AssetMetadata.File file : files) {
 
                 try {
-                    String destinationPath = basePath + File.separator + did.getHash() + File.separator;
-                    if (null != file.name && !file.name.isEmpty())
-                        destinationPath = destinationPath + file.name;
-                    else
-                        destinationPath = destinationPath + file.index;
-
-                    GatewayService.downloadUrlByOwner(serviceEndpoint, checkConsumerAddress,
-                            did.getDid(), file.index, signature, false, 0, 0);
+                    String destinationPath = buildDestinationPath(basePath, did, fileIndex, file);
+                    GatewayService.downloadToPathByOwner(serviceEndpoint, checkConsumerAddress,
+                            did.getDid(), file.index, signature, destinationPath, false,
+                            0, 0);
 
                 } catch (IOException e) {
                     String msg = "Error downloading asset by owner with DID " + did.getDid();
@@ -960,12 +972,7 @@ public class NeverminedManager extends BaseManager {
 
             // For each url we call to consume Gateway endpoint that requires consumerAddress, serviceAgreementId and url as a parameters
             try {
-                String destinationPath = basePath + File.separator + did.getHash() + File.separator;
-                if (null != file.name && !file.name.isEmpty())
-                    destinationPath = destinationPath + file.name;
-                else
-                    destinationPath = destinationPath + fileIndex;
-
+                String destinationPath = buildDestinationPath(basePath, did, fileIndex, file);
                 GatewayService.downloadToPath(serviceEndpoint, checkConsumerAddress, agreementId, did.getDid(),
                         fileIndex, signature, destinationPath, false, 0, 0);
 
@@ -979,6 +986,25 @@ public class NeverminedManager extends BaseManager {
         }
 
         return true;
+    }
+
+    /**
+     * Constructs the final path where the file should be downloaded
+     *
+     * @param basePath  the path where the asset will be downloaded
+     * @param did       the did
+     * @param fileIndex index of the file inside the files definition in metadata
+     * @param file      the asset metadata file
+     * @return the destination path to download the file
+     */
+    private String buildDestinationPath(String basePath, DID did, int fileIndex, AssetMetadata.File file) {
+        String destinationPath = basePath + File.separator + "datafile." + did.getHash() + "." + fileIndex + File.separator;
+        if (null != file.name && !file.name.isEmpty())
+            destinationPath = destinationPath + file.name;
+        else
+            destinationPath = destinationPath + fileIndex;
+
+        return destinationPath;
     }
 
     public String generateSignature(String message) throws IOException, CipherException {

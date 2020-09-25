@@ -120,7 +120,18 @@ public class DDOTest {
         assertTrue(AbstractModel.DATE_FORMAT.format(newDDO.updated).startsWith("20"));
     }
 
+    @Test
+    public void checkFiles() throws Exception {
+        DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, DDO_JSON_CONTENT);
+        String ddoJson = ddo.toJson();
+        ddo = DDO.fromJSON(new TypeReference<DDO>() {
+        }, ddoJson);
 
+        assertEquals(1, ddo.services.get(0).attributes.main.files.size());
+        assertEquals("https://raw.githubusercontent.com/tbertinmahieux/MSongsDB/master/Tasks_Demos/CoverSongs/shs_dataset_test.txt",
+                ddo.services.get(0).attributes.main.files.get(0).url);
+        assertEquals("shs_dataset_test.txt", ddo.services.get(0).attributes.main.files.get(0).name);
+    }
 
     @Test
     public void testWorkflow() throws Exception {
