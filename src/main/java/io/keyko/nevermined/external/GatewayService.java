@@ -475,4 +475,42 @@ public class GatewayService {
         return logs;
     }
 
+    /**
+     * Calls a gateway endpoint to get the compute status
+     *
+     * @param serviceEndpoint the gateway service endpoint
+     * @param consumerAddress the address of the consumer of the compute to the data job
+     * @param signature the signature of the executionId
+     * @return the current status of the compute job.
+     * @throws ServiceException ServiceException
+     */
+    public static ComputeStatus getComputeStatus(String serviceEndpoint, String consumerAddress, String signature)
+            throws ServiceException {
+
+        HttpResponse response;
+        ComputeStatus computeStatus;
+        Map<String, String> headers = new HashMap<>();
+        headers.put(HEADER_CONSUMER_ADDRESS, consumerAddress);
+        headers.put(HEADER_SIGNATURE, signature);
+
+        try {
+            response = HttpHelper.httpClientGet(serviceEndpoint, headers);
+        } catch (HttpException e) {
+            log.error("Exception getting the compute status: " + e.getMessage());
+            throw new ServiceException("Exception getting the compute status", e);
+        }
+
+        if (response.getStatusCode() != 200 && response.getStatusCode() != 201) {
+            log.error("Unable to get the compute status: " + response.toString());
+            throw new ServiceException("Unable to get compute status: " + response.toString());
+        }
+
+        try {
+            computeStatus = ComputeStatus.fromJSON(new TypeReference<>() {}, response.getBody());
+        } catch (IOException e) {
+            log.error("Exception parsing the compute status: " + e.getMessage());
+            throw new ServiceException("Unable to parse status", e);
+        }
+        return computeStatus;
+    }
 }

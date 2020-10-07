@@ -18,6 +18,7 @@ import io.keyko.nevermined.models.Order;
 import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.asset.OrderResult;
 import io.keyko.nevermined.models.gateway.ComputeLogs;
+import io.keyko.nevermined.models.gateway.ComputeStatus;
 import io.keyko.nevermined.models.gateway.ExecuteService;
 import io.keyko.nevermined.models.service.*;
 import io.keyko.nevermined.models.service.types.*;
@@ -1135,6 +1136,31 @@ public class NeverminedManager extends BaseManager {
             throw new ServiceException("Unable to generate signature", e);
         }
         return GatewayService.getComputeLogs(serviceEndpoint, consumerAddress, signature);
+    }
+
+    /**
+     * Generates the service endpoint and signature and calls the gateway to get the status of a compute job
+     *
+     * @param serviceAgreementId The agreement id for the compute to the data
+     * @param executionId The id of the compute job
+     * @param consumerAddress The address of the consumer of the compute to the data job
+     * @param providerConfig The configuration of the provider.
+     * @return The current status of the compute job.
+     * @throws ServiceException Service Exception
+     */
+    public ComputeStatus getComputeStatus(String serviceAgreementId, String executionId, String consumerAddress,
+                                        ProviderConfig providerConfig) throws ServiceException {
+        String serviceEndpoint = providerConfig.getAccessEndpoint()
+                .replace("/access", "/compute/status/");
+        serviceEndpoint += serviceAgreementId + "/" + executionId;
+        String signature;
+        try {
+            signature = generateSignature(executionId);
+        } catch (IOException | CipherException e) {
+            log.error("Exception generating signature: ", e.getMessage());
+            throw new ServiceException("Unable to generate signature", e);
+        }
+        return GatewayService.getComputeStatus(serviceEndpoint, consumerAddress, signature);
     }
 
 
