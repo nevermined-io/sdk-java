@@ -10,6 +10,7 @@ import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.asset.OrderResult;
+import io.keyko.nevermined.models.gateway.ComputeLogs;
 import io.keyko.nevermined.models.metadata.SearchResult;
 import io.keyko.nevermined.models.service.AuthConfig;
 import io.keyko.nevermined.models.service.ProviderConfig;
@@ -66,6 +67,12 @@ public class AssetsImpl implements AssetsAPI {
     @Override
     public DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException {
         return neverminedManager.registerComputeService(metadata, providerConfig, computingProvider);
+    }
+
+    @Override
+    public List<ComputeLogs> getComputeLogs(String serviceAgreementId, String executionId, String consumerAddress,
+                                            ProviderConfig providerConfig) throws ServiceException {
+        return neverminedManager.getComputeLogs(serviceAgreementId, executionId, consumerAddress, providerConfig);
     }
 
     @Override
