@@ -17,6 +17,8 @@ import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.Order;
 import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.asset.OrderResult;
+import io.keyko.nevermined.models.gateway.ComputeLogs;
+import io.keyko.nevermined.models.gateway.ComputeStatus;
 import io.keyko.nevermined.models.gateway.ExecuteService;
 import io.keyko.nevermined.models.service.*;
 import io.keyko.nevermined.models.service.types.*;
@@ -1109,6 +1111,56 @@ public class NeverminedManager extends BaseManager {
             throw new ServiceException("There was an error resolving the DID ", e);
         }
 
+    }
+
+    /**
+     * Generates the service endpoint and signature and calls the gateway to get the logs of a compute job
+     *
+     * @param serviceAgreementId The agreement id for the compute to the data
+     * @param executionId The id of the compute job
+     * @param consumerAddress The address of the consumer of the compute to the data job
+     * @param providerConfig The configuration of the provider.
+     * @return A list of log lines.
+     * @throws ServiceException Service Exception
+     */
+    public List<ComputeLogs> getComputeLogs(String serviceAgreementId, String executionId, String consumerAddress,
+                                            ProviderConfig providerConfig) throws ServiceException {
+        String serviceEndpoint = providerConfig.getAccessEndpoint()
+                .replace("/access", "/compute/logs/");
+        serviceEndpoint += serviceAgreementId + "/" + executionId;
+        String signature;
+        try {
+            signature = generateSignature(executionId);
+        } catch (IOException | CipherException e) {
+            log.error("Exception generating signature: ", e.getMessage());
+            throw new ServiceException("Unable to generate signature", e);
+        }
+        return GatewayService.getComputeLogs(serviceEndpoint, Keys.toChecksumAddress(consumerAddress), signature);
+    }
+
+    /**
+     * Generates the service endpoint and signature and calls the gateway to get the status of a compute job
+     *
+     * @param serviceAgreementId The agreement id for the compute to the data
+     * @param executionId The id of the compute job
+     * @param consumerAddress The address of the consumer of the compute to the data job
+     * @param providerConfig The configuration of the provider.
+     * @return The current status of the compute job.
+     * @throws ServiceException Service Exception
+     */
+    public ComputeStatus getComputeStatus(String serviceAgreementId, String executionId, String consumerAddress,
+                                        ProviderConfig providerConfig) throws ServiceException {
+        String serviceEndpoint = providerConfig.getAccessEndpoint()
+                .replace("/access", "/compute/status/");
+        serviceEndpoint += serviceAgreementId + "/" + executionId;
+        String signature;
+        try {
+            signature = generateSignature(executionId);
+        } catch (IOException | CipherException e) {
+            log.error("Exception generating signature: ", e.getMessage());
+            throw new ServiceException("Unable to generate signature", e);
+        }
+        return GatewayService.getComputeStatus(serviceEndpoint, Keys.toChecksumAddress(consumerAddress), signature);
     }
 
 

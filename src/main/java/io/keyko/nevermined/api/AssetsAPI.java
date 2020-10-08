@@ -6,6 +6,8 @@ import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.asset.OrderResult;
+import io.keyko.nevermined.models.gateway.ComputeLogs;
+import io.keyko.nevermined.models.gateway.ComputeStatus;
 import io.keyko.nevermined.models.metadata.SearchResult;
 import io.keyko.nevermined.models.service.AuthConfig;
 import io.keyko.nevermined.models.service.ProviderConfig;
@@ -357,5 +359,26 @@ public interface AssetsAPI {
      */
     Boolean getPermissions(DID did, String subjectAddress) throws DDOException;
 
+    /**
+     * Get the logs for the compute job with executionId and serviceAgreementId
+     * @param serviceAgreementId The service agreement id for the compute service
+     * @param executionId The execution id of the compute job
+     * @param consumerAddress The address of the consumer that executed the compute job
+     * @return a list of compute logs
+     * @throws ServiceException ServiceException
+     */
+    List<ComputeLogs> getComputeLogs(String serviceAgreementId, String executionId, String consumerAddress,
+                                     ProviderConfig providerConfig) throws ServiceException;
+
+    /**
+     * Get the status for the compute job with executionId and serviceAgreementId
+     * @param serviceAgreementId The service agreement id for the compute service
+     * @param executionId The execution id of the compute job
+     * @param consumerAddress The address of the consumer that executed the compute job
+     * @return The current status of the compute job
+     * @throws ServiceException ServiceException
+     */
+    ComputeStatus getComputeStatus(String serviceAgreementId, String executionId, String consumerAddress,
+                                 ProviderConfig providerConfig) throws ServiceException;
 
 }

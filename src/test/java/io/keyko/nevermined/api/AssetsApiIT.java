@@ -16,6 +16,8 @@ import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.asset.OrderResult;
+import io.keyko.nevermined.models.gateway.ComputeLogs;
+import io.keyko.nevermined.models.gateway.ComputeStatus;
 import io.keyko.nevermined.models.service.ProviderConfig;
 import io.keyko.nevermined.models.service.Service;
 import io.keyko.nevermined.models.service.types.ComputingService;
@@ -291,6 +293,27 @@ public class AssetsApiIT {
         assertFalse(shouldntBeDownloaded);
     }
 
+    // Ignore test until e2e compute elements are automated
+    @Ignore
+    @Test
+    public void testComputeLogs() throws Exception {
+        List<ComputeLogs> computeLogs = neverminedAPI.getAssetsAPI()
+                .getComputeLogs("9bc29134bb0b466a8ca9e171e649b5a647f2fc098c894a6ea0eaf4ec2ba4e535",
+                        "nevermined-compute-df4g7", neverminedAPI.getMainAccount().address,
+                        providerConfig);
+        assertNotNull(computeLogs);
+    }
+
+    // Ignore test until e2e compute elements are automated
+    @Ignore
+    @Test
+    public void testComputeStatus() throws Exception {
+        ComputeStatus computeStatus = neverminedAPI.getAssetsAPI()
+                .getComputeStatus("1d587c0143ac4400b8776178c57946f301fc53f966f64a65911fa53c8b497391",
+                        "nevermined-compute-8tfvn", neverminedAPI.getMainAccount().address,
+                        providerConfig);
+        assertNotNull(computeStatus);
+    }
 
     // TODO: Automate the Compute use cases e2e
     // Ignoring test until the e2e compute components are automated
