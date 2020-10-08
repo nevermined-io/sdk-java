@@ -1135,7 +1135,7 @@ public class NeverminedManager extends BaseManager {
             log.error("Exception generating signature: ", e.getMessage());
             throw new ServiceException("Unable to generate signature", e);
         }
-        return GatewayService.getComputeLogs(serviceEndpoint, consumerAddress, signature);
+        return GatewayService.getComputeLogs(serviceEndpoint, Keys.toChecksumAddress(consumerAddress), signature);
     }
 
     /**
@@ -1160,7 +1160,7 @@ public class NeverminedManager extends BaseManager {
             log.error("Exception generating signature: ", e.getMessage());
             throw new ServiceException("Unable to generate signature", e);
         }
-        return GatewayService.getComputeStatus(serviceEndpoint, consumerAddress, signature);
+        return GatewayService.getComputeStatus(serviceEndpoint, Keys.toChecksumAddress(consumerAddress), signature);
     }
 
 
