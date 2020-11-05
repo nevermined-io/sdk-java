@@ -19,7 +19,7 @@
     },
     {
       "name": "nevermined-contracts",
-      "version": "0.4.1"
+      "version": "0.5.0"
     },
     {
       "name": "metadata",
@@ -27,11 +27,7 @@
     },
     {
       "name": "gateway",
-      "version": "0.4.1"
-    },
-    {
-      "name": "events-handler",
-      "version": "0.1.0"
+      "version": "0.4.3"
     }
   ]
 }
