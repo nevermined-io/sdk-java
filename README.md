@@ -1,13 +1,12 @@
-[![banner](https://raw.githubusercontent.com/keyko-io/assets/master/images/logo/nevermined_logo_1.png)](https://nevermined.io)
-
+[![banner](https://raw.githubusercontent.com/nevermined-io/assets/main/images/logo/banner_logo.png)](https://nevermined.io)
 
 # Java API for Nevermined Data platform
 
 > Java SDK for connecting with Nevermined Data Platform
-> [keyko.io](https://keyko.io)
+> [nevermined.io](https://nevermined.io)
 
-![Java Maven CI](https://github.com/keyko-io/nevermined-sdk-java/workflows/Java%20Maven%20CI/badge.svg)
-![Release](https://github.com/keyko-io/nevermined-sdk-java/workflows/Release/badge.svg)
+![Java Maven CI](https://github.com/nevermined-io/sdk-java/workflows/Java%20Maven%20CI/badge.svg)
+![Release](https://github.com/nevermined-io/sdk-java/workflows/Release/badge.svg)
 [![javadoc](https://javadoc.io/badge2/io.keyko.nevermined/api/javadoc.svg)](https://javadoc.io/doc/io.keyko.nevermined/api)
 
 ---
@@ -150,7 +149,7 @@ Once you have initialized the API you can call the methods through their corresp
 
 ### Using the SDK with the Nevermined Tools
 
-If you are using [Nevermined Tools](https://github.com/keyko-io/nevermined-tools/) for playing with the Nevermined stack, 
+If you are using [Nevermined Tools](https://github.com/nevermined-io/tools/) for playing with the Nevermined stack, 
 you can use the following command to run the components necessary to have a fully functional environment:
 
 `bash start_nevermined.sh --no-commons --local-spree-node`
@@ -225,7 +224,7 @@ mvn clean test
 ### Integration Tests
 
 The execution of the integration tests require to have running the complete Nevermined stack using 
-[Nevermined Tools](https://github.com/keyko-io/nevermined-tools/).
+[Nevermined Tools](https://github.com/nevermined-io/tools/).
 
 After having the tools in your environment, you can run the components needed running:
 
