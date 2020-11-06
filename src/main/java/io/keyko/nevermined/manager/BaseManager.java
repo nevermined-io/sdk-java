@@ -1,8 +1,8 @@
 package io.keyko.nevermined.manager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.oceanprotocol.secretstore.core.EvmDto;
-import com.oceanprotocol.secretstore.core.SecretStoreDto;
+import io.keyko.secretstore.core.EvmDto;
+import io.keyko.secretstore.core.SecretStoreDto;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.keyko.common.helpers.UrlHelper;
