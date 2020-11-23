@@ -203,9 +203,6 @@ public class NeverminedManagerIT {
     public void resolveDID() throws Exception {
 
         DID did= DID.builder();
-        String oldUrl= "http://mymetadata.io/api";
-
-
         String checksum = "0xd190bc85ee50643baffe7afe84ec6a9dd5212b67223523cd8e4d88f9069255fb";
 
         ddoBase.id = did.toString();
@@ -214,15 +211,16 @@ public class NeverminedManagerIT {
         ddoBase.services.get(0).serviceEndpoint = newUrl;
         metadataApiService.createDDO(ddoBase);
 
-        boolean didRegistered= managerPublisher.registerDID(did, oldUrl, checksum, Arrays.asList(providerAddress));
+        boolean didRegistered= managerPublisher.registerDID(did, newUrl, checksum, Arrays.asList(providerAddress));
         assertTrue(didRegistered);
-
-        log.debug("Registering " + did.toString());
-        managerPublisher.registerDID(did, newUrl, checksum, Arrays.asList(providerAddress));
 
         DDO ddo= managerPublisher.resolveDID(did);
         assertEquals(did.getDid(), ddo.id);
         Assert.assertEquals(newUrl, ddo.services.get(0).serviceEndpoint);
+
+        DDO ddoFromEvent = managerPublisher.resolveDIDFromEvent(did);
+        assertEquals(did.getDid(), ddoFromEvent.id);
+        Assert.assertEquals(newUrl, ddoFromEvent.services.get(0).serviceEndpoint);
     }
 
     @Test(expected = DDOException.class)
