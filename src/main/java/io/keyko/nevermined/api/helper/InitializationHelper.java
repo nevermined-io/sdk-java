@@ -1,7 +1,7 @@
 package io.keyko.nevermined.api.helper;
 
-import com.oceanprotocol.secretstore.core.EvmDto;
-import com.oceanprotocol.secretstore.core.SecretStoreDto;
+import io.keyko.secretstore.core.EvmDto;
+import io.keyko.secretstore.core.SecretStoreDto;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.config.NeverminedConfig;
 import io.keyko.nevermined.contracts.*;
