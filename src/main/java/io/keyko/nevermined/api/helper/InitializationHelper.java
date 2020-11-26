@@ -1,12 +1,12 @@
 package io.keyko.nevermined.api.helper;
 
-import io.keyko.secretstore.core.EvmDto;
-import io.keyko.secretstore.core.SecretStoreDto;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.config.NeverminedConfig;
 import io.keyko.nevermined.contracts.*;
 import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.manager.*;
+import io.keyko.secretstore.core.EvmDto;
+import io.keyko.secretstore.core.SecretStoreDto;
 import org.web3j.crypto.CipherException;
 
 import java.io.IOException;
@@ -99,10 +99,8 @@ public class InitializationHelper {
      * @param keeperService   the keeperService
      * @param metadataApiService the MetadataApiService
      * @return an initialized NeverminedManager object
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public NeverminedManager getNeverminedManager(KeeperService keeperService, MetadataApiService metadataApiService) throws IOException, CipherException {
+    public NeverminedManager getNeverminedManager(KeeperService keeperService, MetadataApiService metadataApiService) {
         return NeverminedManager.getInstance(keeperService, metadataApiService);
     }
 
@@ -112,10 +110,8 @@ public class InitializationHelper {
      * @param keeperService   the keeperService
      * @param metadataApiService the MetadataApiService
      * @return an initialized AccountsManager object
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public AccountsManager getAccountsManager(KeeperService keeperService, MetadataApiService metadataApiService) throws IOException, CipherException {
+    public AccountsManager getAccountsManager(KeeperService keeperService, MetadataApiService metadataApiService) {
         return AccountsManager.getInstance(keeperService, metadataApiService)
                 .setFaucetUrl(neverminedConfig.getFaucetUrl());
     }
@@ -126,10 +122,8 @@ public class InitializationHelper {
      * @param keeperService   the keeperService
      * @param metadataApiService the MetadataApiService
      * @return an initialized AgreementsManager object
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public AgreementsManager getAgreementsManager(KeeperService keeperService, MetadataApiService metadataApiService) throws IOException, CipherException {
+    public AgreementsManager getAgreementsManager(KeeperService keeperService, MetadataApiService metadataApiService) {
         return AgreementsManager.getInstance(keeperService, metadataApiService);
     }
 
@@ -139,10 +133,8 @@ public class InitializationHelper {
      * @param keeperService   the keeperService
      * @param metadataApiService the MetadataApiService
      * @return an initialized ConditionsManager object
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public ConditionsManager getConditionsManager(KeeperService keeperService, MetadataApiService metadataApiService) throws IOException, CipherException {
+    public ConditionsManager getConditionsManager(KeeperService keeperService, MetadataApiService metadataApiService) {
         return ConditionsManager.getInstance(keeperService, metadataApiService);
     }
 
@@ -152,10 +144,8 @@ public class InitializationHelper {
      * @param keeperService   the keeperService
      * @param metadataApiService the MetadataApiService
      * @return an initialized TemplatesManager object
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public TemplatesManager getTemplatesManager(KeeperService keeperService, MetadataApiService metadataApiService) throws IOException, CipherException {
+    public TemplatesManager getTemplatesManager(KeeperService keeperService, MetadataApiService metadataApiService) {
         return TemplatesManager.getInstance(keeperService, metadataApiService);
     }
 
@@ -165,10 +155,8 @@ public class InitializationHelper {
      * @param keeperService   the KeeperService
      * @param metadataApiService the MetadataApiService
      * @return an initialized AssetsManager object
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public AssetsManager getAssetsManager(KeeperService keeperService, MetadataApiService metadataApiService) throws IOException, CipherException {
+    public AssetsManager getAssetsManager(KeeperService keeperService, MetadataApiService metadataApiService) {
         return AssetsManager.getInstance(keeperService, metadataApiService);
     }
 
@@ -177,8 +165,6 @@ public class InitializationHelper {
      *
      * @param keeperService   the KeeperService
      * @return an initialized ProvenanceManager object
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
     public ProvenanceManager getProvenanceManager(KeeperService keeperService) {
         return ProvenanceManager.getInstance(keeperService);
@@ -189,10 +175,8 @@ public class InitializationHelper {
      *
      * @param keeper the keeper Service
      * @return an instance of NeverminedToken contract deployed in keeper
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public NeverminedToken loadNeverminedTokenContract(KeeperService keeper) throws IOException, CipherException {
+    public NeverminedToken loadNeverminedTokenContract(KeeperService keeper) {
 
         return NeverminedToken.load(
                 neverminedConfig.getTokenAddress(),
@@ -207,10 +191,8 @@ public class InitializationHelper {
      *
      * @param keeper the keeper Service
      * @return an instance of TemplateStoreManager contract deployed in keeper
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public TemplateStoreManager loadTemplateStoreManagerContract(KeeperService keeper) throws IOException, CipherException {
+    public TemplateStoreManager loadTemplateStoreManagerContract(KeeperService keeper) {
         return TemplateStoreManager.load(
                 neverminedConfig.getTemplateStoreManagerAddress(),
                 keeper.getWeb3(),
@@ -224,10 +206,8 @@ public class InitializationHelper {
      *
      * @param keeper the keeper Service
      * @return an instance of Dispenser contract deployed in keeper
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public Dispenser loadDispenserContract(KeeperService keeper) throws IOException, CipherException {
+    public Dispenser loadDispenserContract(KeeperService keeper) {
         return Dispenser.load(
                 neverminedConfig.getDispenserAddress(),
                 keeper.getWeb3(),
@@ -242,10 +222,8 @@ public class InitializationHelper {
      *
      * @param keeper the keeper service
      * @return an instance of DIDRegistry contract deployed in keeper
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public DIDRegistry loadDIDRegistryContract(KeeperService keeper) throws IOException, CipherException {
+    public DIDRegistry loadDIDRegistryContract(KeeperService keeper) {
 
         return DIDRegistry.load(
                 neverminedConfig.getDidRegistryAddress(),
@@ -260,10 +238,8 @@ public class InitializationHelper {
      *
      * @param keeper the keeper Service
      * @return an instance of EscrowAccessSecretStoreTemplate contract deployed in keeper
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public EscrowAccessSecretStoreTemplate loadEscrowAccessSecretStoreTemplate(KeeperService keeper) throws IOException, CipherException {
+    public EscrowAccessSecretStoreTemplate loadEscrowAccessSecretStoreTemplate(KeeperService keeper) {
         return EscrowAccessSecretStoreTemplate.load(
                 neverminedConfig.getEscrowAccessSecretStoreTemplateAddress(),
                 keeper.getWeb3(),
@@ -276,10 +252,8 @@ public class InitializationHelper {
      *
      * @param keeper the keeper Service
      * @return an instance of LockRewardCondition contract deployed in keeper
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public LockRewardCondition loadLockRewardCondition(KeeperService keeper) throws IOException, CipherException {
+    public LockRewardCondition loadLockRewardCondition(KeeperService keeper) {
         return LockRewardCondition.load(
                 neverminedConfig.getLockrewardConditionsAddress(),
                 keeper.getWeb3(),
@@ -293,10 +267,8 @@ public class InitializationHelper {
      *
      * @param keeper the keeper Service
      * @return an instance of EscrowReward contract deployed in keeper
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public EscrowReward loadEscrowReward(KeeperService keeper) throws IOException, CipherException {
+    public EscrowReward loadEscrowReward(KeeperService keeper) {
         return EscrowReward.load(
                 neverminedConfig.getEscrowRewardConditionsAddress(),
                 keeper.getWeb3(),
@@ -310,10 +282,8 @@ public class InitializationHelper {
      *
      * @param keeper the keeper Service
      * @return an instance of AgreementStoreManager contract deployed in keeper
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public AgreementStoreManager loadAgreementStoreManager(KeeperService keeper) throws IOException, CipherException {
+    public AgreementStoreManager loadAgreementStoreManager(KeeperService keeper)  {
         return AgreementStoreManager.load(
                 neverminedConfig.getAgreementStoreManagerAddress(),
                 keeper.getWeb3(),
@@ -328,10 +298,8 @@ public class InitializationHelper {
      *
      * @param keeper the keeper Service
      * @return an instance of AgreementStoreManager contract deployed in keeper
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public ConditionStoreManager loadConditionStoreManager(KeeperService keeper) throws IOException, CipherException {
+    public ConditionStoreManager loadConditionStoreManager(KeeperService keeper) {
         return ConditionStoreManager.load(
                 neverminedConfig.getConditionStoreManagerAddress(),
                 keeper.getWeb3(),
@@ -345,10 +313,8 @@ public class InitializationHelper {
      *
      * @param keeper the keeper Service
      * @return an instance of AccessSecretStoreCondition contract deployed in keeper
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public AccessSecretStoreCondition loadAccessSecretStoreCondition(KeeperService keeper) throws IOException, CipherException {
+    public AccessSecretStoreCondition loadAccessSecretStoreCondition(KeeperService keeper) {
         return AccessSecretStoreCondition.load(
                 neverminedConfig.getAccessSsConditionsAddress(),
                 keeper.getWeb3(),
@@ -362,10 +328,8 @@ public class InitializationHelper {
      *
      * @param keeper the keeper Service
      * @return an instance of EscrowComputeExecutionTemplate contract deployed in keeper
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public EscrowComputeExecutionTemplate loadEscrowComputeExecutionTemplate(KeeperService keeper) throws IOException, CipherException {
+    public EscrowComputeExecutionTemplate loadEscrowComputeExecutionTemplate(KeeperService keeper) {
         return EscrowComputeExecutionTemplate.load(
                 neverminedConfig.getEscrowComputeExecutionTemplateAddress(),
                 keeper.getWeb3(),
@@ -378,10 +342,8 @@ public class InitializationHelper {
      *
      * @param keeper the keeper Service
      * @return an instance of ComputeExecutionCondition contract deployed in keeper
-     * @throws IOException     IOException
-     * @throws CipherException CipherException
      */
-    public ComputeExecutionCondition loadComputeExecutionCondition(KeeperService keeper) throws IOException, CipherException {
+    public ComputeExecutionCondition loadComputeExecutionCondition(KeeperService keeper) {
         return ComputeExecutionCondition.load(
                 neverminedConfig.getComputeExecutionConditionAddress(),
                 keeper.getWeb3(),

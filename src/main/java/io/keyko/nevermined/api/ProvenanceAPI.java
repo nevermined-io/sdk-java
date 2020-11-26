@@ -125,6 +125,7 @@ public interface ProvenanceAPI {
      * Search for provenance methods (used, wasGeneratedBy, etc.) given a DID
      *
      * @param did           Identifier of the entity we are looking provenance events
+     * @param method        Provenance methods to fetch
      * @return List of ProvenanceEvents found
      * @throws ProvenanceException DDOException
      */
