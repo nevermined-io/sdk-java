@@ -42,7 +42,7 @@ public class SecretStoreApiIT {
 
         String consumerAddress= config.getString("account.parity.address2");
         String consumerPassword= config.getString("account.parity.password2");
-        String consumerFile= config.getString("account.parity.file2");
+        String consumerFile= config.getString("account.parity.credentialsFile2");
 
         Config consumerConfig= config.withValue("account.main.address",
                 ConfigValueFactory.fromAnyRef(consumerAddress))

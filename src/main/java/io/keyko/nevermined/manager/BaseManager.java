@@ -1,11 +1,10 @@
 package io.keyko.nevermined.manager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.keyko.secretstore.core.EvmDto;
-import io.keyko.secretstore.core.SecretStoreDto;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.keyko.common.helpers.EncodingHelper;
+import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.common.helpers.UrlHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.contracts.*;
@@ -17,16 +16,18 @@ import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.service.types.AuthorizationService;
 import io.keyko.nevermined.models.service.types.MetadataService;
+import io.keyko.secretstore.core.EvmDto;
+import io.keyko.secretstore.core.SecretStoreDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.abi.EventEncoder;
 import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.datatypes.Event;
 import org.web3j.abi.datatypes.Type;
+import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Hash;
 import org.web3j.crypto.Keys;
 import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.RemoteFunctionCall;
 import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
@@ -559,6 +560,11 @@ public abstract class BaseManager {
     public byte[] getTemplateIdByName(String contractName) {
         return Hash.sha3(contractName.getBytes());
 
+    }
+
+    public String generateSignature(String message) throws IOException, CipherException {
+        return EncodingHelper.signatureToString(
+                EthereumHelper.signMessage(message, getKeeperService().getCredentials()));
     }
 
     @Override

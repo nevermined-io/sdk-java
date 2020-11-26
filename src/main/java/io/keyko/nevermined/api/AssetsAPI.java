@@ -379,6 +379,6 @@ public interface AssetsAPI {
      * @throws ServiceException ServiceException
      */
     ComputeStatus getComputeStatus(String serviceAgreementId, String executionId, String consumerAddress,
-                                 ProviderConfig providerConfig) throws ServiceException;
+                                   ProviderConfig providerConfig) throws ServiceException;
 
 }

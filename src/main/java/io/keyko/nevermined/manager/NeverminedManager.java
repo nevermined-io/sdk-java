@@ -1009,10 +1009,6 @@ public class NeverminedManager extends BaseManager {
         return destinationPath;
     }
 
-    public String generateSignature(String message) throws IOException, CipherException {
-        return EncodingHelper.signatureToString(
-                EthereumHelper.signMessage(message, getKeeperService().getCredentials()));
-    }
 
     /**
      * Downloads a single file of an Asset previously ordered through a Service Agreement

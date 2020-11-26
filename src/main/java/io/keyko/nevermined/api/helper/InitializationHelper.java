@@ -173,6 +173,18 @@ public class InitializationHelper {
     }
 
     /**
+     * Initialize an instance of ProvenanceManager
+     *
+     * @param keeperService   the KeeperService
+     * @return an initialized ProvenanceManager object
+     * @throws IOException     IOException
+     * @throws CipherException CipherException
+     */
+    public ProvenanceManager getProvenanceManager(KeeperService keeperService) {
+        return ProvenanceManager.getInstance(keeperService);
+    }
+
+    /**
      * Loads the NeverminedToken contract from Keeper
      *
      * @param keeper the keeper Service
