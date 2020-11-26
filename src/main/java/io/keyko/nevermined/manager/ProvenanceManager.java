@@ -34,10 +34,10 @@ public class ProvenanceManager extends BaseManager {
     }
 
     /**
-     * Gets an instance of AssetManager
+     * Gets an instance of ProvenanceManager
      *
      * @param keeperService   instance of keeperService
-     * @return an initialized instance of AssetManager
+     * @return an initialized instance of ProvenanceManager
      */
     public static ProvenanceManager getInstance(KeeperService keeperService) {
         return new ProvenanceManager(keeperService);
