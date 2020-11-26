@@ -97,7 +97,6 @@ public class ProvenanceApiIT {
         final List<ProvenanceEvent> provenanceEvents = neverminedAPI.getProvenanceAPI()
                 .getDIDProvenanceEvents(ddo.getDid());
 
-        Thread.sleep(3000);
         assertEquals(2, provenanceEvents.size());
     }
 
