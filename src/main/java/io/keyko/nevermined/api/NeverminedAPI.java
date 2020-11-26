@@ -1,7 +1,7 @@
 package io.keyko.nevermined.api;
 
-import com.oceanprotocol.secretstore.core.EvmDto;
-import com.oceanprotocol.secretstore.core.SecretStoreDto;
+import io.keyko.secretstore.core.EvmDto;
+import io.keyko.secretstore.core.SecretStoreDto;
 import com.typesafe.config.Config;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.config.NeverminedConfig;
@@ -41,6 +41,7 @@ public class NeverminedAPI {
     private SecretStoreManager secretStoreManager;
     private NeverminedManager neverminedManager;
     private AssetsManager assetsManager;
+    private ProvenanceManager provenanceManager;
     private AccountsManager accountsManager;
     private AgreementsManager agreementsManager;
     private ConditionsManager conditionsManager;
@@ -65,6 +66,7 @@ public class NeverminedAPI {
     private ConditionsAPI conditionsAPI;
     private TokensAPI tokensAPI;
     private AssetsAPI assetsAPI;
+    private ProvenanceAPI provenanceAPI;
     private SecretStoreAPI secretStoreAPI;
     private TemplatesAPI templatesAPI;
 
@@ -234,12 +236,16 @@ public class NeverminedAPI {
                     .setMainAccount(neverminedAPI.mainAccount)
                     .setDidRegistryContract(neverminedAPI.didRegistryContract);
 
+            neverminedAPI.provenanceManager = initializationHelper.getProvenanceManager(neverminedAPI.keeperService);
+            neverminedAPI.provenanceManager.setDidRegistryContract(neverminedAPI.didRegistryContract);
+
             neverminedAPI.accountsAPI = new AccountsImpl(neverminedAPI.accountsManager);
             neverminedAPI.agreementsAPI = new AgreementsImpl(neverminedAPI.agreementsManager, neverminedAPI.neverminedManager);
             neverminedAPI.conditionsAPI = new ConditionsImpl(neverminedAPI.conditionsManager);
             neverminedAPI.tokensAPI = new TokensImpl(neverminedAPI.accountsManager);
             neverminedAPI.secretStoreAPI = new SecretStoreImpl(neverminedAPI.secretStoreManager);
             neverminedAPI.assetsAPI = new AssetsImpl(neverminedAPI.neverminedManager, neverminedAPI.assetsManager, neverminedAPI.agreementsManager);
+            neverminedAPI.provenanceAPI = new ProvenanceImpl(neverminedAPI.neverminedManager, neverminedAPI.provenanceManager);
             neverminedAPI.templatesAPI = new TemplatesImpl(neverminedAPI.templatesManager);
 
             return neverminedAPI;
@@ -315,6 +321,15 @@ public class NeverminedAPI {
      */
     public AssetsAPI getAssetsAPI() {
         return this.assetsAPI;
+    }
+
+    /**
+     * Gets the ProvenanceAPI
+     *
+     * @return an instance of an Implementation class of ProvenanceAPI
+     */
+    public ProvenanceAPI getProvenanceAPI() {
+        return this.provenanceAPI;
     }
 
     /**

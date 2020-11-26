@@ -64,17 +64,17 @@ public abstract class BaseOceanExecutor implements Executor {
 
             config = config.withValue("account.main.address", ConfigValueFactory.fromAnyRef(config.getString("account.parity.address2")))
                     .withValue("account.main.password", ConfigValueFactory.fromAnyRef(config.getString("account.parity.password2")))
-                    .withValue("account.main.credentialsFile", ConfigValueFactory.fromAnyRef(config.getString("account.parity.file2")));
+                    .withValue("account.main.credentialsFile", ConfigValueFactory.fromAnyRef(config.getString("account.parity.credentialsFile2")));
             neverminedAPIList.add(NeverminedAPI.getInstance(config));
 
             config = config.withValue("account.main.address", ConfigValueFactory.fromAnyRef(config.getString("account.parity.address3")))
                     .withValue("account.main.password", ConfigValueFactory.fromAnyRef(config.getString("account.parity.password3")))
-                    .withValue("account.main.credentialsFile", ConfigValueFactory.fromAnyRef(config.getString("account.parity.file3")));
+                    .withValue("account.main.credentialsFile", ConfigValueFactory.fromAnyRef(config.getString("account.parity.credentialsFile3")));
             neverminedAPIList.add(NeverminedAPI.getInstance(config));
 
             config = config.withValue("account.main.address", ConfigValueFactory.fromAnyRef(config.getString("account.parity.address4")))
                     .withValue("account.main.password", ConfigValueFactory.fromAnyRef(config.getString("account.parity.password4")))
-                    .withValue("account.main.credentialsFile", ConfigValueFactory.fromAnyRef(config.getString("account.parity.file4")));
+                    .withValue("account.main.credentialsFile", ConfigValueFactory.fromAnyRef(config.getString("account.parity.credentialsFile4")));
             neverminedAPIList.add(NeverminedAPI.getInstance(config));
 
 

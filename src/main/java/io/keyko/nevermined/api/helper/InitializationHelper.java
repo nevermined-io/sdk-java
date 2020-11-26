@@ -1,7 +1,7 @@
 package io.keyko.nevermined.api.helper;
 
-import com.oceanprotocol.secretstore.core.EvmDto;
-import com.oceanprotocol.secretstore.core.SecretStoreDto;
+import io.keyko.secretstore.core.EvmDto;
+import io.keyko.secretstore.core.SecretStoreDto;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.config.NeverminedConfig;
 import io.keyko.nevermined.contracts.*;
@@ -170,6 +170,18 @@ public class InitializationHelper {
      */
     public AssetsManager getAssetsManager(KeeperService keeperService, MetadataApiService metadataApiService) throws IOException, CipherException {
         return AssetsManager.getInstance(keeperService, metadataApiService);
+    }
+
+    /**
+     * Initialize an instance of ProvenanceManager
+     *
+     * @param keeperService   the KeeperService
+     * @return an initialized ProvenanceManager object
+     * @throws IOException     IOException
+     * @throws CipherException CipherException
+     */
+    public ProvenanceManager getProvenanceManager(KeeperService keeperService) {
+        return ProvenanceManager.getInstance(keeperService);
     }
 
     /**

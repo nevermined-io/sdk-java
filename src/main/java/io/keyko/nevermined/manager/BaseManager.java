@@ -1,10 +1,10 @@
 package io.keyko.nevermined.manager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.oceanprotocol.secretstore.core.EvmDto;
-import com.oceanprotocol.secretstore.core.SecretStoreDto;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import io.keyko.common.helpers.EncodingHelper;
+import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.common.helpers.UrlHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.contracts.*;
@@ -16,18 +16,22 @@ import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.service.types.AuthorizationService;
 import io.keyko.nevermined.models.service.types.MetadataService;
+import io.keyko.secretstore.core.EvmDto;
+import io.keyko.secretstore.core.SecretStoreDto;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.web3j.abi.EventEncoder;
 import org.web3j.abi.FunctionReturnDecoder;
 import org.web3j.abi.datatypes.Event;
 import org.web3j.abi.datatypes.Type;
+import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Hash;
 import org.web3j.crypto.Keys;
 import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple6;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -173,16 +177,41 @@ public abstract class BaseManager {
 
     }
 
-
     /**
-     * Given a DID, scans the DIDRegistry events on-chain to resolve the
-     * Metadata API url and return the DDO found
+     * Given a DID, fetch the on-chain url from the DIDRegistry. That urls resolves
+     * the DDO stored in the Metadata API. This method returns the DDO found
      *
      * @param did the did
      * @return DDO
      * @throws DDOException      DDOException
      */
     public DDO resolveDID(DID did) throws DDOException {
+
+
+        try {
+            final Tuple6<String, byte[], String, String, BigInteger, List<String>> didAttributes =
+                    didRegistry.getDIDRegister(EncodingHelper.hexStringToBytes(did.getHash())).send();
+
+            String didUrl = didAttributes.component3();
+
+            MetadataApiService ddoMetadataDto = MetadataApiService.getInstance(UrlHelper.getBaseUrl(didUrl));
+            return ddoMetadataDto.getDDO(didUrl);
+
+        } catch (Exception ex) {
+            log.error("Unable to retrieve DDO " + ex.getMessage());
+            throw new DDOException("Unable to retrieve DDO " + ex.getMessage());
+        }
+    }
+
+    /**
+     * Given a DID, scans the DIDRegistry events to resolve the
+     * Metadata API url and return the DDO found
+     *
+     * @param did the did
+     * @return DDO
+     * @throws DDOException      DDOException
+     */
+    public DDO resolveDIDFromEvent(DID did) throws DDOException {
 
         EthFilter didFilter = new EthFilter(
                 DefaultBlockParameterName.EARLIEST,
@@ -217,8 +246,8 @@ public abstract class BaseManager {
             List<Type> nonIndexed = FunctionReturnDecoder.decode(((EthLog.LogObject) logResult).getData(), event.getNonIndexedParameters());
             String didUrl = nonIndexed.get(0).getValue().toString();
 
-            MetadataApiService ddoAquariosDto = MetadataApiService.getInstance(UrlHelper.getBaseUrl(didUrl));
-            return ddoAquariosDto.getDDO(didUrl);
+            MetadataApiService ddoMetadataDto = MetadataApiService.getInstance(UrlHelper.getBaseUrl(didUrl));
+            return ddoMetadataDto.getDDO(didUrl);
 
         } catch (Exception ex) {
             log.error("Unable to retrieve DDO " + ex.getMessage());
@@ -531,6 +560,11 @@ public abstract class BaseManager {
     public byte[] getTemplateIdByName(String contractName) {
         return Hash.sha3(contractName.getBytes());
 
+    }
+
+    public String generateSignature(String message) throws IOException, CipherException {
+        return EncodingHelper.signatureToString(
+                EthereumHelper.signMessage(message, getKeeperService().getCredentials()));
     }
 
     @Override

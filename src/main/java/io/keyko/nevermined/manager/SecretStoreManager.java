@@ -1,10 +1,10 @@
 package io.keyko.nevermined.manager;
 
 
-import com.oceanprotocol.secretstore.auth.ConsumerWorker;
-import com.oceanprotocol.secretstore.auth.PublisherWorker;
-import com.oceanprotocol.secretstore.core.EvmDto;
-import com.oceanprotocol.secretstore.core.SecretStoreDto;
+import io.keyko.secretstore.auth.ConsumerWorker;
+import io.keyko.secretstore.auth.PublisherWorker;
+import io.keyko.secretstore.core.EvmDto;
+import io.keyko.secretstore.core.SecretStoreDto;
 import io.keyko.nevermined.exceptions.EncryptionException;
 
 import java.io.IOException;

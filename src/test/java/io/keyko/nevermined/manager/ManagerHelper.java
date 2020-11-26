@@ -1,7 +1,7 @@
 package io.keyko.nevermined.manager;
 
-import com.oceanprotocol.secretstore.core.EvmDto;
-import com.oceanprotocol.secretstore.core.SecretStoreDto;
+import io.keyko.secretstore.core.EvmDto;
+import io.keyko.secretstore.core.SecretStoreDto;
 import com.typesafe.config.Config;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.common.web3.    PersonalTransactionManager;
@@ -20,7 +20,7 @@ public abstract class ManagerHelper {
 
     private static final Logger log = LogManager.getLogger(ManagerHelper.class);
 
-    public enum VmClient { ganache, parity}
+    public enum VmClient { ganache, parity, main}
 
     public static KeeperService getKeeper(Config config) throws IOException, CipherException {
         return getKeeper(config, VmClient.ganache);
@@ -41,7 +41,7 @@ public abstract class ManagerHelper {
                 config.getString("keeper.url"),
                 config.getString("account." + client.toString() + ".address"),
                 config.getString("account." + client.toString() + ".password"),
-                config.getString("account." + client.toString() + ".file"),
+                config.getString("account." + client.toString() + ".credentialsFile"),
                 BigInteger.valueOf(config.getLong("keeper.gasLimit")),
                 BigInteger.valueOf(config.getLong("keeper.gasPrice")),
                 config.getInt("keeper.tx.attempts"),
@@ -57,7 +57,7 @@ public abstract class ManagerHelper {
                 config.getString("keeper.url"),
                 config.getString("account." + client.toString() + ".address" + nAddress),
                 config.getString("account." + client.toString() + ".password" + nAddress),
-                config.getString("account." + client.toString() + ".file" + nAddress),
+                config.getString("account." + client.toString() + ".credentialsFile" + nAddress),
                 config.getInt("keeper.tx.attempts"),
                 config.getLong("keeper.tx.sleepDuration")
         );
@@ -159,7 +159,7 @@ public abstract class ManagerHelper {
         properties.put(NeverminedConfig.CONSUME_BASE_PATH, config.getString("consume.basePath"));
         properties.put(NeverminedConfig.MAIN_ACCOUNT_ADDRESS, config.getString("account.parity.address" + numAddress));
         properties.put(NeverminedConfig.MAIN_ACCOUNT_PASSWORD, config.getString("account.parity.password" + numAddress));
-        properties.put(NeverminedConfig.MAIN_ACCOUNT_CREDENTIALS_FILE, config.getString("account.parity.file" + numAddress));
+        properties.put(NeverminedConfig.MAIN_ACCOUNT_CREDENTIALS_FILE, config.getString("account.parity.credentialsFile" + numAddress));
         properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
         properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
         properties.put(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
