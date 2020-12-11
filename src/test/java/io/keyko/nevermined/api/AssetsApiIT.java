@@ -51,7 +51,6 @@ public class AssetsApiIT {
 
     private static String METADATA_WORKFLOW_JSON_SAMPLE = "src/test/resources/examples/metadata-workflow.json";
     private static String METADATA_WORKFLOW_JSON_CONTENT;
-    private static AssetMetadata metadataBaseWorkflow;
 
     private static String COMPUTING_PROVIDER_JSON_SAMPLE = "src/test/resources/examples/computing-provider-example.json";
     private static String COMPUTING_PROVIDER_JSON_CONTENT;
@@ -349,22 +348,46 @@ public class AssetsApiIT {
         log.debug("Execution Request took " + (endTime - startTime) + " milliseconds");
         assertNotNull(executionResult.getExecutionId());
 
-        // wait a couple of seconds for the jobs to start
-        TimeUnit.SECONDS.sleep(5);
-
         // 6. Get compute status
-        ComputeStatus status = neverminedAPIConsumer.getAssetsAPI().getComputeStatus(
-            EthereumHelper.add0x(orderResult.getServiceAgreementId()),
-            executionResult.getExecutionId(),
-            providerConfig);
-        assertNotNull(status);
-
+        // The jobs take some time to start we are going to retrie a couple of times
+        // in case we get and exception
+        Integer retries = 0;
+        while (true) {
+            try {
+                ComputeStatus status = neverminedAPIConsumer.getAssetsAPI().getComputeStatus(
+                    EthereumHelper.add0x(orderResult.getServiceAgreementId()),
+                    executionResult.getExecutionId(),
+                    providerConfig);
+                assertNotNull(status);
+                break;
+            } catch (ServiceException e) {
+                retries += 1;
+                if (retries == 3) {
+                    throw e;
+                }
+                TimeUnit.SECONDS.sleep(10);
+            }
+        }
         // 7. Get compute logs
-        List<ComputeLogs> logs = neverminedAPIConsumer.getAssetsAPI().getComputeLogs(
-            EthereumHelper.add0x(orderResult.getServiceAgreementId()),
-            executionResult.getExecutionId(),
-            providerConfig);
-        assertNotNull(logs);
+        // The jobs take some time to start we are going to retrie a couple of times
+        // in case we get and exception
+        retries = 0;
+        while (true) {
+            try {
+                List<ComputeLogs> logs = neverminedAPIConsumer.getAssetsAPI().getComputeLogs(
+                    EthereumHelper.add0x(orderResult.getServiceAgreementId()),
+                    executionResult.getExecutionId(),
+                    providerConfig);
+                assertNotNull(logs);
+                break;
+            } catch (ServiceException e) {
+                retries += 1;
+                if (retries == 3) {
+                    throw e;
+                }
+                TimeUnit.SECONDS.sleep(10);
+            }
+        }
     }
 
 
