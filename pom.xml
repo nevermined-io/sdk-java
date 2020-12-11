@@ -24,7 +24,7 @@
         <final-name>nevermined-sdk</final-name>
 
         <web3j.version>4.5.18</web3j.version>
-        <common-utils.version>0.3.2</common-utils.version>
+        <common-utils.version>0.4.0</common-utils.version>
 
         <nevermined.contracts.version>0.5.2</nevermined.contracts.version>
         <secretstore.version>0.1.0</secretstore.version>

@@ -7,7 +7,6 @@ import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.FromJsonToModel;
 
 import java.util.List;
-import java.util.Optional;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ComputeStatus extends AbstractModel implements FromJsonToModel {

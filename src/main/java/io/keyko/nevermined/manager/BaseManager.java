@@ -3,8 +3,11 @@ package io.keyko.nevermined.manager;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+
+import io.keyko.common.exceptions.CryptoException;
 import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.helpers.EthereumHelper;
+import io.keyko.common.helpers.JwtHelper;
 import io.keyko.common.helpers.UrlHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.contracts.*;
@@ -96,11 +99,10 @@ public abstract class BaseManager {
         }
     }
 
-
     /**
      * Constructor
      *
-     * @param keeperService   KeeperService
+     * @param keeperService      KeeperService
      * @param metadataApiService MetadataApiService
      */
     public BaseManager(KeeperService keeperService, MetadataApiService metadataApiService) {
@@ -124,20 +126,24 @@ public abstract class BaseManager {
         }
     }
 
-    public List<AssetMetadata.File> getDecriptedSecretStoreMetadataFiles(DDO ddo) throws IOException, EncryptionException, InterruptedException {
+    public List<AssetMetadata.File> getDecriptedSecretStoreMetadataFiles(DDO ddo)
+            throws IOException, EncryptionException, InterruptedException {
         return getDecriptedSecretStoreMetadataFiles(ddo, MAX_SS_RETRIES);
     }
 
-    public List<AssetMetadata.File> getDecriptedSecretStoreMetadataFiles(DDO ddo, int retries) throws IOException, EncryptionException, InterruptedException {
+    public List<AssetMetadata.File> getDecriptedSecretStoreMetadataFiles(DDO ddo, int retries)
+            throws IOException, EncryptionException, InterruptedException {
         int counter = 0;
         AuthorizationService authorizationService = ddo.getAuthorizationService();
         SecretStoreManager secretStoreManager = getSecretStoreInstance(authorizationService);
 
-        String jsonFiles= null;
+        String jsonFiles = null;
         while (counter < retries) {
             try {
-                jsonFiles = secretStoreManager.decryptDocument(ddo.getDid().getHash(), ddo.getMetadataService().attributes.encryptedFiles);
-                return DDO.fromJSON(new TypeReference<ArrayList<AssetMetadata.File>>() {}, jsonFiles);
+                jsonFiles = secretStoreManager.decryptDocument(ddo.getDid().getHash(),
+                        ddo.getMetadataService().attributes.encryptedFiles);
+                return DDO.fromJSON(new TypeReference<ArrayList<AssetMetadata.File>>() {
+                }, jsonFiles);
             } catch (EncryptionException e) {
                 log.warn("Unable to decrypt [" + counter + "]");
                 counter++;
@@ -148,16 +154,14 @@ public abstract class BaseManager {
 
     }
 
-    public boolean tokenApprove(NeverminedToken tokenContract, String spenderAddress, String price) throws TokenApproveException {
+    public boolean tokenApprove(NeverminedToken tokenContract, String spenderAddress, String price)
+            throws TokenApproveException {
 
         String checksumAddress = Keys.toChecksumAddress(spenderAddress);
 
         try {
 
-            TransactionReceipt receipt = tokenContract.approve(
-                    checksumAddress,
-                    new BigInteger(price)
-            ).send();
+            TransactionReceipt receipt = tokenContract.approve(checksumAddress, new BigInteger(price)).send();
 
             if (!receipt.getStatus().equals("0x1")) {
                 String msg = "The Status received is not valid executing Token Approve: " + receipt.getStatus();
@@ -183,14 +187,13 @@ public abstract class BaseManager {
      *
      * @param did the did
      * @return DDO
-     * @throws DDOException      DDOException
+     * @throws DDOException DDOException
      */
     public DDO resolveDID(DID did) throws DDOException {
 
-
         try {
-            final Tuple6<String, byte[], String, String, BigInteger, List<String>> didAttributes =
-                    didRegistry.getDIDRegister(EncodingHelper.hexStringToBytes(did.getHash())).send();
+            final Tuple6<String, byte[], String, String, BigInteger, List<String>> didAttributes = didRegistry
+                    .getDIDRegister(EncodingHelper.hexStringToBytes(did.getHash())).send();
 
             String didUrl = didAttributes.component3();
 
@@ -204,20 +207,17 @@ public abstract class BaseManager {
     }
 
     /**
-     * Given a DID, scans the DIDRegistry events to resolve the
-     * Metadata API url and return the DDO found
+     * Given a DID, scans the DIDRegistry events to resolve the Metadata API url and
+     * return the DDO found
      *
      * @param did the did
      * @return DDO
-     * @throws DDOException      DDOException
+     * @throws DDOException DDOException
      */
     public DDO resolveDIDFromEvent(DID did) throws DDOException {
 
-        EthFilter didFilter = new EthFilter(
-                DefaultBlockParameterName.EARLIEST,
-                DefaultBlockParameterName.LATEST,
-                didRegistry.getContractAddress()
-        );
+        EthFilter didFilter = new EthFilter(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST,
+                didRegistry.getContractAddress());
 
         try {
 
@@ -243,7 +243,8 @@ public abstract class BaseManager {
                 throw new DDOException("No events found for " + did.toString());
 
             EthLog.LogResult logResult = logs.get(numLogs - 1);
-            List<Type> nonIndexed = FunctionReturnDecoder.decode(((EthLog.LogObject) logResult).getData(), event.getNonIndexedParameters());
+            List<Type> nonIndexed = FunctionReturnDecoder.decode(((EthLog.LogObject) logResult).getData(),
+                    event.getNonIndexedParameters());
             String didUrl = nonIndexed.get(0).getValue().toString();
 
             MetadataApiService ddoMetadataDto = MetadataApiService.getInstance(UrlHelper.getBaseUrl(didUrl));
@@ -254,7 +255,6 @@ public abstract class BaseManager {
             throw new DDOException("Unable to retrieve DDO " + ex.getMessage());
         }
     }
-
 
     public ContractAddresses getContractAddresses() {
         return contractAddresses;
@@ -350,7 +350,8 @@ public abstract class BaseManager {
     }
 
     /**
-     * Set the EvmDto necessary to stablish the encryption/decryption flow necessary by Secret Store
+     * Set the EvmDto necessary to stablish the encryption/decryption flow necessary
+     * by Secret Store
      *
      * @param evmDto EvmDto
      * @return this
@@ -425,7 +426,6 @@ public abstract class BaseManager {
         this.agreementStoreManager = contract;
         return this;
     }
-
 
     /**
      * It sets the AgreementStoreManager stub instance
@@ -513,7 +513,8 @@ public abstract class BaseManager {
      * @param escrowComputeExecutionTemplate EscrowComputeExecutionTemplate instance
      * @return BaseManager instance
      */
-    public BaseManager setEscrowComputeExecutionTemplate(EscrowComputeExecutionTemplate escrowComputeExecutionTemplate) {
+    public BaseManager setEscrowComputeExecutionTemplate(
+            EscrowComputeExecutionTemplate escrowComputeExecutionTemplate) {
         this.escrowComputeExecutionTemplate = escrowComputeExecutionTemplate;
         return this;
     }
@@ -537,7 +538,6 @@ public abstract class BaseManager {
         this.accessSecretStoreCondition = accessSecretStoreCondition;
         return this;
     }
-
 
     public Account getMainAccount() {
         return mainAccount;
@@ -563,8 +563,27 @@ public abstract class BaseManager {
     }
 
     public String generateSignature(String message) throws IOException, CipherException {
-        return EncodingHelper.signatureToString(
-                EthereumHelper.signMessage(message, getKeeperService().getCredentials()));
+        return EncodingHelper
+                .signatureToString(EthereumHelper.signMessage(message, getKeeperService().getCredentials()));
+    }
+
+    public String generateAccessGrantToken(String serviceAgreementId, DID did)
+            throws CryptoException, IOException, CipherException {
+        return JwtHelper.generateAccessGrantToken(getKeeperService().getCredentials(), serviceAgreementId, did.getDid());
+    }
+
+    public String generateDownloadGrantToken(DID did) throws CryptoException, IOException, CipherException {
+        return JwtHelper.generateDownloadGrantToken(getKeeperService().getCredentials(), did.getDid());
+    }
+
+    public String generateExecuteGrantToken(String serviceAgreementId, DID workflowDid)
+            throws CryptoException, IOException, CipherException {
+        return JwtHelper.generateExecuteGrantToken(getKeeperService().getCredentials(), serviceAgreementId, workflowDid.getDid());
+    }
+
+    public String generateComputeGrantToken(String serviceAgreementId, String executionId)
+            throws CryptoException, IOException, CipherException {
+        return JwtHelper.generateComputeGrantToken(getKeeperService().getCredentials(), serviceAgreementId, executionId);
     }
 
     @Override

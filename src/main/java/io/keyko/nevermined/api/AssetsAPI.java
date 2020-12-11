@@ -363,24 +363,22 @@ public interface AssetsAPI {
      * Get the logs for the compute job with executionId and serviceAgreementId
      * @param serviceAgreementId The service agreement id for the compute service
      * @param executionId The execution id of the compute job
-     * @param consumerAddress The address of the consumer that executed the compute job
      * @param providerConfig Object encapsulating the configuration of the provider
      * @return a list of compute logs
      * @throws ServiceException ServiceException
      */
-    List<ComputeLogs> getComputeLogs(String serviceAgreementId, String executionId, String consumerAddress,
+    List<ComputeLogs> getComputeLogs(String serviceAgreementId, String executionId,
                                      ProviderConfig providerConfig) throws ServiceException;
 
     /**
      * Get the status for the compute job with executionId and serviceAgreementId
      * @param serviceAgreementId The service agreement id for the compute service
      * @param executionId The execution id of the compute job
-     * @param consumerAddress The address of the consumer that executed the compute job
      * @param providerConfig Object encapsulating the configuration of the provider
      * @return The current status of the compute job
      * @throws ServiceException ServiceException
      */
-    ComputeStatus getComputeStatus(String serviceAgreementId, String executionId, String consumerAddress,
+    ComputeStatus getComputeStatus(String serviceAgreementId, String executionId,
                                    ProviderConfig providerConfig) throws ServiceException;
 
 }
