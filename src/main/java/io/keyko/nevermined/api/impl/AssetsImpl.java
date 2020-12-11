@@ -71,15 +71,15 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
-    public List<ComputeLogs> getComputeLogs(String serviceAgreementId, String executionId, String consumerAddress,
+    public List<ComputeLogs> getComputeLogs(String serviceAgreementId, String executionId,
                                             ProviderConfig providerConfig) throws ServiceException {
-        return neverminedManager.getComputeLogs(serviceAgreementId, executionId, consumerAddress, providerConfig);
+        return neverminedManager.getComputeLogs(serviceAgreementId, executionId, providerConfig);
     }
 
     @Override
-    public ComputeStatus getComputeStatus(String serviceAgreementId, String executionId, String consumerAddress,
+    public ComputeStatus getComputeStatus(String serviceAgreementId, String executionId,
                                           ProviderConfig providerConfig) throws ServiceException {
-        return neverminedManager.getComputeStatus(serviceAgreementId, executionId, consumerAddress, providerConfig);
+        return neverminedManager.getComputeStatus(serviceAgreementId, executionId, providerConfig);
     }
 
     @Override

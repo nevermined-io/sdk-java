@@ -2,11 +2,9 @@ package io.keyko.nevermined.models;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.keyko.nevermined.models.gateway.ComputeStatus;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 

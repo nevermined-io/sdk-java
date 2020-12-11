@@ -51,7 +51,6 @@ public class AssetsApiIT {
 
     private static String METADATA_WORKFLOW_JSON_SAMPLE = "src/test/resources/examples/metadata-workflow.json";
     private static String METADATA_WORKFLOW_JSON_CONTENT;
-    private static AssetMetadata metadataBaseWorkflow;
 
     private static String COMPUTING_PROVIDER_JSON_SAMPLE = "src/test/resources/examples/computing-provider-example.json";
     private static String COMPUTING_PROVIDER_JSON_CONTENT;
@@ -81,8 +80,7 @@ public class AssetsApiIT {
         }, METADATA_ALG_JSON_CONTENT);
 
         METADATA_WORKFLOW_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(METADATA_WORKFLOW_JSON_SAMPLE)));
-        metadataBaseWorkflow = DDO.fromJSON(new TypeReference<AssetMetadata>() {
-        }, METADATA_WORKFLOW_JSON_CONTENT);
+
 
         COMPUTING_PROVIDER_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(COMPUTING_PROVIDER_JSON_SAMPLE)));
         computingProvider = DDO.fromJSON(new TypeReference<ComputingService.Provider>() {
@@ -293,31 +291,6 @@ public class AssetsApiIT {
         assertFalse(shouldntBeDownloaded);
     }
 
-    // Ignore test until e2e compute elements are automated
-    @Ignore
-    @Test
-    public void testComputeLogs() throws Exception {
-        List<ComputeLogs> computeLogs = neverminedAPI.getAssetsAPI()
-                .getComputeLogs("9bc29134bb0b466a8ca9e171e649b5a647f2fc098c894a6ea0eaf4ec2ba4e535",
-                        "nevermined-compute-df4g7", neverminedAPI.getMainAccount().address,
-                        providerConfig);
-        assertNotNull(computeLogs);
-    }
-
-    // Ignore test until e2e compute elements are automated
-    @Ignore
-    @Test
-    public void testComputeStatus() throws Exception {
-        ComputeStatus computeStatus = neverminedAPI.getAssetsAPI()
-                .getComputeStatus("1d587c0143ac4400b8776178c57946f301fc53f966f64a65911fa53c8b497391",
-                        "nevermined-compute-8tfvn", neverminedAPI.getMainAccount().address,
-                        providerConfig);
-        assertNotNull(computeStatus);
-    }
-
-    // TODO: Automate the Compute use cases e2e
-    // Ignoring test until the e2e compute components are automated
-    @Ignore
     @Test
     public void orderAndExecuteComputeService() throws Exception {
 
@@ -331,7 +304,7 @@ public class AssetsApiIT {
         metadataWorkflow.attributes.main.dateCreated = new Date();
 
         String computeServiceEndpoint = config.getString("gateway.url") + "/api/v1/gateway/services/execute";
-        providerConfig.setAccessEndpoint(computeServiceEndpoint);
+        providerConfig.setExecuteEndpoint(computeServiceEndpoint);
 
         // 1. Publish the compute service
 
@@ -359,7 +332,6 @@ public class AssetsApiIT {
         OrderResult orderResult = neverminedAPIConsumer.getAssetsAPI().orderDirect(didComputeService, Service.DEFAULT_COMPUTE_INDEX);
         final long orderTime = System.currentTimeMillis();
 
-//        TimeUnit.SECONDS.sleep(2l);
         assertTrue(orderResult.isAccessGranted());
         assertNotNull(orderResult.getServiceAgreementId());
 
@@ -375,6 +347,48 @@ public class AssetsApiIT {
         log.debug("Execution Request took " + (endTime - startTime) + " milliseconds");
         assertNotNull(executionResult.getExecutionId());
 
+        // TODO: We need a better way to wait for the compute status and logs to be available
+        //       Skipping for now
+        // 6. Get compute status
+        // The jobs take some time to start we are going to retrie a couple of times
+        // in case we get and exception
+        // Integer retries = 0;
+        // while (true) {
+        //     try {
+        //         ComputeStatus status = neverminedAPIConsumer.getAssetsAPI().getComputeStatus(
+        //             EthereumHelper.add0x(orderResult.getServiceAgreementId()),
+        //             executionResult.getExecutionId(),
+        //             providerConfig);
+        //         assertNotNull(status);
+        //         break;
+        //     } catch (ServiceException e) {
+        //         retries += 1;
+        //         if (retries == 3) {
+        //             throw e;
+        //         }
+        //         TimeUnit.SECONDS.sleep(10);
+        //     }
+        // }
+        // 7. Get compute logs
+        // The jobs take some time to start we are going to retrie a couple of times
+        // in case we get and exception
+        // retries = 0;
+        // while (true) {
+        //     try {
+        //         List<ComputeLogs> logs = neverminedAPIConsumer.getAssetsAPI().getComputeLogs(
+        //             EthereumHelper.add0x(orderResult.getServiceAgreementId()),
+        //             executionResult.getExecutionId(),
+        //             providerConfig);
+        //         assertNotNull(logs);
+        //         break;
+        //     } catch (ServiceException e) {
+        //         retries += 1;
+        //         if (retries == 3) {
+        //             throw e;
+        //         }
+        //         TimeUnit.SECONDS.sleep(10);
+        //     }
+        // }
     }
 
 

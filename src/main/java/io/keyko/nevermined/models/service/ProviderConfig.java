@@ -103,4 +103,8 @@ public class ProviderConfig {
     public void setSecretStoreEndpoint(String secretStoreEndpoint) {
         this.secretStoreEndpoint = secretStoreEndpoint;
     }
+
+    public String getAccessTokenEndpoint() {
+        return this.gatewayUrl + "/api/v1/gateway/services/oauth/token";
+    }
 }
