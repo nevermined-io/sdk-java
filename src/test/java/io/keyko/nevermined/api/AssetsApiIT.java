@@ -349,6 +349,9 @@ public class AssetsApiIT {
         log.debug("Execution Request took " + (endTime - startTime) + " milliseconds");
         assertNotNull(executionResult.getExecutionId());
 
+        // wait a couple of seconds for the jobs to start
+        TimeUnit.SECONDS.sleep(5);
+
         // 6. Get compute status
         ComputeStatus status = neverminedAPIConsumer.getAssetsAPI().getComputeStatus(
             EthereumHelper.add0x(orderResult.getServiceAgreementId()),
