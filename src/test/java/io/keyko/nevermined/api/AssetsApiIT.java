@@ -80,8 +80,6 @@ public class AssetsApiIT {
         }, METADATA_ALG_JSON_CONTENT);
 
         METADATA_WORKFLOW_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(METADATA_WORKFLOW_JSON_SAMPLE)));
-        metadataBaseWorkflow = DDO.fromJSON(new TypeReference<AssetMetadata>() {
-        }, METADATA_WORKFLOW_JSON_CONTENT);
 
         COMPUTING_PROVIDER_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(COMPUTING_PROVIDER_JSON_SAMPLE)));
         computingProvider = DDO.fromJSON(new TypeReference<ComputingService.Provider>() {
