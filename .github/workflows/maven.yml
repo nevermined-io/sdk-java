@@ -18,6 +18,7 @@ jobs:
           rm -rf ~/.nevermined/nevermined-contracts/artifacts || true
           cd nevermined-tools
           sudo bash -x start_nevermined.sh --compute --no-commons --latest 2>&1 > start_nevermined.log &
+          ./scripts/wait_for_compute_api.sh
           cd ..
 
       - name: Install Java and Maven
