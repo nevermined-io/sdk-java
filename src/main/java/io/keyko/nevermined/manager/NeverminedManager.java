@@ -672,7 +672,7 @@ public class NeverminedManager extends BaseManager {
     /**
      * Initialize a new ServiceExecutionAgreement between a publisher and a consumer
      *
-     * @param ddo                the ddi
+     * @param ddo                the ddo
      * @param serviceIndex       the service index
      * @param serviceAgreementId the service agreement id
      * @return true if the agreement was initialized correctly, if not false
@@ -727,7 +727,7 @@ public class NeverminedManager extends BaseManager {
     /**
      * Initialize a new ServiceExecutionAgreement between a publisher and a consumer
      *
-     * @param ddo                the ddi
+     * @param ddo                the ddo
      * @param serviceIndex       the service index
      * @param serviceAgreementId the service agreement id
      * @return true if the agreement was initialized correctly, if not false
@@ -747,7 +747,7 @@ public class NeverminedManager extends BaseManager {
      * Initialize a new ServiceExecutionAgreement between a publisher and a consumer
      * return a flowable to listen contract initialization events
      *
-     * @param ddo                the ddi
+     * @param ddo                the ddo
      * @param serviceIndex       the service index
      * @param serviceAgreementId the service agreement id
      * @return a Flowable over an AgreementInitializedEventResponse
@@ -1122,6 +1122,19 @@ public class NeverminedManager extends BaseManager {
         return GatewayService.getComputeStatus(serviceEndpoint, Keys.toChecksumAddress(getMainAccount().getAddress()), accessToken);
     }
 
+    /**
+     * Get the Access Token for the Download service.
+     *
+     * It first tries to retrieve it from the cache. If not available it:
+     *  - generates a grant token
+     *  - makes a call to the gateway to fetch the access token
+     *  - caches the token
+     *
+     * @param serviceEndpoint
+     * @param did
+     * @return String The Access Token.
+     * @throws ConsumeServiceException
+     */
     private String getDownloadAccessToken(String serviceEndpoint, DID did) throws ConsumeServiceException {
         // Check if token is cached
         String cacheKey = getCacheKey(serviceEndpoint, did.getDid());
@@ -1161,6 +1174,20 @@ public class NeverminedManager extends BaseManager {
         return result.getAccessToken();
     }
 
+    /**
+     * Get the Access Token for the Access service.
+     *
+     * It first tries to retrieve it from the cache. If not available it:
+     *  - generates a grant token
+     *  - makes a call to the gateway to fetch the access token
+     *  - caches the token
+     *
+     * @param serviceEndpoint
+     * @param serviceAgreementId
+     * @param did
+     * @return String The Access Token.
+     * @throws ConsumeServiceException
+     */
     private String getAccessAccessToken(String serviceEndpoint, String serviceAgreementId, DID did)
             throws ConsumeServiceException {
 
@@ -1202,6 +1229,20 @@ public class NeverminedManager extends BaseManager {
         return result.getAccessToken();
     }
 
+    /**
+     * Get the Access Token for the Execute service.
+     *
+     * It first tries to retrieve it from the cache. If not available it:
+     *  - generates a grant token
+     *  - makes a call to the gateway to fetch the access token
+     *  - caches the token
+     *
+     * @param serviceEndpoint
+     * @param serviceAgreementId
+     * @param workflowDID
+     * @return String The Access Token.
+     * @throws ServiceException
+     */
     private String getExecuteAccessToken(String serviceEndpoint, String serviceAgreementId, DID workflowDID)
             throws ServiceException {
 
@@ -1243,6 +1284,20 @@ public class NeverminedManager extends BaseManager {
         return result.getAccessToken();
     }
 
+    /**
+     * Get the Access Token for the Compute service.
+     *
+     * It first tries to retrieve it from the cache. If not available it:
+     *  - generates a grant token
+     *  - makes a call to the gateway to fetch the access token
+     *  - caches the token
+     *
+     * @param serviceEndpoint
+     * @param serviceAgreementId
+     * @param executionId
+     * @return String The Access Token.
+     * @throws ServiceException
+     */
     private String getComputeAccessToken(String serviceEndpoint, String serviceAgreementId, String executionId)
             throws ServiceException {
 
@@ -1284,6 +1339,14 @@ public class NeverminedManager extends BaseManager {
         return result.getAccessToken();
     }
 
+    /**
+     * Generates a unique cache key based of the request arguments.
+     *
+     * This key will be used to search the token cache.
+     *
+     * @param args
+     * @return String The cache key.
+     */
     private String getCacheKey(String ... args) {
         return String.join("", args);
     }

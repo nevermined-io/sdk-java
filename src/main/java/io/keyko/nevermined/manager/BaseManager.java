@@ -567,20 +567,59 @@ public abstract class BaseManager {
                 .signatureToString(EthereumHelper.signMessage(message, getKeeperService().getCredentials()));
     }
 
+    /**
+     * Generate the Grant Token for the Access service.
+     *
+     * @param serviceAgreementId
+     * @param did
+     * @return String The Grant Token.
+     * @throws CryptoException
+     * @throws IOException
+     * @throws CipherException
+     */
     public String generateAccessGrantToken(String serviceAgreementId, DID did)
             throws CryptoException, IOException, CipherException {
         return JwtHelper.generateAccessGrantToken(getKeeperService().getCredentials(), serviceAgreementId, did.getDid());
     }
 
+    /**
+     * Generat the Grant Token for the Download service.
+     *
+     * @param did
+     * @return String The Grant Token.
+     * @throws CryptoException
+     * @throws IOException
+     * @throws CipherException
+     */
     public String generateDownloadGrantToken(DID did) throws CryptoException, IOException, CipherException {
         return JwtHelper.generateDownloadGrantToken(getKeeperService().getCredentials(), did.getDid());
     }
 
+    /**
+     * Generate the Grant Token for the Execute service.
+     *
+     * @param serviceAgreementId
+     * @param workflowDid
+     * @return String The Grant Token.
+     * @throws CryptoException
+     * @throws IOException
+     * @throws CipherException
+     */
     public String generateExecuteGrantToken(String serviceAgreementId, DID workflowDid)
             throws CryptoException, IOException, CipherException {
         return JwtHelper.generateExecuteGrantToken(getKeeperService().getCredentials(), serviceAgreementId, workflowDid.getDid());
     }
 
+    /**
+     * Generate the Grant Token for the Compute service.
+     *
+     * @param serviceAgreementId
+     * @param executionId
+     * @return String The Grant Token.
+     * @throws CryptoException
+     * @throws IOException
+     * @throws CipherException
+     */
     public String generateComputeGrantToken(String serviceAgreementId, String executionId)
             throws CryptoException, IOException, CipherException {
         return JwtHelper.generateComputeGrantToken(getKeeperService().getCredentials(), serviceAgreementId, executionId);
