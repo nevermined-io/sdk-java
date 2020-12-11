@@ -570,12 +570,12 @@ public abstract class BaseManager {
     /**
      * Generate the Grant Token for the Access service.
      *
-     * @param serviceAgreementId
-     * @param did
+     * @param serviceAgreementId The Service Agreement Id.
+     * @param did The did.
      * @return String The Grant Token.
-     * @throws CryptoException
-     * @throws IOException
-     * @throws CipherException
+     * @throws CryptoException CryptoException
+     * @throws IOException IOException
+     * @throws CipherException CipherException
      */
     public String generateAccessGrantToken(String serviceAgreementId, DID did)
             throws CryptoException, IOException, CipherException {
@@ -585,11 +585,11 @@ public abstract class BaseManager {
     /**
      * Generat the Grant Token for the Download service.
      *
-     * @param did
+     * @param did The did.
      * @return String The Grant Token.
-     * @throws CryptoException
-     * @throws IOException
-     * @throws CipherException
+     * @throws CryptoException CryptoException
+     * @throws IOException IOExcception
+     * @throws CipherException CipherException
      */
     public String generateDownloadGrantToken(DID did) throws CryptoException, IOException, CipherException {
         return JwtHelper.generateDownloadGrantToken(getKeeperService().getCredentials(), did.getDid());
@@ -598,12 +598,12 @@ public abstract class BaseManager {
     /**
      * Generate the Grant Token for the Execute service.
      *
-     * @param serviceAgreementId
-     * @param workflowDid
+     * @param serviceAgreementId The Service Agreement Id.
+     * @param workflowDid The workflow did.
      * @return String The Grant Token.
-     * @throws CryptoException
-     * @throws IOException
-     * @throws CipherException
+     * @throws CryptoException CryptoException
+     * @throws IOException IOException
+     * @throws CipherException CipherException
      */
     public String generateExecuteGrantToken(String serviceAgreementId, DID workflowDid)
             throws CryptoException, IOException, CipherException {
@@ -613,12 +613,12 @@ public abstract class BaseManager {
     /**
      * Generate the Grant Token for the Compute service.
      *
-     * @param serviceAgreementId
-     * @param executionId
+     * @param serviceAgreementId The Service Agreement Id.
+     * @param executionId The excution Id of the compute job.
      * @return String The Grant Token.
-     * @throws CryptoException
-     * @throws IOException
-     * @throws CipherException
+     * @throws CryptoException CryptoException
+     * @throws IOException IOException
+     * @throws CipherException CipherException
      */
     public String generateComputeGrantToken(String serviceAgreementId, String executionId)
             throws CryptoException, IOException, CipherException {

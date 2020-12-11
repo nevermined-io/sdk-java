@@ -1044,7 +1044,7 @@ public class NeverminedManager extends BaseManager {
     /**
      * Executes a remote service associated with an asset and serviceAgreementId
      *
-     * @param agreementId the agreement id
+     * @param serviceAgreementId the agreement id
      * @param did         the did
      * @param index       the index of the service
      * @param workflowDID the workflow id
@@ -1130,10 +1130,10 @@ public class NeverminedManager extends BaseManager {
      *  - makes a call to the gateway to fetch the access token
      *  - caches the token
      *
-     * @param serviceEndpoint
-     * @param did
+     * @param serviceEndpoint The endpoint of the service.
+     * @param did The did.
      * @return String The Access Token.
-     * @throws ConsumeServiceException
+     * @throws ConsumeServiceException ConsumeServiceException
      */
     private String getDownloadAccessToken(String serviceEndpoint, DID did) throws ConsumeServiceException {
         // Check if token is cached
@@ -1182,11 +1182,11 @@ public class NeverminedManager extends BaseManager {
      *  - makes a call to the gateway to fetch the access token
      *  - caches the token
      *
-     * @param serviceEndpoint
-     * @param serviceAgreementId
-     * @param did
+     * @param serviceEndpoint The service endpoint.
+     * @param serviceAgreementId The Service Agreement Id.
+     * @param did The did.
      * @return String The Access Token.
-     * @throws ConsumeServiceException
+     * @throws ConsumeServiceException ConsumeServiceException
      */
     private String getAccessAccessToken(String serviceEndpoint, String serviceAgreementId, DID did)
             throws ConsumeServiceException {
@@ -1237,11 +1237,11 @@ public class NeverminedManager extends BaseManager {
      *  - makes a call to the gateway to fetch the access token
      *  - caches the token
      *
-     * @param serviceEndpoint
-     * @param serviceAgreementId
-     * @param workflowDID
+     * @param serviceEndpoint The service endpoint.
+     * @param serviceAgreementId The Service Agreement Id.
+     * @param workflowDID The workflow did.
      * @return String The Access Token.
-     * @throws ServiceException
+     * @throws ServiceException ServiceException
      */
     private String getExecuteAccessToken(String serviceEndpoint, String serviceAgreementId, DID workflowDID)
             throws ServiceException {
@@ -1292,11 +1292,11 @@ public class NeverminedManager extends BaseManager {
      *  - makes a call to the gateway to fetch the access token
      *  - caches the token
      *
-     * @param serviceEndpoint
-     * @param serviceAgreementId
-     * @param executionId
+     * @param serviceEndpoint The service endpoint.
+     * @param serviceAgreementId The Service Agreement Id.
+     * @param executionId The execution Id.
      * @return String The Access Token.
-     * @throws ServiceException
+     * @throws ServiceException ServiceException
      */
     private String getComputeAccessToken(String serviceEndpoint, String serviceAgreementId, String executionId)
             throws ServiceException {
@@ -1344,7 +1344,7 @@ public class NeverminedManager extends BaseManager {
      *
      * This key will be used to search the token cache.
      *
-     * @param args
+     * @param args List of arguments.
      * @return String The cache key.
      */
     private String getCacheKey(String ... args) {
