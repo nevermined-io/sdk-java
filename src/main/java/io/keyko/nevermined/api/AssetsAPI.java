@@ -110,7 +110,7 @@ public interface AssetsAPI {
     boolean transfer(DID did, String address, BigInteger amount) throws NftException;
 
     /**
-     * Allows a DID owner to mint a NFT associated with the DID
+     * Gets the balance of the NFT associated to a DID
      *
      * @param address the account holding the NFT
      * @param did the DID associated to the NFT

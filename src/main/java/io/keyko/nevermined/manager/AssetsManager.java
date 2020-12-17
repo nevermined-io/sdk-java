@@ -384,9 +384,9 @@ public class AssetsManager extends BaseManager {
     }
 
     /**
-     * Allows a DID owner to mint a NFT associated with the DID
+     * Gets the balance of the NFT associated to a DID
      *
-     * @param address the account holding the NFT
+     * @param address the address holding the NFT
      * @param did the DID associated to the NFT
      * @return BigInteger the address and DID/NFT balance
      * @throws NftException unable to get the balance
