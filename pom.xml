@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.keyko.nevermined</groupId>
     <artifactId>api</artifactId>
-    <version>0.4.0</version>
+    <version>0.4.1</version>
     <packaging>jar</packaging>
     <name>Nevermined Data Platform Java SDK</name>
     <url>https://github.com/nevermined-io/sdk-java</url>
@@ -23,10 +23,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <final-name>nevermined-sdk</final-name>
 
-        <web3j.version>4.5.18</web3j.version>
+        <web3j.version>4.8.2</web3j.version>
         <common-utils.version>0.4.0</common-utils.version>
 
-        <nevermined.contracts.version>0.5.2</nevermined.contracts.version>
+        <nevermined.contracts.version>0.6.0</nevermined.contracts.version>
         <secretstore.version>0.1.0</secretstore.version>
         <eddsa.version>0.3.0</eddsa.version>
 
