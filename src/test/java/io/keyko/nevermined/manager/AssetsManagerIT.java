@@ -4,7 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.keyko.common.web3.KeeperService;
+import io.keyko.nevermined.contracts.DIDRegistry;
+import io.keyko.nevermined.exceptions.NftException;
 import io.keyko.nevermined.external.MetadataApiService;
+import io.keyko.nevermined.models.Account;
 import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import org.apache.logging.log4j.LogManager;
@@ -13,12 +16,13 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class AssetsManagerIT {
 
@@ -27,6 +31,7 @@ public class AssetsManagerIT {
     private static AssetsManager manager;
     private static KeeperService keeper;
     private static MetadataApiService metadataApiService;
+    private static NeverminedManager neverminedManager;
 
     private static final String DDO_JSON_SAMPLE = "src/test/resources/examples/ddo-example.json";
     private static String DDO_JSON_CONTENT;
@@ -38,15 +43,58 @@ public class AssetsManagerIT {
     public static void setUp() throws Exception {
         log.debug("Setting Up DTO's");
 
-        keeper = ManagerHelper.getKeeper(config);
+        Account mainAccount = new Account(
+                config.getString("account.main.address"),
+                config.getString("account.main.password"));
+
+
+        keeper = ManagerHelper.getKeeper(config, ManagerHelper.VmClient.main);
         metadataApiService = ManagerHelper.getMetadataService(config);
+        DIDRegistry didRegistry = ManagerHelper.loadDIDRegistryContract(
+                keeper, config.getString("contract.DIDRegistry.address"));
+
         manager = AssetsManager.getInstance(keeper, metadataApiService);
+        manager.setMainAccount(mainAccount);
+        manager.setDidRegistryContract(didRegistry);
 
         SecretStoreManager secretStore= ManagerHelper.getSecretStoreController(config, ManagerHelper.VmClient.parity);
         manager.setSecretStoreManager(secretStore);
 
+        neverminedManager = NeverminedManager.getInstance(keeper, metadataApiService);
+        neverminedManager.setMainAccount(mainAccount);
+        neverminedManager.setDidRegistryContract(didRegistry);
+
         DDO_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(DDO_JSON_SAMPLE)));
 
+    }
+
+
+    @Test
+    public void mintAndBurn() throws NftException, Exception {
+        String myAddress = keeper.getAddress();
+        String someoneAddress = "0x00a329c0648769A73afAc7F9381E08FB43dBEA72";
+
+        DID did= DID.builder();
+        String checksum = "0xd190bc85ee50643baffe7afe84ec6a9dd5212b67223523cd8e4d88f9069255fb";
+
+        DDO ddoBase = DDO.fromJSON(new TypeReference<DDO>() {}, DDO_JSON_CONTENT);
+        ddoBase.id = did.toString();
+        String newUrl= config.getString("metadata-internal.url") + "/api/v1/metadata/assets/ddo/" + did.toString();
+
+        ddoBase.services.get(0).serviceEndpoint = newUrl;
+        metadataApiService.createDDO(ddoBase);
+
+        boolean didRegistered= neverminedManager.registerDID(did, newUrl, checksum, Arrays.asList());
+        assertTrue(didRegistered);
+
+        assertEquals(BigInteger.ONE, manager.balance(myAddress, did));
+        assertTrue(manager.mint(did, BigInteger.TEN));
+        assertEquals(BigInteger.valueOf(11), manager.balance(myAddress, did));
+        assertTrue(manager.burn(did, BigInteger.TWO));
+        assertEquals(BigInteger.valueOf(9), manager.balance(myAddress, did));
+        assertTrue(manager.transfer(did, someoneAddress, BigInteger.ONE));
+        assertEquals(BigInteger.valueOf(8), manager.balance(myAddress, did));
+        assertEquals(BigInteger.ONE, manager.balance(someoneAddress, did));
     }
 
 

@@ -7,6 +7,7 @@ import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.contracts.Dispenser;
 import io.keyko.nevermined.contracts.NeverminedToken;
 import io.keyko.nevermined.exceptions.EthereumException;
+import io.keyko.nevermined.exceptions.NftException;
 import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.models.Account;
 import io.keyko.nevermined.models.Balance;
@@ -132,5 +133,6 @@ public class AccountsManagerIT {
 
         managerError.getAccountBalance(TEST_ADDRESS);
     }
+
 
 }

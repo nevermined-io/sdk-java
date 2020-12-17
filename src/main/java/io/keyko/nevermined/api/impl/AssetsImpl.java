@@ -20,6 +20,7 @@ import io.keyko.nevermined.models.service.types.ComputingService;
 import io.reactivex.Flowable;
 
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -85,6 +86,26 @@ public class AssetsImpl implements AssetsAPI {
     @Override
     public DDO resolve(DID did) throws DDOException {
         return neverminedManager.resolveDID(did);
+    }
+
+    @Override
+    public boolean mint(DID did, BigInteger amount) throws NftException {
+        return assetsManager.mint(did, amount);
+    }
+
+    @Override
+    public boolean burn(DID did, BigInteger amount) throws NftException {
+        return assetsManager.burn(did, amount);
+    }
+
+    @Override
+    public boolean transfer(DID did, String address, BigInteger amount) throws NftException {
+        return assetsManager.transfer(did, address, amount);
+    }
+
+    @Override
+    public BigInteger balance(String address, DID did) throws NftException {
+        return assetsManager.balance(address, did);
     }
 
     @Override
