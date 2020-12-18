@@ -4,6 +4,7 @@ import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.exceptions.DDOException;
 import io.keyko.nevermined.exceptions.EthereumException;
+import io.keyko.nevermined.exceptions.NftException;
 import io.keyko.nevermined.exceptions.ServiceException;
 import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.models.DDO;
@@ -21,6 +22,7 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.utils.Numeric;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -307,10 +309,99 @@ public class AssetsManager extends BaseManager {
                     .getPermission(EncodingHelper.hexStringToBytes(did.getHash()), Keys.toChecksumAddress(subjectAddress))
                     .send();
 
-        }catch (Exception e){
+        } catch (Exception e){
             throw new DDOException("There was an error trying to transfer the ownership of the DID " + did.getDid(), e);
         }
+    }
 
+
+    /**
+     * Given a DID, the owner of the DID can mint an amount of NFT
+     * @param did DID with the nft associated
+     * @param amount amount to mint
+     * @return true if worked
+     * @throws NftException Unable to mint
+     */
+    public boolean mint(DID did, BigInteger amount) throws NftException {
+        try {
+            didRegistry.mint(
+                    EncodingHelper.hexStringToBytes(did.getHash()),
+                    amount)
+                    .send();
+        } catch (Exception e) {
+            String msg = "Error minting token ";
+            log.error(msg + ": " + e.getMessage());
+            throw new NftException(msg, e);
+        }
+        return true;
+    }
+
+    /**
+     * Given a DID, the owner of the DID can burn an amount of NFT
+     * @param did DID with the nft associated
+     * @param amount amount to burn
+     * @return true if worked
+     * @throws NftException Unable to burn
+     */
+    public boolean burn(DID did, BigInteger amount) throws NftException {
+        try {
+            didRegistry.burn(
+                    EncodingHelper.hexStringToBytes(did.getHash()),
+                    amount)
+                    .send();
+        } catch (Exception e) {
+            String msg = "Error burning token ";
+            log.error(msg + ": " + e.getMessage());
+            throw new NftException(msg, e);
+        }
+        return true;
+    }
+
+    /**
+     * Allows a DID owner to transfer a specific amount of NFT associated with the DID
+     *
+     * @param did the DID associated to the NFT
+     * @param address the receiver
+     * @param amount the amount to transfer to the NFT DID
+     * @return true if everything worked
+     * @throws NftException Unable to transfer
+     */
+    public boolean transfer(DID did, String address, BigInteger amount) throws NftException {
+        try {
+            didRegistry.safeTransferFrom(
+                    getKeeperService().getAddress(),
+                    address,
+                    Numeric.toBigInt(did.getHash()),
+                    amount,
+                    "".getBytes())
+            .send();
+        } catch (Exception e) {
+            String msg = "Error transferring token ";
+            log.error(msg + ": " + e.getMessage());
+            throw new NftException(msg, e);
+        }
+        return true;
+    }
+
+    /**
+     * Gets the balance of the NFT associated to a DID
+     *
+     * @param address the address holding the NFT
+     * @param did the DID associated to the NFT
+     * @return BigInteger the address and DID/NFT balance
+     * @throws NftException unable to get the balance
+     */
+    public BigInteger balance(String address, DID did) throws NftException {
+        try {
+            return didRegistry.balanceOf(
+                    address,
+                    EncodingHelper.hexStringToBytes(did.getHash()))
+                    .send();
+        } catch (Exception e) {
+            String msg = "Error getting balance ";
+            log.error(msg + ": " + e.getMessage());
+            throw new NftException(msg, e);
+        }
     }
 
 }
