@@ -1,5 +1,6 @@
 package io.keyko.nevermined.api.impl;
 
+import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.nevermined.api.AgreementsAPI;
 import io.keyko.nevermined.core.sla.handlers.ServiceAgreementHandler;
 import io.keyko.nevermined.exceptions.ServiceAgreementException;
@@ -8,13 +9,17 @@ import io.keyko.nevermined.manager.NeverminedManager;
 import io.keyko.nevermined.models.Account;
 import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
+import io.keyko.nevermined.models.service.Agreement;
 import io.keyko.nevermined.models.service.AgreementStatus;
+import io.keyko.nevermined.models.service.Condition;
 import io.keyko.nevermined.models.service.Service;
 import io.keyko.nevermined.models.service.types.AccessService;
 import io.keyko.nevermined.models.service.types.ComputingService;
 import org.web3j.crypto.Keys;
 import org.web3j.tuples.generated.Tuple2;
+import org.web3j.tuples.generated.Tuple6;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,6 +91,21 @@ public class AgreementsImpl implements AgreementsAPI {
     public AgreementStatus status(String agreementId) throws ServiceAgreementException {
         try {
             return agreementsManager.getStatus(agreementId);
+        }catch (Exception e) {
+            throw new ServiceAgreementException(agreementId, "There was a problem getting the status of the agreement", e);
+        }
+    }
+
+    @Override
+    public boolean isAccessGranted(String agreementId, DID did, String consumerAddress) throws ServiceAgreementException {
+        try {
+            final Agreement agreement = agreementsManager.getAgreement(agreementId);
+
+            if (!agreement.did.getHash().equalsIgnoreCase(did.getHash()))
+                return false;
+
+            final AgreementStatus status = status(agreementId);
+            return status.conditionsFulfilled;
         }catch (Exception e) {
             throw new ServiceAgreementException(agreementId, "There was a problem getting the status of the agreement", e);
         }

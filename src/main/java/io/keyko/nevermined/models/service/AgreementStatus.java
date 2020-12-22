@@ -20,6 +20,9 @@ public class AgreementStatus extends AbstractModel implements FromJsonToModel {
     public String agreementId;
 
     @JsonProperty
+    public boolean conditionsFulfilled = false;
+
+    @JsonProperty
     public List<ConditionStatusMap> conditions = new ArrayList<>();
 
     @JsonIgnoreProperties(ignoreUnknown = true)

@@ -135,9 +135,10 @@ public class AgreementsManagerIT {
         final Agreement agreement = agreementsManager.getAgreement(serviceAgreementId);
         AgreementStatus status = agreementsManager.getStatus(serviceAgreementId);
         assertEquals(orderResult.getServiceAgreementId(), status.agreementId);
-        assertEquals(BigInteger.TWO, status.conditions.get(0).conditions.get(io.keyko.nevermined.models.service.Condition.ConditionTypes.lockReward.toString()));
-        assertEquals(BigInteger.TWO, status.conditions.get(0).conditions.get(io.keyko.nevermined.models.service.Condition.ConditionTypes.accessSecretStore.toString()));
-        assertEquals(BigInteger.TWO, status.conditions.get(0).conditions.get(Condition.ConditionTypes.escrowReward.toString()));
+        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(io.keyko.nevermined.models.service.Condition.ConditionTypes.lockReward.toString()));
+        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(io.keyko.nevermined.models.service.Condition.ConditionTypes.accessSecretStore.toString()));
+        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(Condition.ConditionTypes.escrowReward.toString()));
+        assertEquals(true, status.conditionsFulfilled);
 
     }
 }
