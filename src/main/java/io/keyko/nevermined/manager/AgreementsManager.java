@@ -147,29 +147,6 @@ public class AgreementsManager extends BaseManager {
     }
 
 
-
-//    /**
-//     * Returns if a service agreement is granted
-//     *
-//     * @param agreementId the agreement id
-//     * @param did the did
-//     * @param consumerAddress the address of the consumer
-//     * @return true if access is granted
-//     * @throws Exception Exception
-//     */
-//    public boolean isAccessGranted(String agreementId, DID did, String consumerAddress) throws Exception {
-//        final Tuple6<byte[], String, String, List<byte[]>, String, BigInteger> agreementTuple =
-//                agreementStoreManager.getAgreement(EncodingHelper.hexStringToBytes(agreementId)).send();
-//
-//        String didHashFromAgreement = EncodingHelper.toHexString(agreementTuple.component1());
-//        if (!didHashFromAgreement.equalsIgnoreCase(did.getHash()))
-//            return false;
-//
-//        final AgreementStatus.ConditionStatusMap conditionStatusMap = parseConditionStatus(agreementTuple.component4());
-//
-//        return false;
-//    }
-
     /**
      * Auxiliar method to get the name of the different conditions address.
      *
