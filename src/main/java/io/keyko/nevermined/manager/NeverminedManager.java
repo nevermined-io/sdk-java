@@ -913,7 +913,7 @@ public class NeverminedManager extends BaseManager {
      * @param did                the did
      * @param serviceIndex       the service index in the DDO
      * @param basePath           the path where the asset will be downloaded
-     * @return a flag that indicates if the consume operation was executed correctly
+     * @return a flag that indicates if the download operation was executed correctly
      * @throws ConsumeServiceException ConsumeServiceException
      */
     public boolean access(String serviceAgreementId, DID did, int serviceIndex, String basePath)
@@ -929,7 +929,7 @@ public class NeverminedManager extends BaseManager {
      * @param serviceIndex       id of the service in the DDO
      * @param fileIndex          of the file inside the files definition in metadata
      * @param basePath           the path where the asset will be downloaded
-     * @return a flag that indicates if the consume operation was executed correctly
+     * @return a flag that indicates if the download operation was executed correctly
      * @throws ConsumeServiceException ConsumeServiceException
      */
     public boolean access(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, String basePath)
@@ -947,7 +947,7 @@ public class NeverminedManager extends BaseManager {
 
         for (AssetMetadata.File file : files) {
 
-            // For each url we call to consume Gateway endpoint that requires
+            // For each url we call to download Gateway endpoint that requires
             // consumerAddress, serviceAgreementId and url as a parameters
             try {
                 String destinationPath = buildDestinationPath(basePath, did, fileIndex, file);
@@ -1046,12 +1046,12 @@ public class NeverminedManager extends BaseManager {
      *
      * @param serviceAgreementId the agreement id
      * @param did         the did
-     * @param index       the index of the service
+     * @param serviceIndex       the index of the service
      * @param workflowDID the workflow id
      * @return an execution id
      * @throws ServiceException ServiceException
      */
-    public GatewayService.ServiceExecutionResult executeComputeService(String serviceAgreementId, DID did, int index,
+    public GatewayService.ServiceExecutionResult executeComputeService(String serviceAgreementId, DID did, int serviceIndex,
             DID workflowDID) throws ServiceException {
 
         DDO ddo;
@@ -1062,7 +1062,7 @@ public class NeverminedManager extends BaseManager {
             log.error(msg + e.getMessage());
             throw new ServiceException(msg, e);
         }
-        Service service = ddo.getService(index);
+        Service service = ddo.getService(serviceIndex);
         String checkConsumerAddress = Keys.toChecksumAddress(getMainAccount().address);
         String serviceEndpoint = service.serviceEndpoint;
 

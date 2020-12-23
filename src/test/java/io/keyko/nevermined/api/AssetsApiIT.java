@@ -16,8 +16,6 @@ import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.asset.OrderResult;
-import io.keyko.nevermined.models.gateway.ComputeLogs;
-import io.keyko.nevermined.models.gateway.ComputeStatus;
 import io.keyko.nevermined.models.service.ProviderConfig;
 import io.keyko.nevermined.models.service.Service;
 import io.keyko.nevermined.models.service.types.ComputingService;
@@ -249,7 +247,7 @@ public class AssetsApiIT {
 
         assertTrue(orderResult.isAccessGranted());
 
-        InputStream result = neverminedAPIConsumer.getAssetsAPI().consumeBinary(
+        InputStream result = neverminedAPIConsumer.getAssetsAPI().downloadBinary(
                 orderResult.getServiceAgreementId(),
                 did,
                 Service.DEFAULT_ACCESS_INDEX,
@@ -415,7 +413,7 @@ public class AssetsApiIT {
         assertEquals(true, orderResult.isAccessGranted());
         log.debug("Granted Access Received for the service Agreement " + orderResult.getServiceAgreementId());
 
-        InputStream result = neverminedAPIConsumer.getAssetsAPI().consumeBinary(
+        InputStream result = neverminedAPIConsumer.getAssetsAPI().downloadBinary(
                 orderResult.getServiceAgreementId(),
                 did,
                 Service.DEFAULT_ACCESS_INDEX,

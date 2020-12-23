@@ -176,10 +176,10 @@ public interface AssetsAPI {
      * @param did                 the did
      * @param serviceDefinitionId the service definition id
      * @param basePath            the path where the asset will be downloaded
-     * @return a flag that indicates if the consume flow was executed correctly
+     * @return a flag that indicates if the download flow was executed correctly
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, String basePath) throws ConsumeServiceException;
+    Boolean download(String serviceAgreementId, DID did, int serviceDefinitionId, String basePath) throws ConsumeServiceException;
 
     /**
      * Downloads an Asset previously ordered through a Service Agreement
@@ -187,12 +187,12 @@ public interface AssetsAPI {
      * @param serviceAgreementId  the service agreement id of the asset
      * @param did                 the did
      * @param serviceDefinitionId the service definition id
-     * @param fileIndex           index id of the file to consume
+     * @param fileIndex           index id of the file to download
      * @param basePath            the path where the asset will be downloaded
-     * @return a flag that indicates if the consume flow was executed correctly
+     * @return a flag that indicates if the download flow was executed correctly
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, String basePath) throws ConsumeServiceException;
+    Boolean download(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, String basePath) throws ConsumeServiceException;
 
 
     /**
@@ -203,7 +203,7 @@ public interface AssetsAPI {
      * @return the input stream wit the binary content of the file
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId) throws ConsumeServiceException;
+    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceDefinitionId) throws ConsumeServiceException;
 
     /**
      * Gets the input stream of one file of the asset
@@ -214,7 +214,7 @@ public interface AssetsAPI {
      * @return the input stream wit the binary content of the file
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex) throws ConsumeServiceException;
+    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex) throws ConsumeServiceException;
 
 
     /**
@@ -228,7 +228,7 @@ public interface AssetsAPI {
      * @return                    the input stream wit the binary content of the specified range
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, int rangeStart, int rangeEnd) throws ConsumeServiceException;
+    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, int rangeStart, int rangeEnd) throws ConsumeServiceException;
 
 
     /**
@@ -311,12 +311,12 @@ public interface AssetsAPI {
      * Executes a remote service associated with an asset and serviceAgreementId
      * @param agreementId the agreement id
      * @param did the did
-     * @param index the index of the service
+     * @param serviceIndex the index of the service
      * @param workflowDID the workflow did
      * @return an execution id
      * @throws ServiceException ServiceException
      */
-    GatewayService.ServiceExecutionResult execute(String agreementId, DID did, int index, DID workflowDID) throws ServiceException;
+    GatewayService.ServiceExecutionResult execute(String agreementId, DID did, int serviceIndex, DID workflowDID) throws ServiceException;
 
     /**
      * Return the owner of the asset.

@@ -1,7 +1,7 @@
 package io.keyko.nevermined.exceptions;
 
 /**
- * Business Exception related with issues during the consume of a service
+ * Business Exception related with issues during the download of a service
  */
 public class ConsumeServiceException extends NeverminedException {
 

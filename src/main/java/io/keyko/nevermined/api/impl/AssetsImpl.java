@@ -143,28 +143,28 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
-    public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, String basePath) throws ConsumeServiceException {
+    public Boolean download(String serviceAgreementId, DID did, int serviceDefinitionId, String basePath) throws ConsumeServiceException {
         return neverminedManager.access(serviceAgreementId, did, serviceDefinitionId, basePath);
     }
 
     @Override
-    public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, String basePath) throws ConsumeServiceException {
+    public Boolean download(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, String basePath) throws ConsumeServiceException {
         return neverminedManager.access(serviceAgreementId, did, serviceDefinitionId, fileIndex, basePath);
     }
 
 
     @Override
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId) throws ConsumeServiceException{
-        return this.consumeBinary(serviceAgreementId, did, serviceDefinitionId, 0);
+    public InputStream downloadBinary(String serviceAgreementId, DID did, int serviceDefinitionId) throws ConsumeServiceException{
+        return this.downloadBinary(serviceAgreementId, did, serviceDefinitionId, 0);
     }
 
     @Override
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex) throws ConsumeServiceException{
+    public InputStream downloadBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex) throws ConsumeServiceException{
         return neverminedManager.consumeBinary(serviceAgreementId, did, serviceDefinitionId,  fileIndex);
     }
 
     @Override
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, int rangeStart, int rangeEnd) throws ConsumeServiceException{
+    public InputStream downloadBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, int rangeStart, int rangeEnd) throws ConsumeServiceException{
         return neverminedManager.consumeBinary(serviceAgreementId, did, serviceDefinitionId, fileIndex, true, rangeStart, rangeEnd);
     }
 
@@ -215,8 +215,8 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
-    public GatewayService.ServiceExecutionResult execute(String agreementId, DID did, int index, DID workflowDID) throws ServiceException {
-        return neverminedManager.executeComputeService(agreementId, did, index, workflowDID);
+    public GatewayService.ServiceExecutionResult execute(String agreementId, DID did, int serviceIndex, DID workflowDID) throws ServiceException {
+        return neverminedManager.executeComputeService(agreementId, did, serviceIndex, workflowDID);
     }
 
     @Override

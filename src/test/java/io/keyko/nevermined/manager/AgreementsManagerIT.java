@@ -14,7 +14,6 @@ import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.asset.OrderResult;
 import io.keyko.nevermined.models.service.Condition;
 import io.keyko.nevermined.models.service.*;
-import io.reactivex.Flowable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
@@ -124,7 +123,7 @@ public class AgreementsManagerIT {
         log.info("Consumer balance: " + neverminedAPIConsumer.getAccountsAPI().balance(neverminedAPIConsumer.getMainAccount()));
         OrderResult orderResult = neverminedAPIConsumer.getAssetsAPI().orderDirect(did, Service.DEFAULT_ACCESS_INDEX);
 
-        neverminedAPIConsumer.getAssetsAPI().consumeBinary(
+        neverminedAPIConsumer.getAssetsAPI().downloadBinary(
                 orderResult.getServiceAgreementId(),
                 did,
                 Service.DEFAULT_ACCESS_INDEX,
