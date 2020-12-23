@@ -406,7 +406,7 @@ public class NeverminedManager extends BaseManager {
         String serviceAgreementId = ServiceAgreementHandler.generateSlaId();
         OrderResult orderResult;
         DDO ddo;
-        // Checking if DDO is already there and serviceDefinitionId is included
+        // Checking if DDO is already there and serviceIndex is included
         try {
             ddo = resolveDID(did);
         } catch (DDOException e) {
@@ -494,7 +494,7 @@ public class NeverminedManager extends BaseManager {
         String serviceAgreementId = ServiceAgreementHandler.generateSlaId();
 
         DDO ddo;
-        // Checking if DDO is already there and serviceDefinitionId is included
+        // Checking if DDO is already there and serviceIndex is included
         try {
 
             ddo = resolveDID(did);
@@ -594,7 +594,7 @@ public class NeverminedManager extends BaseManager {
 
         Service service;
         DDO ddo;
-        // Checking if DDO is already there and serviceDefinitionId is included
+        // Checking if DDO is already there and serviceIndex is included
         try {
             ddo = resolveDID(did);
         } catch (DDOException e) {

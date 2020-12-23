@@ -174,72 +174,72 @@ public interface AssetsAPI {
      *
      * @param serviceAgreementId  the service agreement id of the asset
      * @param did                 the did
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @param basePath            the path where the asset will be downloaded
      * @return a flag that indicates if the download flow was executed correctly
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    Boolean download(String serviceAgreementId, DID did, int serviceDefinitionId, String basePath) throws ConsumeServiceException;
+    Boolean download(String serviceAgreementId, DID did, int serviceIndex, String basePath) throws ConsumeServiceException;
 
     /**
      * Downloads an Asset previously ordered through a Service Agreement
      *
      * @param serviceAgreementId  the service agreement id of the asset
      * @param did                 the did
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @param fileIndex           index id of the file to download
      * @param basePath            the path where the asset will be downloaded
      * @return a flag that indicates if the download flow was executed correctly
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    Boolean download(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, String basePath) throws ConsumeServiceException;
+    Boolean download(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, String basePath) throws ConsumeServiceException;
 
 
     /**
      * Gets the input stream of one file of the asset
      * @param serviceAgreementId  the service agreement id of the asset
      * @param did                 the did
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @return the input stream wit the binary content of the file
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceDefinitionId) throws ConsumeServiceException;
+    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex) throws ConsumeServiceException;
 
     /**
      * Gets the input stream of one file of the asset
      * @param serviceAgreementId  the service agreement id of the asset
      * @param did                 the did
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @param fileIndex               the index of the file
      * @return the input stream wit the binary content of the file
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex) throws ConsumeServiceException;
+    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex) throws ConsumeServiceException;
 
 
     /**
      * Gets a range of bytes of the input stream of one file of the asset
      * @param serviceAgreementId  the service agreement id of the asset
      * @param did                 the did
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @param fileIndex               the index of the file
      * @param rangeStart          the start of the bytes range
      * @param rangeEnd            the end of the bytes range
      * @return                    the input stream wit the binary content of the specified range
      * @throws ConsumeServiceException ConsumeServiceException
      */
-    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, int rangeStart, int rangeEnd) throws ConsumeServiceException;
+    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, int rangeStart, int rangeEnd) throws ConsumeServiceException;
 
 
     /**
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
      *
      * @param did                 the did of the DDO
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @return a Flowable instance over an OrderResult to get the result of the flow in an asynchronous fashion
      * @throws OrderException OrderException
      */
-    Flowable<OrderResult> order(DID did, int serviceDefinitionId) throws OrderException;
+    Flowable<OrderResult> order(DID did, int serviceIndex) throws OrderException;
 
     /**
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
@@ -257,13 +257,13 @@ public interface AssetsAPI {
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
      *
      * @param did                 the did of the DDO
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @return OrderResult
      * @throws OrderException OrderException
      * @throws ServiceException ServiceException
      * @throws EscrowRewardException EscrowRewardException
      */
-    OrderResult orderDirect(DID did, int serviceDefinitionId) throws OrderException, ServiceException, EscrowRewardException;
+    OrderResult orderDirect(DID did, int serviceIndex) throws OrderException, ServiceException, EscrowRewardException;
 
 
     /**
@@ -283,14 +283,14 @@ public interface AssetsAPI {
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
      *
      * @param did                 the did of the DDO
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @param serviceTypes service type to order
      * @return OrderResult
      * @throws OrderException OrderException
      * @throws ServiceException ServiceException
      * @throws EscrowRewardException EscrowRewardException
      */
-    OrderResult orderDirect(DID did, int serviceDefinitionId, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException;
+    OrderResult orderDirect(DID did, int serviceIndex, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException;
 
 
     /**
