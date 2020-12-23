@@ -458,4 +458,31 @@ public class AssetsApiIT {
         assertEquals(assetsOwnedAfter, assetsOwnedBefore + 1);
     }
 
+
+    @Test
+    public void manageProviders() throws Exception {
+        String someoneAddress = "0x00a329c0648769A73afAc7F9381E08FB43dBEA72".toLowerCase();
+        String someoneElseAddress = "0x00Bd138aBD70e2F00903268F3Db08f2D25677C9e".toLowerCase();
+
+        metadataBase.attributes.main.dateCreated = new Date();
+        DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
+
+        DID did = new DID(ddo.id);
+        final List<String> initialProviders = neverminedAPI.getAssetsAPI().listProviders(did);
+        assertTrue(neverminedAPI.getAssetsAPI().addProvider(did, someoneAddress));
+        assertTrue(neverminedAPI.getAssetsAPI().addProvider(did, someoneElseAddress));
+
+        final List<String> providersAfterAdding = neverminedAPI.getAssetsAPI().listProviders(did);
+        assertEquals(initialProviders.size() +2, providersAfterAdding.size());
+        assertTrue(providersAfterAdding.contains(someoneAddress.toLowerCase()));
+        assertTrue(providersAfterAdding.contains(someoneElseAddress.toLowerCase()));
+
+        assertTrue(neverminedAPI.getAssetsAPI().removeProvider(did, someoneAddress));
+        final List<String> providersAfterRemoving = neverminedAPI.getAssetsAPI().listProviders(did);
+        assertEquals(initialProviders.size() +1, providersAfterRemoving.size());
+        assertFalse(providersAfterRemoving.contains(someoneAddress.toLowerCase()));
+        assertTrue(providersAfterRemoving.contains(someoneElseAddress.toLowerCase()));
+
+    }
+
 }

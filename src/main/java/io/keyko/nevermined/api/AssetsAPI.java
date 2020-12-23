@@ -402,6 +402,34 @@ public interface AssetsAPI {
      */
     Boolean getPermissions(DID did, String subjectAddress) throws DDOException;
 
+
+    /**
+     * Adds a provider to an existing DID
+     * @param did the did
+     * @param providerAddress the provider address
+     * @return true if the provider was added successfully
+     * @throws EthereumException Problem adding the provider to the DID Registry
+     */
+    Boolean addProvider(DID did, String providerAddress) throws EthereumException;
+
+    /**
+     * Removes a provider to an existing DID
+     * @param did the did
+     * @param providerAddress the provider address
+     * @return true if the provider was removed successfully
+     * @throws EthereumException Problem removing the provider to the DID Registry
+     */
+    Boolean removeProvider(DID did, String providerAddress) throws EthereumException;
+
+    /**
+     * Gets all the provider addresses associated to a DID
+     * @param did the did
+     * @return the list of provider addresses
+     * @throws EthereumException Problem fetching the providers list
+     */
+    List<String> listProviders(DID did) throws EthereumException;
+
+
     /**
      * Get the logs for the compute job with executionId and serviceAgreementId
      * @param serviceAgreementId The service agreement id for the compute service

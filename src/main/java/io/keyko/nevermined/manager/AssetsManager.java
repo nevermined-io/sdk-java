@@ -19,6 +19,7 @@ import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple6;
 import org.web3j.utils.Numeric;
 
 import java.io.IOException;
@@ -311,6 +312,60 @@ public class AssetsManager extends BaseManager {
 
         } catch (Exception e){
             throw new DDOException("There was an error trying to transfer the ownership of the DID " + did.getDid(), e);
+        }
+    }
+
+    public Boolean addProvider(DID did, String providerAddress) throws EthereumException {
+        TransactionReceipt receipt;
+        try {
+            receipt = didRegistry
+                    .addDIDProvider(
+                            EncodingHelper.hexStringToBytes(did.getHash()),
+                            Keys.toChecksumAddress(providerAddress))
+                    .send();
+
+            if (!receipt.getStatus().equals("0x1")) {
+                String msg = "The Status received is not valid executing DIDRegistry.addDIDProvider: " + receipt.getStatus();
+                log.error(msg);
+                throw new EthereumException(msg);
+            }
+        } catch (Exception e) {
+            throw new EthereumException("There was an error trying to add a provider to a DID " + did.getDid(), e);
+        }
+        return true;
+    }
+
+    public Boolean removeProvider(DID did, String providerAddress) throws EthereumException {
+        TransactionReceipt receipt;
+        try {
+            receipt = didRegistry
+                    .removeDIDProvider(
+                            EncodingHelper.hexStringToBytes(did.getHash()),
+                            Keys.toChecksumAddress(providerAddress))
+                    .send();
+
+            if (!receipt.getStatus().equals("0x1")) {
+                String msg = "The Status received is not valid executing DIDRegistry.removeDIDProvider: " + receipt.getStatus();
+                log.error(msg);
+                throw new EthereumException(msg);
+            }
+        } catch (Exception e) {
+            throw new EthereumException("There was an error trying to remove a provider from a DID " + did.getDid(), e);
+        }
+        return true;
+    }
+
+    public List<String> listProviders(DID did) throws EthereumException {
+        try {
+
+            final Tuple6<String, byte[], String, String, BigInteger, List<String>> didRegisterTuple = didRegistry
+                    .getDIDRegister(EncodingHelper.hexStringToBytes(did.getHash()))
+                    .send();
+            List<String> providers = didRegisterTuple.component6();
+            providers.remove("0x0000000000000000000000000000000000000000");
+            return providers;
+        } catch (Exception e){
+            throw new EthereumException("Unable to retrieve providers for the DID " + did.getDid(), e);
         }
     }
 

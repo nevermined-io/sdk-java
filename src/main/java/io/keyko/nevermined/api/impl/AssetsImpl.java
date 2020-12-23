@@ -248,4 +248,21 @@ public class AssetsImpl implements AssetsAPI {
     public Boolean getPermissions(DID did, String subjectAddress) throws DDOException {
         return assetsManager.getPermission(did, subjectAddress);
     }
+
+    @Override
+    public Boolean addProvider(DID did, String providerAddress) throws EthereumException {
+        return assetsManager.addProvider(did, providerAddress);
+    }
+
+    @Override
+    public Boolean removeProvider(DID did, String providerAddress) throws EthereumException {
+        return assetsManager.removeProvider(did, providerAddress);
+    }
+
+    @Override
+    public List<String> listProviders(DID did) throws EthereumException {
+        return assetsManager.listProviders(did);
+    }
+
+
 }
