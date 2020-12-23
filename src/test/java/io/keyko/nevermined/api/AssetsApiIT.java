@@ -284,7 +284,7 @@ public class AssetsApiIT {
         try {
             shouldntBeDownloaded = neverminedAPIConsumer.getAssetsAPI().ownerDownload(did, Service.DEFAULT_ACCESS_INDEX,
                     tempFolder.getRoot().getAbsolutePath());
-        } catch (ServiceException | ConsumeServiceException e) {
+        } catch (ServiceException | DownloadServiceException e) {
         }
         assertFalse(shouldntBeDownloaded);
     }

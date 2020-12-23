@@ -570,10 +570,10 @@ public class NeverminedManager extends BaseManager {
      * @param basePath     path where we want to download the asset files
      * @return true if the asset was purchased successfully, if not false
      * @throws ServiceException        ServiceException
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
     public boolean downloadAssetByOwner(DID did, int serviceIndex, String basePath)
-            throws ServiceException, ConsumeServiceException {
+            throws ServiceException, DownloadServiceException {
         return downloadAssetByOwner(did, serviceIndex, basePath, 0);
     }
 
@@ -587,10 +587,10 @@ public class NeverminedManager extends BaseManager {
      * @param fileIndex    index of the file inside the files definition in metadata
      * @return true if the asset was purchased successfully, if not false
      * @throws ServiceException        ServiceException
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
     public boolean downloadAssetByOwner(DID did, int serviceIndex, String basePath, int fileIndex)
-            throws ServiceException, ConsumeServiceException {
+            throws ServiceException, DownloadServiceException {
 
         Service service;
         DDO ddo;
@@ -599,7 +599,7 @@ public class NeverminedManager extends BaseManager {
             ddo = resolveDID(did);
         } catch (DDOException e) {
             log.error("Error resolving did[" + did.getHash() + "]: " + e.getMessage());
-            throw new ConsumeServiceException("Error resolving did " + did.getDid(), e);
+            throw new DownloadServiceException("Error resolving did " + did.getDid(), e);
         }
 
         if (serviceIndex >= 0) {
@@ -631,7 +631,7 @@ public class NeverminedManager extends BaseManager {
                 String msg = "Error downloading asset by owner with DID " + did.getDid();
 
                 log.error(msg + ": " + e.getMessage());
-                throw new ConsumeServiceException(msg, e);
+                throw new DownloadServiceException(msg, e);
             }
         }
         return true;
@@ -881,9 +881,9 @@ public class NeverminedManager extends BaseManager {
      * @param did          the did
      * @param serviceIndex the id of the service in the DDO
      * @return a Map with the data needed to consume the asset
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
-    private Map<String, Object> fetchAssetDataBeforeConsume(DID did, int serviceIndex) throws ConsumeServiceException {
+    private Map<String, Object> fetchAssetDataBeforeConsume(DID did, int serviceIndex) throws DownloadServiceException {
 
         DDO ddo;
         String serviceEndpoint;
@@ -900,7 +900,7 @@ public class NeverminedManager extends BaseManager {
         } catch (DDOException | ServiceException e) {
             String msg = "Error getting the data from asset with DID " + did.toString();
             log.error(msg + ": " + e.getMessage());
-            throw new ConsumeServiceException(msg, e);
+            throw new DownloadServiceException(msg, e);
         }
 
         return data;
@@ -914,10 +914,10 @@ public class NeverminedManager extends BaseManager {
      * @param serviceIndex       the service index in the DDO
      * @param basePath           the path where the asset will be downloaded
      * @return a flag that indicates if the download operation was executed correctly
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
     public boolean access(String serviceAgreementId, DID did, int serviceIndex, String basePath)
-            throws ConsumeServiceException {
+            throws DownloadServiceException {
         return access(serviceAgreementId, did, serviceIndex, 0, basePath);
     }
 
@@ -930,10 +930,10 @@ public class NeverminedManager extends BaseManager {
      * @param fileIndex          of the file inside the files definition in metadata
      * @param basePath           the path where the asset will be downloaded
      * @return a flag that indicates if the download operation was executed correctly
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
     public boolean access(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, String basePath)
-            throws ConsumeServiceException {
+            throws DownloadServiceException {
 
         Map<String, Object> consumeData = fetchAssetDataBeforeConsume(did, serviceIndex);
         String serviceEndpoint = (String) consumeData.get("serviceEndpoint");
@@ -959,7 +959,7 @@ public class NeverminedManager extends BaseManager {
                         + serviceAgreementId;
 
                 log.error(msg + ": " + e.getMessage());
-                throw new ConsumeServiceException(msg, e);
+                throw new DownloadServiceException(msg, e);
             }
 
         }
@@ -996,10 +996,10 @@ public class NeverminedManager extends BaseManager {
      * @param serviceIndex       the id of the service index in the DDO
      * @param fileIndex          of the file inside the files definition in metadata
      * @return an InputStream that represents the binary content
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
     public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex)
-            throws ConsumeServiceException {
+            throws DownloadServiceException {
         return consumeBinary(serviceAgreementId, did, serviceIndex, fileIndex, false, 0, 0);
     }
 
@@ -1015,10 +1015,10 @@ public class NeverminedManager extends BaseManager {
      * @param rangeStart         the start of the bytes range
      * @param rangeEnd           the end of the bytes range
      * @return an InputStream that represents the binary content
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
     public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex,
-            Boolean isRangeRequest, Integer rangeStart, Integer rangeEnd) throws ConsumeServiceException {
+            Boolean isRangeRequest, Integer rangeStart, Integer rangeEnd) throws DownloadServiceException {
 
         Map<String, Object> consumeData = fetchAssetDataBeforeConsume(did, serviceIndex);
         String serviceEndpoint = (String) consumeData.get("serviceEndpoint");
@@ -1037,7 +1037,7 @@ public class NeverminedManager extends BaseManager {
                     + serviceAgreementId;
 
             log.error(msg + ": " + e.getMessage());
-            throw new ConsumeServiceException(msg, e);
+            throw new DownloadServiceException(msg, e);
         }
     }
 
@@ -1133,9 +1133,9 @@ public class NeverminedManager extends BaseManager {
      * @param serviceEndpoint The endpoint of the service.
      * @param did The did.
      * @return String The Access Token.
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
-    private String getDownloadAccessToken(String serviceEndpoint, DID did) throws ConsumeServiceException {
+    private String getDownloadAccessToken(String serviceEndpoint, DID did) throws DownloadServiceException {
         // Check if token is cached
         String cacheKey = getCacheKey(serviceEndpoint, did.getDid());
         if (tokenCache.containsKey(cacheKey)) {
@@ -1149,7 +1149,7 @@ public class NeverminedManager extends BaseManager {
         } catch (CryptoException | IOException | CipherException e) {
             String msg = "Error generating grant token: ";
             log.error(msg + e.getMessage());
-            throw new ConsumeServiceException(msg, e);
+            throw new DownloadServiceException(msg, e);
         }
         log.debug("Grant Token: " + grantToken);
 
@@ -1160,13 +1160,13 @@ public class NeverminedManager extends BaseManager {
         } catch (ServiceException e) {
             String msg = "Error requesting access token: ";
             log.error(msg + e.getMessage());
-            throw new ConsumeServiceException(msg, e);
+            throw new DownloadServiceException(msg, e);
         }
 
         if (!result.getOk()) {
             String msg = "Error requesting the access token: " + result.getMsg();
             log.error(msg);
-            throw new ConsumeServiceException(msg);
+            throw new DownloadServiceException(msg);
         }
         log.debug("Access Token: " + result.getAccessToken());
 
@@ -1186,10 +1186,10 @@ public class NeverminedManager extends BaseManager {
      * @param serviceAgreementId The Service Agreement Id.
      * @param did The did.
      * @return String The Access Token.
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
     private String getAccessAccessToken(String serviceEndpoint, String serviceAgreementId, DID did)
-            throws ConsumeServiceException {
+            throws DownloadServiceException {
 
         // Check if token is cached
         String cacheKey = getCacheKey(serviceEndpoint, serviceAgreementId, did.getDid());
@@ -1204,7 +1204,7 @@ public class NeverminedManager extends BaseManager {
         } catch (CryptoException | IOException | CipherException e) {
             String msg = "Error generating grant token: ";
             log.error(msg + e.getMessage());
-            throw new ConsumeServiceException(msg, e);
+            throw new DownloadServiceException(msg, e);
         }
         log.debug("Grant Token: " + grantToken);
 
@@ -1215,13 +1215,13 @@ public class NeverminedManager extends BaseManager {
         } catch (ServiceException e) {
             String msg = "Error requesting access token: ";
             log.error(msg + e.getMessage());
-            throw new ConsumeServiceException(msg, e);
+            throw new DownloadServiceException(msg, e);
         }
 
         if (!result.getOk()) {
             String msg = "Error requesting the access token: " + result.getMsg();
             log.error(msg);
-            throw new ConsumeServiceException(msg);
+            throw new DownloadServiceException(msg);
         }
         log.debug("Access Token: " + result.getAccessToken());
 

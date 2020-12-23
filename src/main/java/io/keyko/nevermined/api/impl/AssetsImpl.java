@@ -143,37 +143,37 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
-    public Boolean download(String serviceAgreementId, DID did, int serviceIndex, String basePath) throws ConsumeServiceException {
+    public Boolean download(String serviceAgreementId, DID did, int serviceIndex, String basePath) throws DownloadServiceException {
         return neverminedManager.access(serviceAgreementId, did, serviceIndex, basePath);
     }
 
     @Override
-    public Boolean download(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, String basePath) throws ConsumeServiceException {
+    public Boolean download(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, String basePath) throws DownloadServiceException {
         return neverminedManager.access(serviceAgreementId, did, serviceIndex, fileIndex, basePath);
     }
 
 
     @Override
-    public InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex) throws ConsumeServiceException{
+    public InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex) throws DownloadServiceException {
         return this.downloadBinary(serviceAgreementId, did, serviceIndex, 0);
     }
 
     @Override
-    public InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex) throws ConsumeServiceException{
+    public InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex) throws DownloadServiceException {
         return neverminedManager.consumeBinary(serviceAgreementId, did, serviceIndex,  fileIndex);
     }
 
     @Override
-    public InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, int rangeStart, int rangeEnd) throws ConsumeServiceException{
+    public InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, int rangeStart, int rangeEnd) throws DownloadServiceException {
         return neverminedManager.consumeBinary(serviceAgreementId, did, serviceIndex, fileIndex, true, rangeStart, rangeEnd);
     }
 
 
-    public Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws ServiceException, ConsumeServiceException {
+    public Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws ServiceException, DownloadServiceException {
         return neverminedManager.downloadAssetByOwner(did, serviceIndex, basePath);
     }
 
-    public Boolean ownerDownload(DID did, int serviceIndex, String basePath, int fileIndex) throws ServiceException, ConsumeServiceException {
+    public Boolean ownerDownload(DID did, int serviceIndex, String basePath, int fileIndex) throws ServiceException, DownloadServiceException {
         return neverminedManager.downloadAssetByOwner(did, serviceIndex, basePath, fileIndex);
     }
 

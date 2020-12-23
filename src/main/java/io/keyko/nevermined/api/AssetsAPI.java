@@ -177,9 +177,9 @@ public interface AssetsAPI {
      * @param serviceIndex the service definition id
      * @param basePath            the path where the asset will be downloaded
      * @return a flag that indicates if the download flow was executed correctly
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
-    Boolean download(String serviceAgreementId, DID did, int serviceIndex, String basePath) throws ConsumeServiceException;
+    Boolean download(String serviceAgreementId, DID did, int serviceIndex, String basePath) throws DownloadServiceException;
 
     /**
      * Downloads an Asset previously ordered through a Service Agreement
@@ -190,9 +190,9 @@ public interface AssetsAPI {
      * @param fileIndex           index id of the file to download
      * @param basePath            the path where the asset will be downloaded
      * @return a flag that indicates if the download flow was executed correctly
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
-    Boolean download(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, String basePath) throws ConsumeServiceException;
+    Boolean download(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, String basePath) throws DownloadServiceException;
 
 
     /**
@@ -201,9 +201,9 @@ public interface AssetsAPI {
      * @param did                 the did
      * @param serviceIndex the service definition id
      * @return the input stream wit the binary content of the file
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
-    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex) throws ConsumeServiceException;
+    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex) throws DownloadServiceException;
 
     /**
      * Gets the input stream of one file of the asset
@@ -212,9 +212,9 @@ public interface AssetsAPI {
      * @param serviceIndex the service definition id
      * @param fileIndex               the index of the file
      * @return the input stream wit the binary content of the file
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
-    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex) throws ConsumeServiceException;
+    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex) throws DownloadServiceException;
 
 
     /**
@@ -226,9 +226,9 @@ public interface AssetsAPI {
      * @param rangeStart          the start of the bytes range
      * @param rangeEnd            the end of the bytes range
      * @return                    the input stream wit the binary content of the specified range
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
-    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, int rangeStart, int rangeEnd) throws ConsumeServiceException;
+    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, int rangeStart, int rangeEnd) throws DownloadServiceException;
 
 
     /**
@@ -301,9 +301,9 @@ public interface AssetsAPI {
      * @param basePath            the path where the asset will be downloaded
      * @return true if asset was downloaded correctly
      * @throws ServiceException ServiceException
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
-    Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws ServiceException, ConsumeServiceException;
+    Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws ServiceException, DownloadServiceException;
 
 
 
