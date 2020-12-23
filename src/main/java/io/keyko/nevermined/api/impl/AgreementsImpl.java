@@ -57,13 +57,13 @@ public class AgreementsImpl implements AgreementsAPI {
     }
 
     @Override
-    public boolean create(DID did, String agreementId, int index, String consumerAddress) throws ServiceAgreementException {
+    public boolean create(DID did, String agreementId, int serviceIndex, String consumerAddress) throws ServiceAgreementException {
 
         try {
             DDO ddo = neverminedManager.resolveDID(did);
-            Service service = ddo.getService(index);
+            Service service = ddo.getService(serviceIndex);
 
-            List<byte[]> conditionsId = neverminedManager.generateServiceConditionsId(agreementId, Keys.toChecksumAddress(consumerAddress), ddo, index);
+            List<byte[]> conditionsId = neverminedManager.generateServiceConditionsId(agreementId, Keys.toChecksumAddress(consumerAddress), ddo, serviceIndex);
 
             if (service.type.equals(Service.ServiceTypes.ACCESS.toString()))
                 return agreementsManager.createAccessAgreement(agreementId,

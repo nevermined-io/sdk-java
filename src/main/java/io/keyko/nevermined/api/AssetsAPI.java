@@ -174,72 +174,72 @@ public interface AssetsAPI {
      *
      * @param serviceAgreementId  the service agreement id of the asset
      * @param did                 the did
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @param basePath            the path where the asset will be downloaded
-     * @return a flag that indicates if the consume flow was executed correctly
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @return a flag that indicates if the download flow was executed correctly
+     * @throws DownloadServiceException DownloadServiceException
      */
-    Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, String basePath) throws ConsumeServiceException;
+    Boolean download(String serviceAgreementId, DID did, int serviceIndex, String basePath) throws DownloadServiceException;
 
     /**
      * Downloads an Asset previously ordered through a Service Agreement
      *
      * @param serviceAgreementId  the service agreement id of the asset
      * @param did                 the did
-     * @param serviceDefinitionId the service definition id
-     * @param fileIndex           index id of the file to consume
+     * @param serviceIndex the service definition id
+     * @param fileIndex           index id of the file to download
      * @param basePath            the path where the asset will be downloaded
-     * @return a flag that indicates if the consume flow was executed correctly
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @return a flag that indicates if the download flow was executed correctly
+     * @throws DownloadServiceException DownloadServiceException
      */
-    Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, String basePath) throws ConsumeServiceException;
+    Boolean download(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, String basePath) throws DownloadServiceException;
 
 
     /**
      * Gets the input stream of one file of the asset
      * @param serviceAgreementId  the service agreement id of the asset
      * @param did                 the did
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @return the input stream wit the binary content of the file
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
-    InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId) throws ConsumeServiceException;
+    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex) throws DownloadServiceException;
 
     /**
      * Gets the input stream of one file of the asset
      * @param serviceAgreementId  the service agreement id of the asset
      * @param did                 the did
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @param fileIndex               the index of the file
      * @return the input stream wit the binary content of the file
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
-    InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex) throws ConsumeServiceException;
+    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex) throws DownloadServiceException;
 
 
     /**
      * Gets a range of bytes of the input stream of one file of the asset
      * @param serviceAgreementId  the service agreement id of the asset
      * @param did                 the did
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @param fileIndex               the index of the file
      * @param rangeStart          the start of the bytes range
      * @param rangeEnd            the end of the bytes range
      * @return                    the input stream wit the binary content of the specified range
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
-    InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, int rangeStart, int rangeEnd) throws ConsumeServiceException;
+    InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, int rangeStart, int rangeEnd) throws DownloadServiceException;
 
 
     /**
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
      *
      * @param did                 the did of the DDO
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @return a Flowable instance over an OrderResult to get the result of the flow in an asynchronous fashion
      * @throws OrderException OrderException
      */
-    Flowable<OrderResult> order(DID did, int serviceDefinitionId) throws OrderException;
+    Flowable<OrderResult> order(DID did, int serviceIndex) throws OrderException;
 
     /**
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
@@ -257,13 +257,13 @@ public interface AssetsAPI {
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
      *
      * @param did                 the did of the DDO
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @return OrderResult
      * @throws OrderException OrderException
      * @throws ServiceException ServiceException
      * @throws EscrowRewardException EscrowRewardException
      */
-    OrderResult orderDirect(DID did, int serviceDefinitionId) throws OrderException, ServiceException, EscrowRewardException;
+    OrderResult orderDirect(DID did, int serviceIndex) throws OrderException, ServiceException, EscrowRewardException;
 
 
     /**
@@ -283,14 +283,14 @@ public interface AssetsAPI {
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
      *
      * @param did                 the did of the DDO
-     * @param serviceDefinitionId the service definition id
+     * @param serviceIndex the service definition id
      * @param serviceTypes service type to order
      * @return OrderResult
      * @throws OrderException OrderException
      * @throws ServiceException ServiceException
      * @throws EscrowRewardException EscrowRewardException
      */
-    OrderResult orderDirect(DID did, int serviceDefinitionId, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException;
+    OrderResult orderDirect(DID did, int serviceIndex, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException;
 
 
     /**
@@ -301,9 +301,9 @@ public interface AssetsAPI {
      * @param basePath            the path where the asset will be downloaded
      * @return true if asset was downloaded correctly
      * @throws ServiceException ServiceException
-     * @throws ConsumeServiceException ConsumeServiceException
+     * @throws DownloadServiceException DownloadServiceException
      */
-    Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws ServiceException, ConsumeServiceException;
+    Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws ServiceException, DownloadServiceException;
 
 
 
@@ -311,12 +311,12 @@ public interface AssetsAPI {
      * Executes a remote service associated with an asset and serviceAgreementId
      * @param agreementId the agreement id
      * @param did the did
-     * @param index the index of the service
+     * @param serviceIndex the index of the service
      * @param workflowDID the workflow did
      * @return an execution id
      * @throws ServiceException ServiceException
      */
-    GatewayService.ServiceExecutionResult execute(String agreementId, DID did, int index, DID workflowDID) throws ServiceException;
+    GatewayService.ServiceExecutionResult execute(String agreementId, DID did, int serviceIndex, DID workflowDID) throws ServiceException;
 
     /**
      * Return the owner of the asset.
@@ -401,6 +401,34 @@ public interface AssetsAPI {
      * @throws DDOException DDOException
      */
     Boolean getPermissions(DID did, String subjectAddress) throws DDOException;
+
+
+    /**
+     * Adds a provider to an existing DID
+     * @param did the did
+     * @param providerAddress the provider address
+     * @return true if the provider was added successfully
+     * @throws EthereumException Problem adding the provider to the DID Registry
+     */
+    Boolean addProvider(DID did, String providerAddress) throws EthereumException;
+
+    /**
+     * Removes a provider to an existing DID
+     * @param did the did
+     * @param providerAddress the provider address
+     * @return true if the provider was removed successfully
+     * @throws EthereumException Problem removing the provider to the DID Registry
+     */
+    Boolean removeProvider(DID did, String providerAddress) throws EthereumException;
+
+    /**
+     * Gets all the provider addresses associated to a DID
+     * @param did the did
+     * @return the list of provider addresses
+     * @throws EthereumException Problem fetching the providers list
+     */
+    List<String> listProviders(DID did) throws EthereumException;
+
 
     /**
      * Get the logs for the compute job with executionId and serviceAgreementId

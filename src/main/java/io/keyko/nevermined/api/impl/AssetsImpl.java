@@ -143,43 +143,43 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
-    public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, String basePath) throws ConsumeServiceException {
-        return neverminedManager.access(serviceAgreementId, did, serviceDefinitionId, basePath);
+    public Boolean download(String serviceAgreementId, DID did, int serviceIndex, String basePath) throws DownloadServiceException {
+        return neverminedManager.access(serviceAgreementId, did, serviceIndex, basePath);
     }
 
     @Override
-    public Boolean consume(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, String basePath) throws ConsumeServiceException {
-        return neverminedManager.access(serviceAgreementId, did, serviceDefinitionId, fileIndex, basePath);
+    public Boolean download(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, String basePath) throws DownloadServiceException {
+        return neverminedManager.access(serviceAgreementId, did, serviceIndex, fileIndex, basePath);
     }
 
 
     @Override
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId) throws ConsumeServiceException{
-        return this.consumeBinary(serviceAgreementId, did, serviceDefinitionId, 0);
+    public InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex) throws DownloadServiceException {
+        return this.downloadBinary(serviceAgreementId, did, serviceIndex, 0);
     }
 
     @Override
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex) throws ConsumeServiceException{
-        return neverminedManager.consumeBinary(serviceAgreementId, did, serviceDefinitionId,  fileIndex);
+    public InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex) throws DownloadServiceException {
+        return neverminedManager.consumeBinary(serviceAgreementId, did, serviceIndex,  fileIndex);
     }
 
     @Override
-    public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceDefinitionId, int fileIndex, int rangeStart, int rangeEnd) throws ConsumeServiceException{
-        return neverminedManager.consumeBinary(serviceAgreementId, did, serviceDefinitionId, fileIndex, true, rangeStart, rangeEnd);
+    public InputStream downloadBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex, int rangeStart, int rangeEnd) throws DownloadServiceException {
+        return neverminedManager.consumeBinary(serviceAgreementId, did, serviceIndex, fileIndex, true, rangeStart, rangeEnd);
     }
 
 
-    public Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws ServiceException, ConsumeServiceException {
+    public Boolean ownerDownload(DID did, int serviceIndex, String basePath) throws ServiceException, DownloadServiceException {
         return neverminedManager.downloadAssetByOwner(did, serviceIndex, basePath);
     }
 
-    public Boolean ownerDownload(DID did, int serviceIndex, String basePath, int fileIndex) throws ServiceException, ConsumeServiceException {
+    public Boolean ownerDownload(DID did, int serviceIndex, String basePath, int fileIndex) throws ServiceException, DownloadServiceException {
         return neverminedManager.downloadAssetByOwner(did, serviceIndex, basePath, fileIndex);
     }
 
     @Override
-    public Flowable<OrderResult> order(DID did, int serviceDefinitionId) throws OrderException {
-        return neverminedManager.purchaseAssetFlowable(did, serviceDefinitionId);
+    public Flowable<OrderResult> order(DID did, int serviceIndex) throws OrderException {
+        return neverminedManager.purchaseAssetFlowable(did, serviceIndex);
     }
 
     public OrderResult orderDirect(DID did) throws OrderException, ServiceException, EscrowRewardException {
@@ -190,13 +190,13 @@ public class AssetsImpl implements AssetsAPI {
         return neverminedManager.purchaseAssetDirect(did, serviceTypes);
     }
 
-    public OrderResult orderDirect(DID did, int serviceDefinitionId, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException {
-        return neverminedManager.purchaseAssetDirect(did, serviceDefinitionId, serviceTypes);
+    public OrderResult orderDirect(DID did, int serviceIndex, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException {
+        return neverminedManager.purchaseAssetDirect(did, serviceIndex, serviceTypes);
     }
 
 
-    public OrderResult orderDirect(DID did, int serviceDefinitionId) throws OrderException, ServiceException, EscrowRewardException {
-        return neverminedManager.purchaseAssetDirect(did, serviceDefinitionId);
+    public OrderResult orderDirect(DID did, int serviceIndex) throws OrderException, ServiceException, EscrowRewardException {
+        return neverminedManager.purchaseAssetDirect(did, serviceIndex);
     }
 
     @Override
@@ -215,8 +215,8 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
-    public GatewayService.ServiceExecutionResult execute(String agreementId, DID did, int index, DID workflowDID) throws ServiceException {
-        return neverminedManager.executeComputeService(agreementId, did, index, workflowDID);
+    public GatewayService.ServiceExecutionResult execute(String agreementId, DID did, int serviceIndex, DID workflowDID) throws ServiceException {
+        return neverminedManager.executeComputeService(agreementId, did, serviceIndex, workflowDID);
     }
 
     @Override
@@ -248,4 +248,21 @@ public class AssetsImpl implements AssetsAPI {
     public Boolean getPermissions(DID did, String subjectAddress) throws DDOException {
         return assetsManager.getPermission(did, subjectAddress);
     }
+
+    @Override
+    public Boolean addProvider(DID did, String providerAddress) throws EthereumException {
+        return assetsManager.addProvider(did, providerAddress);
+    }
+
+    @Override
+    public Boolean removeProvider(DID did, String providerAddress) throws EthereumException {
+        return assetsManager.removeProvider(did, providerAddress);
+    }
+
+    @Override
+    public List<String> listProviders(DID did) throws EthereumException {
+        return assetsManager.listProviders(did);
+    }
+
+
 }

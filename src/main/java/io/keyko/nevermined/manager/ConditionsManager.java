@@ -58,7 +58,7 @@ public class ConditionsManager extends BaseManager {
     }
 
     /**
-     * Grant access to an address to consume a did.
+     * Grant access to an address to download a did.
      *
      * @param agreementId    the agreement id.
      * @param did            the did.

@@ -16,8 +16,6 @@ import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.asset.OrderResult;
-import io.keyko.nevermined.models.gateway.ComputeLogs;
-import io.keyko.nevermined.models.gateway.ComputeStatus;
 import io.keyko.nevermined.models.service.ProviderConfig;
 import io.keyko.nevermined.models.service.Service;
 import io.keyko.nevermined.models.service.types.ComputingService;
@@ -249,7 +247,7 @@ public class AssetsApiIT {
 
         assertTrue(orderResult.isAccessGranted());
 
-        InputStream result = neverminedAPIConsumer.getAssetsAPI().consumeBinary(
+        InputStream result = neverminedAPIConsumer.getAssetsAPI().downloadBinary(
                 orderResult.getServiceAgreementId(),
                 did,
                 Service.DEFAULT_ACCESS_INDEX,
@@ -286,7 +284,7 @@ public class AssetsApiIT {
         try {
             shouldntBeDownloaded = neverminedAPIConsumer.getAssetsAPI().ownerDownload(did, Service.DEFAULT_ACCESS_INDEX,
                     tempFolder.getRoot().getAbsolutePath());
-        } catch (ServiceException | ConsumeServiceException e) {
+        } catch (ServiceException | DownloadServiceException e) {
         }
         assertFalse(shouldntBeDownloaded);
     }
@@ -415,7 +413,7 @@ public class AssetsApiIT {
         assertEquals(true, orderResult.isAccessGranted());
         log.debug("Granted Access Received for the service Agreement " + orderResult.getServiceAgreementId());
 
-        InputStream result = neverminedAPIConsumer.getAssetsAPI().consumeBinary(
+        InputStream result = neverminedAPIConsumer.getAssetsAPI().downloadBinary(
                 orderResult.getServiceAgreementId(),
                 did,
                 Service.DEFAULT_ACCESS_INDEX,
@@ -458,6 +456,33 @@ public class AssetsApiIT {
 
         int assetsOwnedAfter = neverminedAPI.getAssetsAPI().ownerAssets(neverminedAPI.getMainAccount().address).size();
         assertEquals(assetsOwnedAfter, assetsOwnedBefore + 1);
+    }
+
+
+    @Test
+    public void manageProviders() throws Exception {
+        String someoneAddress = "0x00a329c0648769A73afAc7F9381E08FB43dBEA72".toLowerCase();
+        String someoneElseAddress = "0x00Bd138aBD70e2F00903268F3Db08f2D25677C9e".toLowerCase();
+
+        metadataBase.attributes.main.dateCreated = new Date();
+        DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
+
+        DID did = new DID(ddo.id);
+        final List<String> initialProviders = neverminedAPI.getAssetsAPI().listProviders(did);
+        assertTrue(neverminedAPI.getAssetsAPI().addProvider(did, someoneAddress));
+        assertTrue(neverminedAPI.getAssetsAPI().addProvider(did, someoneElseAddress));
+
+        final List<String> providersAfterAdding = neverminedAPI.getAssetsAPI().listProviders(did);
+        assertEquals(initialProviders.size() +2, providersAfterAdding.size());
+        assertTrue(providersAfterAdding.contains(someoneAddress.toLowerCase()));
+        assertTrue(providersAfterAdding.contains(someoneElseAddress.toLowerCase()));
+
+        assertTrue(neverminedAPI.getAssetsAPI().removeProvider(did, someoneAddress));
+        final List<String> providersAfterRemoving = neverminedAPI.getAssetsAPI().listProviders(did);
+        assertEquals(initialProviders.size() +1, providersAfterRemoving.size());
+        assertFalse(providersAfterRemoving.contains(someoneAddress.toLowerCase()));
+        assertTrue(providersAfterRemoving.contains(someoneElseAddress.toLowerCase()));
+
     }
 
 }
