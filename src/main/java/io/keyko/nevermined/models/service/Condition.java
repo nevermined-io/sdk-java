@@ -6,12 +6,32 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.keyko.nevermined.models.AbstractModel;
 import io.keyko.nevermined.models.FromJsonToModel;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder(alphabetic = true)
 public class Condition extends AbstractModel implements FromJsonToModel {
+
+    public enum ConditionStatus {
+
+        Uninitialized(BigInteger.valueOf(0)),
+        Unfulfilled(BigInteger.valueOf(1)),
+        Fulfilled(BigInteger.valueOf(2)),
+        Aborted(BigInteger.valueOf(3));
+
+        private final BigInteger status;
+
+        ConditionStatus(final BigInteger newStatus) {
+            status = newStatus;
+        }
+
+        public BigInteger getStatus() {
+            return status;
+        }
+    }
+
 
     public enum ConditionTypes {lockReward, accessSecretStore, escrowReward, hashLock, whitelisting, threshold, sign, execCompute}
 

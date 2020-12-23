@@ -20,7 +20,7 @@ public interface AgreementsAPI {
      * @return Tuple with agreement id and signature.
      * @throws ServiceAgreementException Exception
      */
-    public Tuple2<String, String> prepare(DID did, int serviceDefinitionId, Account consumerAccount) throws ServiceAgreementException;
+    Tuple2<String, String> prepare(DID did, int serviceDefinitionId, Account consumerAccount) throws ServiceAgreementException;
 
     /**
      * Create a service agreement.
@@ -32,7 +32,7 @@ public interface AgreementsAPI {
      * @return a flag a true if the creation of the agreement was successful.
      * @throws ServiceAgreementException Exception
      */
-    public boolean create(DID did, String agreementId, int index, String consumerAddress) throws ServiceAgreementException;
+    boolean create(DID did, String agreementId, int index, String consumerAddress) throws ServiceAgreementException;
 
     /**
      * Get the status of a service agreement.
@@ -41,5 +41,16 @@ public interface AgreementsAPI {
      * @return AgreementStatus with condition status of each of the agreement's conditions.
      * @throws ServiceAgreementException Exception
      */
-    public AgreementStatus status(String agreementId) throws ServiceAgreementException;
+    AgreementStatus status(String agreementId) throws ServiceAgreementException;
+
+    /**
+     * Returns if a service agreement is granted
+     *
+     * @param agreementId the agreement id
+     * @param did the did
+     * @param consumerAddress the address of the consumer
+     * @return true if access is granted
+     * @throws ServiceAgreementException Exception
+     */
+    boolean isAccessGranted(String agreementId, DID did, String consumerAddress) throws ServiceAgreementException;
 }

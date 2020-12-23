@@ -4,6 +4,7 @@ import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.exceptions.ConditionNotFoundException;
 import io.keyko.nevermined.exceptions.EthereumException;
+import io.keyko.nevermined.exceptions.ServiceAgreementException;
 import io.keyko.nevermined.exceptions.ServiceException;
 import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.models.DDO;
@@ -21,6 +22,7 @@ import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.tuples.generated.Tuple6;
 import org.web3j.tuples.generated.Tuple7;
 import org.web3j.utils.Numeric;
 
@@ -126,8 +128,8 @@ public class AgreementsManager extends BaseManager {
         agreementStatus.agreementId = agreementId;
         AgreementStatus.ConditionStatusMap condition = new AgreementStatus.ConditionStatusMap();
 
+        boolean isFulfilled = true;
         for (int i = 0; i <= condition_ids.size() - 1; i++) {
-
             Tuple7<String, BigInteger, BigInteger, BigInteger, BigInteger, String, BigInteger> agreementCondition =
                     conditionStoreManager.getCondition(condition_ids.get(i)).send();
 
@@ -135,11 +137,15 @@ public class AgreementsManager extends BaseManager {
             String conditionName = getConditionNameByAddress(Keys.toChecksumAddress(address));
             BigInteger state = agreementCondition.component2();
             condition.conditions.put(conditionName, state);
-
+            if (!state.equals(Condition.ConditionStatus.Fulfilled.getStatus()))
+                isFulfilled = false;
         }
         agreementStatus.conditions.add(condition);
+        agreementStatus.conditionsFulfilled = isFulfilled;
+
         return agreementStatus;
     }
+
 
     /**
      * Auxiliar method to get the name of the different conditions address.

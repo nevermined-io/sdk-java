@@ -334,7 +334,7 @@ public class NeverminedManager extends BaseManager {
             AgreementStatus status = agreementsManager.getStatus(serviceAgreementId);
             BigInteger conditionStatus = status.conditions.get(0).conditions.get(conditionType.toString());
             log.debug("Condition check[" + conditionType.toString() + "] :" + conditionStatus);
-            if (conditionStatus.equals(BigInteger.TWO)) // Condition is fullfilled
+            if (conditionStatus.equals(Condition.ConditionStatus.Fulfilled.getStatus())) // Condition is fullfilled
                 return true;
             iteration++;
             Thread.sleep(sleepTime);

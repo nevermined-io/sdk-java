@@ -13,8 +13,7 @@ import org.junit.Test;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class AgreementsApiIT {
 
@@ -63,6 +62,7 @@ public class AgreementsApiIT {
         DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
         String agreementId = ServiceAgreementHandler.generateSlaId();
         assertTrue(neverminedAPI.getAgreementsAPI().create(ddo.getDid(), agreementId, 3, neverminedAPI.getMainAccount().address));
-        neverminedAPI.getAgreementsAPI().status(agreementId);
+        assertEquals(agreementId.toLowerCase(), neverminedAPI.getAgreementsAPI().status(agreementId).agreementId.toLowerCase());
+        assertFalse(neverminedAPI.getAgreementsAPI().isAccessGranted(agreementId, ddo.getDid(), neverminedAPI.getMainAccount().address));
     }
 }
