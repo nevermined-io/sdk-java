@@ -252,14 +252,14 @@
               "functionName": "fulfill",
               "parameters": [
                 {
-                  "name": "_amount",
+                  "name": "_amounts",
                   "type": "uint256",
-                  "value": ""
+                  "value": []
                 },
                 {
-                  "name": "_receiver",
+                  "name": "_receivers",
                   "type": "address",
-                  "value": ""
+                  "value": []
                 },
                 {
                   "name": "_sender",

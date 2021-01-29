@@ -108,16 +108,16 @@
         "timelock": 0,
         "timeout": 0,
         "contractName": "EscrowReward",
-        "functionName": "fulfill",
+        "functionName": "fulfillMultipleRewards",
         "parameters": [
           {
-            "name": "_amount",
-            "type": "uint256",
+            "name": "_amounts",
+            "type": "uint256[]",
             "value": ""
           },
           {
-            "name": "_receiver",
-            "type": "address",
+            "name": "_receivers",
+            "type": "address[]",
             "value": ""
           },
           {
@@ -138,7 +138,7 @@
         ],
         "events": [
           {
-            "name": "Fulfilled",
+            "name": "FulfilledMultiple",
             "actorType": "publisher",
             "handler": {
               "moduleName": "escrowRewardCondition",

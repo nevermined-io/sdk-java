@@ -130,7 +130,7 @@ public class Service extends AbstractModel implements FromJsonToModel {
         public List<String> fulfillmentOrder = Arrays.asList(
                 "lockReward.fulfill",
                 "accessSecretStore.fulfill",
-                "escrowReward.fulfill");
+                "escrowReward.fulfillMultipleRewards");
 
         @JsonProperty
         public ConditionDependency conditionDependency = new ConditionDependency();
@@ -308,19 +308,39 @@ public class Service extends AbstractModel implements FromJsonToModel {
     public String generateEscrowRewardConditionId(String serviceAgreementId, String consumerAddress, String publisherAddress, String escrowRewardConditionAddress,
                                                   String lockConditionId, String releaseConditionId) throws UnsupportedEncodingException {
 
-        Condition accessSecretStoreCondition = this.getConditionbyName("escrowReward");
+        Condition escrowRewardCondition = this.getConditionbyName("escrowReward");
 
-        Condition.ConditionParameter amount = accessSecretStoreCondition.getParameterByName("_amount");
-        Condition.ConditionParameter receiver = accessSecretStoreCondition.getParameterByName("_receiver");
-        Condition.ConditionParameter sender = accessSecretStoreCondition.getParameterByName("_sender");
-        Condition.ConditionParameter lockCondition = accessSecretStoreCondition.getParameterByName("_lockCondition");
-        Condition.ConditionParameter releaseCondition = accessSecretStoreCondition.getParameterByName("_releaseCondition");
+        Condition.ConditionParameter amounts = escrowRewardCondition.getParameterByName("_amounts");
+        Condition.ConditionParameter receivers = escrowRewardCondition.getParameterByName("_receivers");
+        Condition.ConditionParameter sender = escrowRewardCondition.getParameterByName("_sender");
+        Condition.ConditionParameter lockCondition = escrowRewardCondition.getParameterByName("_lockCondition");
+        Condition.ConditionParameter releaseCondition = escrowRewardCondition.getParameterByName("_releaseCondition");
 
-        String params = EthereumHelper.add0x(EthereumHelper.encodeParameterValue(amount.type, amount.value.toString())
-                + EthereumHelper.encodeParameterValue(receiver.type, publisherAddress)
-                + EthereumHelper.encodeParameterValue(sender.type, consumerAddress)
-                + EthereumHelper.encodeParameterValue(lockCondition.type, lockConditionId)
-                + EthereumHelper.encodeParameterValue(releaseCondition.type, releaseConditionId));
+        String params = null;
+        if (amounts.value instanceof String)    {
+            params = EthereumHelper.add0x(EthereumHelper.encodeParameterValue(amounts.type, amounts.value.toString())
+                    + EthereumHelper.encodeParameterValue(amounts.type, publisherAddress)
+                    + EthereumHelper.encodeParameterValue(sender.type, consumerAddress)
+                    + EthereumHelper.encodeParameterValue(lockCondition.type, lockConditionId)
+                    + EthereumHelper.encodeParameterValue(releaseCondition.type, releaseConditionId));
+
+        }   else    {
+            String encodedReceivers = "";
+            for (String _receiver: (List<String>) receivers.value)  {
+                encodedReceivers = encodedReceivers + EthereumHelper.encodeParameterValue("address", _receiver);
+            }
+            String encodedAmounts = "";
+            for (String _amount: (List<String>) amounts.value)  {
+                encodedAmounts = encodedAmounts + EthereumHelper.encodeParameterValue("uint256", _amount);
+            }
+
+            params = EthereumHelper.add0x(encodedAmounts
+                    + encodedReceivers
+                    + EthereumHelper.encodeParameterValue(sender.type, consumerAddress)
+                    + EthereumHelper.encodeParameterValue(lockCondition.type, lockConditionId)
+                    + EthereumHelper.encodeParameterValue(releaseCondition.type, releaseConditionId));
+        }
+
 
         String valuesHash = Hash.sha3(params);
 

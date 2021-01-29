@@ -17,7 +17,7 @@ public interface ConditionsAPI {
      * @return a flag if the execution was good
      * @throws Exception Exception
      */
-    public boolean lockReward(String agreementId, BigInteger amount) throws Exception;
+    boolean lockReward(String agreementId, BigInteger amount) throws Exception;
 
     /**
      * Grant access to an address using the parity secret store.
@@ -28,7 +28,7 @@ public interface ConditionsAPI {
      * @return a flag if the execution was good
      * @throws Exception Exception
      */
-    public boolean grantAccess(String agreementId, DID did, String grantee) throws Exception;
+    boolean grantAccess(String agreementId, DID did, String grantee) throws Exception;
 
     /**
      * Grant compute to an address using the parity secret store.
@@ -39,26 +39,24 @@ public interface ConditionsAPI {
      * @return a flag if the execution was good
      * @throws Exception Exception
      */
-    public boolean grantServiceExecution(String agreementId, DID did, String grantee) throws Exception;
+    boolean grantServiceExecution(String agreementId, DID did, String grantee) throws Exception;
 
     /**
-     * Release the payment to the provider address.
+     * Release the payment to the data publisher and/or provider addresses
      *
      * @param agreementId the agreement id.
-     * @param amount      the amount to be released.
      * @return a flag if the execution was good
      * @throws Exception Exception
      */
-    public boolean releaseReward(String agreementId, BigInteger amount) throws Exception;
+    boolean releaseReward(String agreementId) throws Exception;
 
     /**
      * Refund the payment to the consumer.
      *
      * @param agreementId the agreement id.
-     * @param amount      the amount to be refund.
      * @return a flag if the execution was good
      * @throws Exception Exception
      */
-    public boolean refundReward(String agreementId, BigInteger amount) throws Exception;
+    boolean refundReward(String agreementId) throws Exception;
 
 }

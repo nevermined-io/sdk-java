@@ -75,7 +75,7 @@ public class ServiceAgreementHandlerTest {
         assertEquals("0x55301caec9ece3cc2e9540f6711e6d8cf28842e4f0d84b7e4a7930a64ca7a18b", accessSecretStoreId);
 
         String escrowRewardId = accessService.generateEscrowRewardConditionId(agreementId, consumerAddress, publisherAddress, escrowRewardConditionAddress, lockRewardId, accessSecretStoreId);
-        assertEquals("0x1792957bac8bf96011ced782d28281bce5a17d8d07ba7f6d3c5474201087c62f", escrowRewardId);
+        assertEquals("0x94e58f5164ea6ebec03fd6e109e46657101794bedf93bfd4d7a551646b19675b", escrowRewardId);
 
     }
 
@@ -99,7 +99,7 @@ public class ServiceAgreementHandlerTest {
         conditionsAddresses.put("accessSecretStoreConditionAddress", accessSecretStoreConditionAddress);
 
         String hash= accessService.generateServiceAgreementHash(agreementId, consumerAddress, publisherAddress,conditionsAddresses);
-        assertEquals("0xa25575970920e439cc076f1489e0b820cb2fd91b7a8643165fd26d296fa69ee6", hash);
+        assertEquals("0xda0edfdf36a924b72ddb6ae966295c560245651ee0cad7d68e3561a421bd2bfe", hash);
 
     }
 

@@ -6,6 +6,7 @@ import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.service.Agreement;
+import io.keyko.nevermined.models.service.Condition;
 import io.keyko.nevermined.models.service.Service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -15,6 +16,7 @@ import org.web3j.protocol.exceptions.TransactionException;
 import org.web3j.tuples.generated.Tuple2;
 
 import java.math.BigInteger;
+import java.util.List;
 
 public class ConditionsManager extends BaseManager {
 
@@ -102,18 +104,18 @@ public class ConditionsManager extends BaseManager {
     }
 
     /**
-     * Release reward to the address after the access was granted.
+     * Release reward to the asset providers and/or publiser after the access was granted.
      *
      * @param agreementId the agreement id.
-     * @param amount      the price.
      * @return a flag true if was executed successfully.
      * @throws Exception exception
      */
-    public Boolean releaseReward(String agreementId, BigInteger amount) throws Exception {
+    public Boolean releaseReward(String agreementId) throws Exception {
 
         Agreement agreement = new Agreement(agreementStoreManager.getAgreement(EncodingHelper.hexStringToBytes(agreementId)).send());
 
         DDO ddo = resolveDID(agreement.did);
+
         Service service  = ddo.getServiceByTemplate(agreement.templateId);
 
         Tuple2<String, String> agreementData = null;
@@ -126,9 +128,11 @@ public class ConditionsManager extends BaseManager {
         }
 
         try {
+            final Condition escrowRewardCondition = service.getConditionbyName(Condition.ConditionTypes.escrowReward.name());
+
             txReceipt = escrowReward.fulfill(EncodingHelper.hexStringToBytes(agreementId),
-                    amount,
-                    agreementData.component2(),
+                    (List<BigInteger>) escrowRewardCondition.getParameterByName("_amounts").value,
+                    (List<String>) escrowRewardCondition.getParameterByName("_receivers").value,
                     agreementData.component1(),
                     agreement.conditions.get(1),
                     agreement.conditions.get(0)).send();
@@ -144,12 +148,11 @@ public class ConditionsManager extends BaseManager {
      * Refund the price in case that some of the step was wrong.
      *
      * @param agreementId the agreement id.
-     * @param amount      the price.
      * @return a flag true if was executed successfully.
      * @throws Exception exception
      */
-    public Boolean refundReward(String agreementId, BigInteger amount) throws Exception {
-        return releaseReward(agreementId, amount);
+    public Boolean refundReward(String agreementId) throws Exception {
+        return releaseReward(agreementId);
     }
 
 }

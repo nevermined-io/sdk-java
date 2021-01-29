@@ -6,6 +6,7 @@ import io.keyko.nevermined.external.GatewayService;
 import io.keyko.nevermined.manager.AgreementsManager;
 import io.keyko.nevermined.manager.AssetsManager;
 import io.keyko.nevermined.manager.NeverminedManager;
+import io.keyko.nevermined.models.AssetRewards;
 import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
@@ -50,10 +51,15 @@ public class AssetsImpl implements AssetsAPI {
         this.agreementsManager = agreementsManager;
     }
 
+    @Override
+    public DDO create(AssetMetadata metadata, ProviderConfig providerConfig, AuthConfig authConfig, AssetRewards assetRewards) throws DDOException {
+        return neverminedManager.registerAccessServiceAsset(metadata, providerConfig, authConfig, assetRewards);
+    }
 
     @Override
     public DDO create(AssetMetadata metadata, ProviderConfig providerConfig, AuthConfig authConfig) throws DDOException {
-        return neverminedManager.registerAccessServiceAsset(metadata, providerConfig, authConfig);
+        final AssetRewards assetRewards = new AssetRewards(neverminedManager.getMainAccount().getAddress(), metadata.attributes.main.price);
+        return neverminedManager.registerAccessServiceAsset(metadata, providerConfig, authConfig, assetRewards);
     }
 
     @Override
@@ -62,13 +68,20 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
+    public DDO create(AssetMetadata metadata, ProviderConfig providerConfig, AssetRewards assetRewards) throws DDOException {
+        return this.create(metadata, providerConfig, new AuthConfig(providerConfig.getGatewayUrl()), assetRewards);
+    }
+
+
+    @Override
     public DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException {
-        return neverminedManager.registerComputeService(metadata, providerConfig, new ComputingService.Provider());
+        final AssetRewards assetRewards = new AssetRewards(neverminedManager.getMainAccount().getAddress(), metadata.attributes.main.price);
+        return neverminedManager.registerComputeService(metadata, providerConfig, new ComputingService.Provider(), assetRewards);
     }
 
     @Override
-    public DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException {
-        return neverminedManager.registerComputeService(metadata, providerConfig, computingProvider);
+    public DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider, AssetRewards assetRewards) throws DDOException {
+        return neverminedManager.registerComputeService(metadata, providerConfig, computingProvider, assetRewards);
     }
 
     @Override
