@@ -428,7 +428,7 @@ public class DDO extends AbstractModel implements FromJsonToModel {
 
         // We assume there is only one service in the DDO with a specific templateId
         return services.stream()
-                .filter(s -> s.templateId == templateId)
+                .filter(s -> s.templateId instanceof String && s.templateId.toLowerCase().equals(templateId.toLowerCase()))
                 .findFirst()
                 .orElseThrow(() -> new ServiceException("Service with template=" + templateId + " not found"));
 

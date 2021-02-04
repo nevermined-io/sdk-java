@@ -16,7 +16,10 @@ import org.web3j.protocol.exceptions.TransactionException;
 import org.web3j.tuples.generated.Tuple2;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ConditionsManager extends BaseManager {
 
@@ -130,10 +133,23 @@ public class ConditionsManager extends BaseManager {
         try {
             final Condition escrowRewardCondition = service.getConditionbyName(Condition.ConditionTypes.escrowReward.name());
 
+            List<BigInteger> _amounts = new ArrayList<>();
+            for (Object _someAmount: (ArrayList) escrowRewardCondition.getParameterByName("_amounts").value) {
+                if (_someAmount instanceof Integer || _someAmount instanceof Long)
+                    _amounts.add(new BigInteger(String.valueOf(_someAmount)));
+                else if (_someAmount instanceof BigInteger)
+                    _amounts.add((BigInteger) _someAmount);
+                else
+                    _amounts.add(new BigInteger(_someAmount.toString()));
+            }
+
+            final List<String> _receivers = ((List<String>) escrowRewardCondition.getParameterByName("_receivers").value)
+                    .stream().map(a -> Keys.toChecksumAddress(a))
+                    .collect(Collectors.toList());
             txReceipt = escrowReward.fulfill(EncodingHelper.hexStringToBytes(agreementId),
-                    (List<BigInteger>) escrowRewardCondition.getParameterByName("_amounts").value,
-                    (List<String>) escrowRewardCondition.getParameterByName("_receivers").value,
-                    agreementData.component1(),
+                    _amounts,
+                    _receivers,
+                    Keys.toChecksumAddress(ddo.proof.creator),
                     agreement.conditions.get(1),
                     agreement.conditions.get(0)).send();
 

@@ -13,8 +13,14 @@ import io.keyko.nevermined.models.FromJsonToModel;
 import io.keyko.nevermined.models.service.attributes.ServiceAdditionalInformation;
 import io.keyko.nevermined.models.service.attributes.ServiceCuration;
 import io.keyko.nevermined.models.service.attributes.ServiceMain;
+import org.web3j.abi.TypeEncoder;
+import org.web3j.abi.datatypes.Address;
+import org.web3j.abi.datatypes.DynamicArray;
+import org.web3j.abi.datatypes.Type;
+import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
+import org.web3j.utils.Numeric;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -130,7 +136,7 @@ public class Service extends AbstractModel implements FromJsonToModel {
         public List<String> fulfillmentOrder = Arrays.asList(
                 "lockReward.fulfill",
                 "accessSecretStore.fulfill",
-                "escrowReward.fulfillMultipleRewards");
+                "escrowReward.fulfill");
 
         @JsonProperty
         public ConditionDependency conditionDependency = new ConditionDependency();
@@ -318,29 +324,32 @@ public class Service extends AbstractModel implements FromJsonToModel {
 
         String params = null;
         if (amounts.value instanceof String)    {
-            params = EthereumHelper.add0x(EthereumHelper.encodeParameterValue(amounts.type, amounts.value.toString())
-                    + EthereumHelper.encodeParameterValue(amounts.type, publisherAddress)
-                    + EthereumHelper.encodeParameterValue(sender.type, consumerAddress)
+            params = EthereumHelper.add0x(EthereumHelper.encodeParameterValue("uint256", amounts.value)
+                    + EthereumHelper.encodeParameterValue("address", publisherAddress)
+                    + EthereumHelper.encodeParameterValue("address", publisherAddress)
                     + EthereumHelper.encodeParameterValue(lockCondition.type, lockConditionId)
                     + EthereumHelper.encodeParameterValue(releaseCondition.type, releaseConditionId));
 
         }   else    {
-            String encodedReceivers = "";
+            StringBuilder encodedReceivers = new StringBuilder();
             for (String _receiver: (List<String>) receivers.value)  {
-                encodedReceivers = encodedReceivers + EthereumHelper.encodeParameterValue("address", _receiver);
-            }
-            String encodedAmounts = "";
-            for (String _amount: (List<String>) amounts.value)  {
-                encodedAmounts = encodedAmounts + EthereumHelper.encodeParameterValue("uint256", _amount);
+                encodedReceivers.append(TypeEncoder.encode(new Address(_receiver)));
             }
 
-            params = EthereumHelper.add0x(encodedAmounts
-                    + encodedReceivers
-                    + EthereumHelper.encodeParameterValue(sender.type, consumerAddress)
+            StringBuilder encodedAmounts = new StringBuilder();
+//            List<Uint256> uintAmounts = new ArrayList<>();
+            for (Object _someAmount: (List) amounts.value) {
+                final Uint256 uint256 = new Uint256(new BigInteger(String.valueOf(_someAmount)));
+//                uintAmounts.add(uint256);
+                encodedAmounts.append(TypeEncoder.encode(uint256));
+            }
+
+            params = EthereumHelper.add0x(encodedAmounts.toString()
+                    + encodedReceivers.toString()
+                    + EthereumHelper.encodeParameterValue(sender.type, publisherAddress)
                     + EthereumHelper.encodeParameterValue(lockCondition.type, lockConditionId)
                     + EthereumHelper.encodeParameterValue(releaseCondition.type, releaseConditionId));
         }
-
 
         String valuesHash = Hash.sha3(params);
 

@@ -170,11 +170,11 @@ public class AssetsApiIT {
         assertTrue(receivers.contains(neverminedAPI.getMainAccount().address));
         assertTrue(receivers.contains(config.getString("provider.address")));
 
-        final List<String> _amounts = (List<String>) resolvedDDO.getAccessService()
+        final List<BigInteger> _amounts = (List<BigInteger>) resolvedDDO.getAccessService()
                 .getConditionbyName(Condition.ConditionTypes.escrowReward.name())
                 .getParameterByName("_amounts").value;
-        assertTrue(_amounts.contains("10"));
-        assertTrue(_amounts.contains("2"));
+        assertTrue(_amounts.contains(BigInteger.valueOf(10)));
+        assertTrue(_amounts.contains(BigInteger.valueOf(2)));
 
     }
 

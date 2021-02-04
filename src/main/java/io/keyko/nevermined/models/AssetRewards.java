@@ -50,10 +50,10 @@ public class AssetRewards extends AbstractModel implements FromJsonToModel {
     }
 
     public String getAmountsArrayString() {
-        String str = "[" +
-                String.join("\",\"", rewards.values()) +
+        return "[" +
+                String.join(",", rewards.values()) +
                 "]";
-        return str.replace("[", "[\"")
-                .replace("]", "\"]");
+//        return str.replace("[", "[\"")
+//                .replace("]", "\"]");
     }
 }

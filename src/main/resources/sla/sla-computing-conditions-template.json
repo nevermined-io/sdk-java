@@ -73,7 +73,7 @@
     "timelock": 0,
     "timeout": 0,
     "contractName": "EscrowReward",
-    "functionName": "fulfillMultipleRewards",
+    "functionName": "fulfill",
     "parameters": [
       {
         "name": "_amounts",
@@ -93,17 +93,17 @@
       {
         "name": "_lockCondition",
         "type": "bytes32",
-        "value": "{contract.LockRewardCondition.address}"
+        "value": ""
       },
       {
         "name": "_releaseCondition",
         "type": "bytes32",
-        "value": "{contract.ComputeExecutionCondition.address}"
+        "value": ""
       }
     ],
     "events": [
       {
-        "name": "FulfilledMultiple",
+        "name": "Fulfilled",
         "actorType": "publisher",
         "handler": {
           "moduleName": "escrowRewardCondition",
