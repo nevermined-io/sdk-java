@@ -13,8 +13,14 @@ import io.keyko.nevermined.models.FromJsonToModel;
 import io.keyko.nevermined.models.service.attributes.ServiceAdditionalInformation;
 import io.keyko.nevermined.models.service.attributes.ServiceCuration;
 import io.keyko.nevermined.models.service.attributes.ServiceMain;
+import org.web3j.abi.TypeEncoder;
+import org.web3j.abi.datatypes.Address;
+import org.web3j.abi.datatypes.DynamicArray;
+import org.web3j.abi.datatypes.Type;
+import org.web3j.abi.datatypes.generated.Uint256;
 import org.web3j.crypto.Hash;
 import org.web3j.protocol.Web3j;
+import org.web3j.utils.Numeric;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -308,19 +314,42 @@ public class Service extends AbstractModel implements FromJsonToModel {
     public String generateEscrowRewardConditionId(String serviceAgreementId, String consumerAddress, String publisherAddress, String escrowRewardConditionAddress,
                                                   String lockConditionId, String releaseConditionId) throws UnsupportedEncodingException {
 
-        Condition accessSecretStoreCondition = this.getConditionbyName("escrowReward");
+        Condition escrowRewardCondition = this.getConditionbyName("escrowReward");
 
-        Condition.ConditionParameter amount = accessSecretStoreCondition.getParameterByName("_amount");
-        Condition.ConditionParameter receiver = accessSecretStoreCondition.getParameterByName("_receiver");
-        Condition.ConditionParameter sender = accessSecretStoreCondition.getParameterByName("_sender");
-        Condition.ConditionParameter lockCondition = accessSecretStoreCondition.getParameterByName("_lockCondition");
-        Condition.ConditionParameter releaseCondition = accessSecretStoreCondition.getParameterByName("_releaseCondition");
+        Condition.ConditionParameter amounts = escrowRewardCondition.getParameterByName("_amounts");
+        Condition.ConditionParameter receivers = escrowRewardCondition.getParameterByName("_receivers");
+        Condition.ConditionParameter sender = escrowRewardCondition.getParameterByName("_sender");
+        Condition.ConditionParameter lockCondition = escrowRewardCondition.getParameterByName("_lockCondition");
+        Condition.ConditionParameter releaseCondition = escrowRewardCondition.getParameterByName("_releaseCondition");
 
-        String params = EthereumHelper.add0x(EthereumHelper.encodeParameterValue(amount.type, amount.value.toString())
-                + EthereumHelper.encodeParameterValue(receiver.type, publisherAddress)
-                + EthereumHelper.encodeParameterValue(sender.type, consumerAddress)
-                + EthereumHelper.encodeParameterValue(lockCondition.type, lockConditionId)
-                + EthereumHelper.encodeParameterValue(releaseCondition.type, releaseConditionId));
+        String params = null;
+        if (amounts.value instanceof String)    {
+            params = EthereumHelper.add0x(EthereumHelper.encodeParameterValue("uint256", amounts.value)
+                    + EthereumHelper.encodeParameterValue("address", publisherAddress)
+                    + EthereumHelper.encodeParameterValue("address", publisherAddress)
+                    + EthereumHelper.encodeParameterValue(lockCondition.type, lockConditionId)
+                    + EthereumHelper.encodeParameterValue(releaseCondition.type, releaseConditionId));
+
+        }   else    {
+            StringBuilder encodedReceivers = new StringBuilder();
+            for (String _receiver: (List<String>) receivers.value)  {
+                encodedReceivers.append(TypeEncoder.encode(new Address(_receiver)));
+            }
+
+            StringBuilder encodedAmounts = new StringBuilder();
+//            List<Uint256> uintAmounts = new ArrayList<>();
+            for (Object _someAmount: (List) amounts.value) {
+                final Uint256 uint256 = new Uint256(new BigInteger(String.valueOf(_someAmount)));
+//                uintAmounts.add(uint256);
+                encodedAmounts.append(TypeEncoder.encode(uint256));
+            }
+
+            params = EthereumHelper.add0x(encodedAmounts.toString()
+                    + encodedReceivers.toString()
+                    + EthereumHelper.encodeParameterValue(sender.type, publisherAddress)
+                    + EthereumHelper.encodeParameterValue(lockCondition.type, lockConditionId)
+                    + EthereumHelper.encodeParameterValue(releaseCondition.type, releaseConditionId));
+        }
 
         String valuesHash = Hash.sha3(params);
 

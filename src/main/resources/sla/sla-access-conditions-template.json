@@ -76,14 +76,14 @@
     "functionName": "fulfill",
     "parameters": [
       {
-        "name": "_amount",
-        "type": "uint256",
-        "value": "{parameter.price}"
+        "name": "_amounts",
+        "type": "uint256[]",
+        "value": {parameter.amounts}
       },
       {
-        "name": "_receiver",
-        "type": "address",
-        "value": ""
+        "name": "_receivers",
+        "type": "address[]",
+        "value": {parameter.receivers}
       },
       {
         "name": "_sender",
@@ -93,12 +93,12 @@
       {
         "name": "_lockCondition",
         "type": "bytes32",
-        "value": "{contract.LockRewardCondition.address}"
+        "value": ""
       },
       {
         "name": "_releaseCondition",
         "type": "bytes32",
-        "value": "{contract.AccessSecretStoreCondition.address}"
+        "value": ""
       }
     ],
     "events": [

@@ -14,6 +14,7 @@ import io.keyko.nevermined.exceptions.*;
 import io.keyko.nevermined.external.GatewayService;
 import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.external.GatewayService.AccessTokenResult;
+import io.keyko.nevermined.models.AssetRewards;
 import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.Order;
@@ -118,14 +119,15 @@ public class NeverminedManager extends BaseManager {
         }
     }
 
-    private Map<String, Object> buildBasicAccessServiceConfiguration(ProviderConfig providerConfig, String price,
-            String creatorAddress) {
+    private Map<String, Object> buildBasicAccessServiceConfiguration(ProviderConfig providerConfig, AssetRewards assetRewards,
+                                                                     String creatorAddress) {
 
         Map<String, Object> configuration = new HashMap<>();
         configuration.put("providerConfig", providerConfig);
         configuration.put("accessServiceTemplateId", escrowAccessSecretStoreTemplate.getContractAddress());
         configuration.put("accessSecretStoreConditionAddress", accessSecretStoreCondition.getContractAddress());
-        configuration.put("price", price);
+        configuration.put("price", assetRewards.totalPrice);
+        configuration.put("rewards", assetRewards.rewards);
         configuration.put("creator", creatorAddress);
 
         return configuration;
@@ -133,18 +135,49 @@ public class NeverminedManager extends BaseManager {
     }
 
     private Map<String, Object> buildBasicComputingServiceConfiguration(ProviderConfig providerConfig,
-            ComputingService.Provider computingProvider, String price, String creatorAddress) {
+                                                                        ComputingService.Provider computingProvider, AssetRewards assetRewards, String creatorAddress) {
 
         Map<String, Object> configuration = new HashMap<>();
         configuration.put("providerConfig", providerConfig);
         configuration.put("computingProvider", computingProvider);
         configuration.put("computingServiceTemplateId", escrowComputeExecutionTemplate.getContractAddress());
         configuration.put("execComputeConditionAddress", computeExecutionCondition.getContractAddress());
-        configuration.put("price", price);
+        configuration.put("price", assetRewards.totalPrice);
+        configuration.put("rewards", assetRewards.rewards);
         configuration.put("creator", creatorAddress);
 
         return configuration;
 
+    }
+
+    /**
+     * Creates a new DDO with an AccessService
+     *
+     * @param metadata       the metadata
+     * @param providerConfig the service Endpoints
+     * @param assetsRewards  rewards associated to the asset
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
+    public DDO registerAccessServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig, AssetRewards assetsRewards) throws DDOException {
+
+        return registerAccessServiceAsset(metadata, providerConfig,
+                new AuthConfig(providerConfig.getGatewayUrl(), AuthorizationService.AuthTypes.PSK_RSA), assetsRewards);
+    }
+
+    /**
+     * Creates a new DDO with an AccessService
+     *
+     * @param metadata       the metadata
+     * @param providerConfig the service Endpoints
+     * @param authConfig     Authorization config
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
+    public DDO registerAccessServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig, AuthConfig authConfig) throws DDOException {
+        final AssetRewards assetRewards = new AssetRewards(mainAccount.address, metadata.attributes.main.price);
+        return registerAccessServiceAsset(metadata, providerConfig,
+                new AuthConfig(providerConfig.getGatewayUrl(), AuthorizationService.AuthTypes.PSK_RSA), assetRewards);
     }
 
     /**
@@ -156,8 +189,9 @@ public class NeverminedManager extends BaseManager {
      * @throws DDOException DDOException
      */
     public DDO registerAccessServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException {
+        final AssetRewards assetRewards = new AssetRewards(mainAccount.address, metadata.attributes.main.price);
         return registerAccessServiceAsset(metadata, providerConfig,
-                new AuthConfig(providerConfig.getGatewayUrl(), AuthorizationService.AuthTypes.PSK_RSA));
+                new AuthConfig(providerConfig.getGatewayUrl(), AuthorizationService.AuthTypes.PSK_RSA), assetRewards);
     }
 
     /**
@@ -166,19 +200,20 @@ public class NeverminedManager extends BaseManager {
      * @param metadata       the metadata
      * @param providerConfig the service Endpoints
      * @param authConfig     auth configuration
+     * @param assetRewards   asset rewards distribution
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
-    public DDO registerAccessServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig, AuthConfig authConfig)
+    public DDO registerAccessServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig, AuthConfig authConfig, AssetRewards assetRewards)
             throws DDOException {
 
         try {
             Map<String, Object> configuration = buildBasicAccessServiceConfiguration(providerConfig,
-                    metadata.attributes.main.price, getMainAccount().address);
-            Service accessService = ServiceBuilder.getServiceBuilder(Service.ServiceTypes.ACCESS)
+                    assetRewards, getMainAccount().address);
+            Service accessService = ServiceBuilder.getServiceBuilder(Service.ServiceTypes.ACCESS, assetRewards)
                     .buildService(configuration);
 
-            return registerAsset(metadata, providerConfig, accessService, authConfig);
+            return registerAsset(metadata, providerConfig, accessService, authConfig, assetRewards);
 
         } catch (ServiceException e) {
             throw new DDOException("Error registering Asset.", e);
@@ -192,22 +227,23 @@ public class NeverminedManager extends BaseManager {
      * @param metadata          the metadata
      * @param providerConfig    the service Endpoints
      * @param computingProvider the data relative to the provider
+     * @param assetRewards   asset rewards distribution
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
     public DDO registerComputeService(AssetMetadata metadata, ProviderConfig providerConfig,
-            ComputingService.Provider computingProvider) throws DDOException {
+                                      ComputingService.Provider computingProvider, AssetRewards assetRewards) throws DDOException {
 
         try {
 
             Map<String, Object> configuration = buildBasicComputingServiceConfiguration(providerConfig,
-                    computingProvider, metadata.attributes.main.price, getMainAccount().address);
-            Service computingService = ServiceBuilder.getServiceBuilder(Service.ServiceTypes.COMPUTE)
+                    computingProvider, assetRewards, getMainAccount().address);
+            Service computingService = ServiceBuilder.getServiceBuilder(Service.ServiceTypes.COMPUTE, assetRewards)
                     .buildService(configuration);
 
             computingService.serviceEndpoint = providerConfig.getExecuteEndpoint();
             return registerAsset(metadata, providerConfig, computingService,
-                    new AuthConfig(providerConfig.getGatewayUrl()));
+                    new AuthConfig(providerConfig.getGatewayUrl()), assetRewards);
 
         } catch (ServiceException e) {
             throw new DDOException("Error registering Asset.", e);
@@ -223,11 +259,12 @@ public class NeverminedManager extends BaseManager {
      * @param providerConfig the service Endpoints
      * @param service        the service
      * @param authConfig     auth configuration
+     * @param assetRewards   asset rewards distribution
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
     private DDO registerAsset(AssetMetadata metadata, ProviderConfig providerConfig, Service service,
-            AuthConfig authConfig) throws DDOException {
+                              AuthConfig authConfig, AssetRewards assetRewards) throws DDOException {
 
         try {
 
@@ -283,27 +320,7 @@ public class NeverminedManager extends BaseManager {
                     ddo.gatewayEncryptFiles(authConfig);
             }
 
-            // Initialize conditions
-            ServiceAgreementHandler sla = null;
-            List<Condition> conditions;
-            Map<String, Object> conditionParams = null;
-
-            if (service instanceof AccessService) {
-                sla = new ServiceAccessAgreementHandler();
-                conditionParams = ServiceBuilder.getAccessConditionParams(ddo.getDid().toString(),
-                        metadata.attributes.main.price, escrowReward.getContractAddress(),
-                        lockRewardCondition.getContractAddress(), accessSecretStoreCondition.getContractAddress());
-            } else if (service instanceof ComputingService) {
-                sla = new ServiceComputingAgreementHandler();
-                conditionParams = ServiceBuilder.getComputingConditionParams(ddo.getDid().toString(),
-                        metadata.attributes.main.price, escrowReward.getContractAddress(),
-                        lockRewardCondition.getContractAddress(), computeExecutionCondition.getContractAddress());
-            }
-            try {
-                conditions = sla.initializeConditions(conditionParams);
-            } catch (InitializeConditionsException e) {
-                throw new DDOException("Error registering Asset.", e);
-            }
+            List<Condition> conditions= ServiceBuilder.getGenericConditionParams(ddo, service, config, assetRewards);
 
             Service theService = ddo.getService(service.index);
             theService.attributes.serviceAgreementTemplate.conditions = conditions;
@@ -415,9 +432,9 @@ public class NeverminedManager extends BaseManager {
         }
 
         Service service;
-        if (serviceIndex >= 0)
+        if (serviceIndex >= 0) {
             service = ddo.getService(serviceIndex);
-        else if (serviceType.toString().equalsIgnoreCase(Service.ServiceTypes.COMPUTE.toString())) {
+        } else if (serviceType.toString().equalsIgnoreCase(Service.ServiceTypes.COMPUTE.toString())) {
             service = ddo.getComputeService();
             serviceIndex = service.index;
         } else {
@@ -442,7 +459,7 @@ public class NeverminedManager extends BaseManager {
 
         try {
             log.debug("Service Agreement " + serviceAgreementId + " initialized successfully");
-            String price = ddo.getMetadataService().attributes.main.price;
+            String price = service.attributes.main.price;
             tokenApprove(this.tokenContract, lockRewardCondition.getContractAddress(), price);
             BigInteger balance = this.tokenContract.balanceOf(getMainAccount().address).send();
             if (balance.compareTo(new BigInteger(price)) < 0) {
@@ -638,7 +655,7 @@ public class NeverminedManager extends BaseManager {
     }
 
     public List<byte[]> generateServiceConditionsId(String serviceAgreementId, String consumerAddress, DDO ddo,
-            int serviceIndex) throws ServiceAgreementException, ServiceException {
+                                                    int serviceIndex) throws ServiceAgreementException, ServiceException {
 
         Service service = ddo.getService(serviceIndex);
 
@@ -842,8 +859,10 @@ public class NeverminedManager extends BaseManager {
             throws ServiceException, EscrowRewardException {
 
         Service service = ddo.getService(serviceIndex);
-        String price = service.attributes.main.price;
-
+        String totalPrice = service.attributes.main.price;
+        final Condition escrowRewardCondition = service.getConditionbyName(Condition.ConditionTypes.escrowReward.name());
+        final Condition.ConditionParameter amountsParameter = escrowRewardCondition.getParameterByName("_amounts");
+        final Condition.ConditionParameter receiversParameter = escrowRewardCondition.getParameterByName("_receivers");
         String lockRewardConditionId = "";
         String releaseConditionId = "";
 
@@ -871,7 +890,8 @@ public class NeverminedManager extends BaseManager {
         }
 
         return FulfillEscrowReward.executeFulfill(escrowReward, serviceAgreementId,
-                this.lockRewardCondition.getContractAddress(), price, this.getMainAccount().address,
+                this.lockRewardCondition.getContractAddress(), (List<BigInteger>) amountsParameter.value,
+                (List<String>) receiversParameter.value,
                 lockRewardConditionId, releaseConditionId);
     }
 
@@ -1018,7 +1038,7 @@ public class NeverminedManager extends BaseManager {
      * @throws DownloadServiceException DownloadServiceException
      */
     public InputStream consumeBinary(String serviceAgreementId, DID did, int serviceIndex, int fileIndex,
-            Boolean isRangeRequest, Integer rangeStart, Integer rangeEnd) throws DownloadServiceException {
+                                     Boolean isRangeRequest, Integer rangeStart, Integer rangeEnd) throws DownloadServiceException {
 
         Map<String, Object> consumeData = fetchAssetDataBeforeConsume(did, serviceIndex);
         String serviceEndpoint = (String) consumeData.get("serviceEndpoint");
@@ -1052,7 +1072,7 @@ public class NeverminedManager extends BaseManager {
      * @throws ServiceException ServiceException
      */
     public GatewayService.ServiceExecutionResult executeComputeService(String serviceAgreementId, DID did, int serviceIndex,
-            DID workflowDID) throws ServiceException {
+                                                                       DID workflowDID) throws ServiceException {
 
         DDO ddo;
         try {
@@ -1111,7 +1131,7 @@ public class NeverminedManager extends BaseManager {
      * @throws ServiceException Service Exception
      */
     public ComputeStatus getComputeStatus(String serviceAgreementId, String executionId,
-                                        ProviderConfig providerConfig) throws ServiceException {
+                                          ProviderConfig providerConfig) throws ServiceException {
         String serviceEndpoint = providerConfig.getAccessEndpoint()
                 .replace("/access", "/compute/status/");
         serviceEndpoint += serviceAgreementId + "/" + executionId;

@@ -122,7 +122,7 @@ public class ConditionsApiIT {
         assertEquals(BigInteger.ONE, statusAfterAccessGranted.conditions.get(0).conditions.get(Condition.ConditionTypes.escrowReward.toString()));
 
 
-        neverminedAPI.getConditionsAPI().releaseReward(agreementId, BigInteger.TEN);
+        neverminedAPI.getConditionsAPI().releaseReward(agreementId);
         AgreementStatus statusAfterReleaseReward = neverminedAPI.getAgreementsAPI().status(agreementId);
         assertEquals(BigInteger.TWO, statusAfterReleaseReward.conditions.get(0).conditions.get(Condition.ConditionTypes.lockReward.toString()));
         assertEquals(BigInteger.TWO, statusAfterReleaseReward.conditions.get(0).conditions.get(Condition.ConditionTypes.accessSecretStore.toString()));

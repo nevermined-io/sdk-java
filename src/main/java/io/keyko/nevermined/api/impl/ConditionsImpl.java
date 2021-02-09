@@ -8,8 +8,7 @@ import java.math.BigInteger;
 
 public class ConditionsImpl implements ConditionsAPI {
 
-    private ConditionsManager conditionsManager;
-
+    final private ConditionsManager conditionsManager;
 
     /**
      * Constructor
@@ -37,12 +36,12 @@ public class ConditionsImpl implements ConditionsAPI {
     }
 
     @Override
-    public boolean releaseReward(String agreementId, BigInteger amount) throws Exception {
-        return conditionsManager.releaseReward(agreementId, amount);
+    public boolean releaseReward(String agreementId) throws Exception {
+        return conditionsManager.releaseReward(agreementId);
     }
 
     @Override
-    public boolean refundReward(String agreementId, BigInteger amount) throws Exception {
-        return conditionsManager.refundReward(agreementId, amount);
+    public boolean refundReward(String agreementId) throws Exception {
+        return conditionsManager.refundReward(agreementId);
     }
 }

@@ -1,45 +1,49 @@
 package io.keyko.nevermined.models.service;
 
+import com.typesafe.config.Config;
+import io.keyko.nevermined.core.sla.handlers.ServiceAccessAgreementHandler;
+import io.keyko.nevermined.core.sla.handlers.ServiceAgreementHandler;
+import io.keyko.nevermined.core.sla.handlers.ServiceComputingAgreementHandler;
 import io.keyko.nevermined.exceptions.DDOException;
+import io.keyko.nevermined.exceptions.InitializeConditionsException;
 import io.keyko.nevermined.exceptions.ServiceException;
+import io.keyko.nevermined.models.AssetRewards;
+import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.service.types.AccessService;
 import io.keyko.nevermined.models.service.types.ComputingService;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public interface ServiceBuilder {
 
     Service buildService( Map<String, Object> serviceConfiguration) throws DDOException;
 
-    static ServiceBuilder getServiceBuilder(Service.ServiceTypes serviceType) throws ServiceException {
+    static ServiceBuilder getServiceBuilder(Service.ServiceTypes serviceType, AssetRewards assetRewards) throws ServiceException {
 
         switch (serviceType) {
-            case ACCESS: return accessServiceBuilder();
-            case COMPUTE: return computingServiceBuilder();
+            case ACCESS: return accessServiceBuilder(assetRewards);
+            case COMPUTE: return computingServiceBuilder(assetRewards);
             default: throw new ServiceException("Invalid Service definition");
 
         }
 
     }
 
-    private static ServiceBuilder computingServiceBuilder() {
+    private static ServiceBuilder computingServiceBuilder(AssetRewards assetRewards) {
 
         return config -> {
 
             ProviderConfig providerConfig = (ProviderConfig) config.get("providerConfig");
             ComputingService.Provider computingProvider = (ComputingService.Provider) config.get("computingProvider");
             String computingServiceTemplateId = (String) config.get("computingServiceTemplateId");
-            String price = (String)config.get("price");
             String creator = (String)config.get("creator");
-            return buildComputingService(providerConfig, computingProvider, computingServiceTemplateId, price, creator);
+
+            return buildComputingService(providerConfig, computingProvider, computingServiceTemplateId, assetRewards, creator);
         };
 
     }
 
-    private static ComputingService buildComputingService(ProviderConfig providerConfig, ComputingService.Provider computingProvider, String computingServiceTemplateId, String price, String creator) throws DDOException {
+    private static ComputingService buildComputingService(ProviderConfig providerConfig, ComputingService.Provider computingProvider, String computingServiceTemplateId, AssetRewards assetRewards, String creator) {
 
         // Definition of a DEFAULT ServiceAgreement Contract
         ComputingService.ServiceAgreementTemplate serviceAgreementTemplate = new ComputingService.ServiceAgreementTemplate();
@@ -75,38 +79,27 @@ public interface ServiceBuilder {
         computingService.attributes.main.provider = computingProvider;
 
         computingService.attributes.main.name = "dataAssetComputeServiceAgreement";
-        computingService.attributes.main.price = price;
+        computingService.attributes.main.price = assetRewards.totalPrice;
         computingService.attributes.main.creator = creator;
         computingService.attributes.main.datePublished = new Date();
 
-        // Initializing conditions and adding to Computing service
-        /*
-        ServiceAgreementHandler sla = new ServiceComputingAgreementHandler();
-        try {
-            computingService.attributes.main.serviceAgreementTemplate.conditions = sla.initializeConditions(
-                    getComputingConditionParams(did, price, escrowRewardAddress, lockRewardConditionAddress, execComputeConditionAddress));
-        }catch (InitializeConditionsException  e) {
-            throw new DDOException("Error registering Asset.", e);
-        }
-         */
         return computingService;
     }
 
 
-    private static ServiceBuilder accessServiceBuilder() {
+    private static ServiceBuilder accessServiceBuilder(AssetRewards assetRewards) {
 
         return config -> {
 
             ProviderConfig providerConfig = (ProviderConfig) config.get("providerConfig");
             String accessServiceTemplateId = (String) config.get("accessServiceTemplateId");
-            String price = (String)config.get("price");
             String creator = (String)config.get("creator");
-            return buildAccessService(providerConfig, accessServiceTemplateId, price, creator);
+            return buildAccessService(providerConfig, accessServiceTemplateId, assetRewards, creator);
         };
 
     }
 
-    private static AccessService buildAccessService(ProviderConfig providerConfig, String accessServiceTemplateId, String price, String creator) {
+    private static AccessService buildAccessService(ProviderConfig providerConfig, String accessServiceTemplateId, AssetRewards assetRewards, String creator) {
 
         // Definition of a DEFAULT ServiceAgreement Contract
         AccessService.ServiceAgreementTemplate serviceAgreementTemplate = new AccessService.ServiceAgreementTemplate();
@@ -131,69 +124,50 @@ public interface ServiceBuilder {
                 serviceAgreementTemplate,
                 accessServiceTemplateId);
         accessService.attributes.main.name = "dataAssetAccessServiceAgreement";
-        accessService.attributes.main.price = price;
+        accessService.attributes.main.price = assetRewards.totalPrice;
         accessService.attributes.main.creator = creator;
         accessService.attributes.main.datePublished = new Date();
 
-        /*
-        // Initializing conditions and adding to Access service
-        ServiceAgreementHandler sla = new ServiceAccessAgreementHandler();
-        try {
-            accessService.attributes.main.serviceAgreementTemplate.conditions = sla.initializeConditions(
-                    getAccessConditionParams(did, price, escrowRewardAddress, lockRewardConditionAddress, accessSecretStoreConditionAddress));
-        }catch (InitializeConditionsException  e) {
-            throw new DDOException("Error registering Asset.", e);
-        }
-         */
         return accessService;
     }
 
-
     /**
-     * Gets the Access ConditionStatusMap Params of a DDO
+     * Gets the ConditionStatusMap Params of a DDO
      *
-     * @param did   the did
-     * @param price the price
-     * @param escrowRewardAddress the address of the EscrowReward Condition
-     * @param accessSecretStoreConditionAddress the address of the accessSecretStore condition
-     * @param lockRewardConditionAddress the address of the lockReward Condition
-     * @return a Map with the params of the Access ConditionStatusMap
+     * @param ddo       the ddo to parse
+     * @param service   the service
+     * @param config    the config object including the contract addresses
+     * @return a list of Conditions
      */
-    static  Map<String, Object> getAccessConditionParams(String did, String price,  String escrowRewardAddress, String lockRewardConditionAddress, String accessSecretStoreConditionAddress) {
+    static List<Condition> getGenericConditionParams(DDO ddo, Service service, Config config, AssetRewards assetRewards) throws DDOException {
         Map<String, Object> params = new HashMap<>();
-        params.put("parameter.did", did);
-        params.put("parameter.price", price);
+        final HashMap<String, HashMap<String, String>> contractNames = (HashMap<String, HashMap<String, String>>) config.getAnyRef("contract");
+        for (String name: contractNames.keySet())    {
+            String configToken = "contract." + name + ".address";
+            params.put(configToken, config.getString(configToken));
+        }
+        params.put("parameter.did", ddo.getDid().getDid());
+        params.put("parameter.assetId", ddo.getDid().getHash());
+        params.put("parameter.price", assetRewards.totalPrice);
 
-        params.put("contract.EscrowReward.address", escrowRewardAddress);
-        params.put("contract.LockRewardCondition.address", lockRewardConditionAddress);
-        params.put("contract.AccessSecretStoreCondition.address", accessSecretStoreConditionAddress);
+        ServiceAgreementHandler sla;
+        List<Condition> conditions;
 
-        params.put("parameter.assetId", did.replace("did:nv:", ""));
+        if (service instanceof AccessService) {
+            sla = new ServiceAccessAgreementHandler();
+        } else if (service instanceof ComputingService) {
+            sla = new ServiceComputingAgreementHandler();
+        }   else    {
+            throw new DDOException("Unrecognized service");
+        }
 
-        return params;
+        try {
+            conditions = sla.initializeConditions(params, assetRewards);
+
+        } catch (InitializeConditionsException e) {
+            throw new DDOException("Unable the initialize Conditions", e);
+        }
+        return conditions;
     }
 
-    /**
-     * Gets the Computing ConditionStatusMap Params of a DDO
-     *
-     * @param did   the did
-     * @param price the price
-     * @param escrowRewardAddress the address of the EscrowReward Condition
-     * @param lockRewardConditionAddress the address of the lockReward Condition
-     * @param execComputeConditionAddress the address of the execCoompute condition
-     * @return a Map with the params of the Access ConditionStatusMap
-     */
-    static  Map<String, Object> getComputingConditionParams(String did, String price,  String escrowRewardAddress, String lockRewardConditionAddress, String execComputeConditionAddress) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("parameter.did", did);
-        params.put("parameter.price", price);
-
-        params.put("contract.EscrowReward.address", escrowRewardAddress);
-        params.put("contract.LockRewardCondition.address", lockRewardConditionAddress);
-        params.put("contract.ExecComputeCondition.address", execComputeConditionAddress);
-
-        params.put("parameter.assetId", did.replace("did:nv:", ""));
-
-        return params;
-    }
 }

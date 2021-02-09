@@ -5,10 +5,10 @@ import io.keyko.nevermined.contracts.EscrowReward;
 import io.keyko.nevermined.exceptions.EscrowRewardException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.web3j.crypto.Keys;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 import java.math.BigInteger;
+import java.util.List;
 
 public class FulfillEscrowReward {
 
@@ -20,8 +20,8 @@ public class FulfillEscrowReward {
      * @param escrowReward       the EscrowReward contract
      * @param serviceAgreementId the service agreement id
      * @param lockRewardAddress  the address of the lockReward contract
-     * @param price          price of the asset
-     * @param consumerAddress    the Address of the consumer
+     * @param amounts            reward amounts to distribute
+     * @param rewardAddresses    the Addresses of the users to distribute the rewards
      * @param lockConditionId    the id of the lock condition
      * @param releaseConditionId the id of the release condition
      * @return a flag that indicates if the function was executed correctly
@@ -30,8 +30,8 @@ public class FulfillEscrowReward {
     public static Boolean executeFulfill(EscrowReward escrowReward,
                                          String serviceAgreementId,
                                          String lockRewardAddress,
-                                         String price,
-                                         String consumerAddress,
+                                         List<BigInteger> amounts,
+                                         List<String> rewardAddresses,
                                          String lockConditionId,
                                          String releaseConditionId) throws EscrowRewardException {
 
@@ -41,7 +41,7 @@ public class FulfillEscrowReward {
 
         try {
 
-            String lockRewardAddressChecksum = Keys.toChecksumAddress(lockRewardAddress);
+//            String lockRewardAddressChecksum = Keys.toChecksumAddress(lockRewardAddress);
             serviceId = EncodingHelper.hexStringToBytes(serviceAgreementId);
 
             lockConditionIdBytes = EncodingHelper.hexStringToBytes(lockConditionId);
@@ -49,9 +49,9 @@ public class FulfillEscrowReward {
 
             TransactionReceipt receipt = escrowReward.fulfill(
                     serviceId,
-                    new BigInteger(price),
-                    lockRewardAddressChecksum,
-                    consumerAddress,
+                    amounts,
+                    rewardAddresses,
+                    lockRewardAddress,
                     lockConditionIdBytes,
                     releaseConditionIdBytes
             ).send();

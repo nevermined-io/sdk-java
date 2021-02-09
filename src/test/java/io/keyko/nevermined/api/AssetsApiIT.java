@@ -8,14 +8,18 @@ import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.config.NeverminedConfig;
 import io.keyko.nevermined.contracts.EscrowAccessSecretStoreTemplate;
 import io.keyko.nevermined.contracts.TemplateStoreManager;
-import io.keyko.nevermined.exceptions.*;
+import io.keyko.nevermined.exceptions.DDOException;
+import io.keyko.nevermined.exceptions.DownloadServiceException;
+import io.keyko.nevermined.exceptions.ServiceException;
 import io.keyko.nevermined.external.GatewayService;
 import io.keyko.nevermined.manager.ManagerHelper;
+import io.keyko.nevermined.models.AssetRewards;
 import io.keyko.nevermined.models.Balance;
 import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.asset.OrderResult;
+import io.keyko.nevermined.models.service.Condition;
 import io.keyko.nevermined.models.service.ProviderConfig;
 import io.keyko.nevermined.models.service.Service;
 import io.keyko.nevermined.models.service.types.ComputingService;
@@ -140,16 +144,39 @@ public class AssetsApiIT {
         log.debug("Is escrowAccessSecretStoreTemplate approved? " + isTemplateApproved);
     }
 
+    private AssetRewards getTestAssetRewards()  {
+        return new AssetRewards(
+                Map.ofEntries(
+                        new AbstractMap.SimpleEntry<>(neverminedAPI.getMainAccount().address, "10"),
+                        new AbstractMap.SimpleEntry<>(config.getString("provider.address"), "2")
+                )
+        );
+    }
+
     @Test
     public void create() throws Exception {
 
+        final AssetRewards assetRewards = getTestAssetRewards();
         metadataBase.attributes.main.dateCreated = new Date();
-        DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
+        DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig, assetRewards);
 
         DID did = new DID(ddo.id);
         DDO resolvedDDO = neverminedAPI.getAssetsAPI().resolve(did);
         assertEquals(ddo.id, resolvedDDO.id);
         assertTrue(resolvedDDO.services.size() == 4);
+        assertEquals(assetRewards.totalPrice, resolvedDDO.getAccessService().attributes.main.price);
+
+        final List<String> receivers = (List<String>) resolvedDDO.getAccessService()
+                .getConditionbyName(Condition.ConditionTypes.escrowReward.name())
+                .getParameterByName("_receivers").value;
+        assertTrue(receivers.contains(neverminedAPI.getMainAccount().address));
+        assertTrue(receivers.contains(config.getString("provider.address")));
+
+        final List<String> _amounts = (List<String>) resolvedDDO.getAccessService()
+                .getConditionbyName(Condition.ConditionTypes.escrowReward.name())
+                .getParameterByName("_amounts").value;
+        assertTrue(_amounts.contains("10"));
+        assertTrue(_amounts.contains("2"));
 
     }
 
@@ -157,7 +184,8 @@ public class AssetsApiIT {
     public void createComputeService() throws Exception {
 
         metadataBaseAlgorithm.attributes.main.dateCreated = new Date();
-        DDO ddo = neverminedAPI.getAssetsAPI().createComputeService(metadataBaseAlgorithm, providerConfig, computingProvider);
+        DDO ddo = neverminedAPI.getAssetsAPI().createComputeService(
+                metadataBaseAlgorithm, providerConfig, computingProvider, getTestAssetRewards());
 
         DID did = new DID(ddo.id);
         DDO resolvedDDO = neverminedAPI.getAssetsAPI().resolve(did);
@@ -230,14 +258,16 @@ public class AssetsApiIT {
     @Test
     public void consumeBinaryDirectly() throws Exception {
 
+        final AssetRewards testAssetRewards = getTestAssetRewards();
+
         int consumedAssetsBefore = neverminedAPI.getAssetsAPI().consumerAssets(
                 neverminedAPIConsumer.getMainAccount().address).size();
 
         metadataBase.attributes.main.dateCreated = new Date();
-        DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
+        DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig, testAssetRewards);
         DID did = new DID(ddo.id);
 
-        neverminedAPIConsumer.getAccountsAPI().requestTokens(BigInteger.TEN);
+        neverminedAPIConsumer.getAccountsAPI().requestTokens(new BigInteger(testAssetRewards.totalPrice));
         Balance balance = neverminedAPIConsumer.getAccountsAPI().balance(neverminedAPIConsumer.getMainAccount());
         log.debug("Account " + neverminedAPIConsumer.getMainAccount().address + " balance is: " + balance.toString());
 
@@ -306,7 +336,9 @@ public class AssetsApiIT {
 
         // 1. Publish the compute service
 
-        DDO ddoComputeService = neverminedAPI.getAssetsAPI().createComputeService(metadataBase, providerConfig, computingProvider);
+        DDO ddoComputeService = neverminedAPI.getAssetsAPI().createComputeService(
+                metadataBase, providerConfig, computingProvider, getTestAssetRewards());
+
         DID didComputeService = new DID(ddoComputeService.id);
         DDO resolvedDDO = neverminedAPI.getAssetsAPI().resolve(didComputeService);
         assertEquals(ddoComputeService.id, resolvedDDO.id);

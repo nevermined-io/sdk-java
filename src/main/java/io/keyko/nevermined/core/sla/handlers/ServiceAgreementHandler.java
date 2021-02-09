@@ -9,6 +9,7 @@ import io.keyko.nevermined.contracts.EscrowAccessSecretStoreTemplate;
 import io.keyko.nevermined.contracts.EscrowComputeExecutionTemplate;
 import io.keyko.nevermined.exceptions.InitializeConditionsException;
 import io.keyko.nevermined.models.AbstractModel;
+import io.keyko.nevermined.models.AssetRewards;
 import io.keyko.nevermined.models.service.Condition;
 import io.reactivex.Flowable;
 import org.apache.commons.io.IOUtils;
@@ -165,7 +166,7 @@ public abstract class ServiceAgreementHandler {
      * @return a List with all the conditions of the template
      * @throws InitializeConditionsException InitializeConditionsException
      */
-    public List<io.keyko.nevermined.models.service.Condition> initializeConditions(Map<String, Object> params) throws InitializeConditionsException {
+    public List<io.keyko.nevermined.models.service.Condition> initializeConditions(Map<String, Object> params, AssetRewards assetRewards) throws InitializeConditionsException {
 
         try {
             conditionsTemplate = IOUtils.toString(
@@ -179,6 +180,10 @@ public abstract class ServiceAgreementHandler {
 
             if (conditionsTemplate == null)
                 conditionsTemplate = new String(Files.readAllBytes(Paths.get("src/main/resources/sla/" + getConditionFileTemplate())));
+
+            // Amounts and Receivers parameters
+            conditionsTemplate = conditionsTemplate.replaceAll("\\{parameter.receivers\\}", assetRewards.getReceiversArrayString());
+            conditionsTemplate = conditionsTemplate.replaceAll("\\{parameter.amounts\\}", assetRewards.getAmountsArrayString());
 
             params.forEach((_name, _func) -> {
                 if (_func instanceof byte[])

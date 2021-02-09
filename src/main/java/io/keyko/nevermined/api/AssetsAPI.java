@@ -2,6 +2,7 @@ package io.keyko.nevermined.api;
 
 import io.keyko.nevermined.exceptions.*;
 import io.keyko.nevermined.external.GatewayService;
+import io.keyko.nevermined.models.AssetRewards;
 import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
@@ -25,6 +26,19 @@ import java.util.Map;
  */
 public interface AssetsAPI {
 
+
+    /**
+     * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
+     *
+     * @param metadata       the metadata of the DDO
+     * @param providerConfig the endpoints of the DDO's services
+     * @param authConfig     Auth configuration
+     * @param assetRewards   Includes the asset reward distribution between none, one or multiple addresses
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
+    DDO create(AssetMetadata metadata, ProviderConfig providerConfig, AuthConfig authConfig, AssetRewards assetRewards) throws DDOException;
+
     /**
      * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
      *
@@ -47,6 +61,17 @@ public interface AssetsAPI {
     DDO create(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException;
 
     /**
+     * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
+     *
+     * @param metadata       the metadata of the DDO
+     * @param providerConfig the endpoints of the DDO's services
+     * @param assetRewards   the rewards to be distributed
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
+    DDO create(AssetMetadata metadata, ProviderConfig providerConfig, AssetRewards assetRewards) throws DDOException;
+
+    /**
      * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
      *
      * @param metadata       the metadata of the DDO
@@ -62,10 +87,11 @@ public interface AssetsAPI {
      * @param metadata       the metadata of the DDO
      * @param providerConfig the endpoints of the DDO's services
      * @param computingProvider the computing provider configuration
+     * @param assetRewards   how the compute rewards will be distributed
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
-    DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider) throws DDOException;
+    DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig, ComputingService.Provider computingProvider, AssetRewards assetRewards) throws DDOException;
 
 
     /**

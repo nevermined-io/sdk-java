@@ -1,5 +1,8 @@
 package io.keyko.nevermined.manager;
 
+import io.keyko.nevermined.api.NeverminedAPI;
+import io.keyko.nevermined.exceptions.InitializationException;
+import io.keyko.nevermined.exceptions.InvalidConfiguration;
 import io.keyko.secretstore.core.EvmDto;
 import io.keyko.secretstore.core.SecretStoreDto;
 import com.typesafe.config.Config;
@@ -66,6 +69,40 @@ public abstract class ManagerHelper {
                 .setGasPrice(BigInteger.valueOf(config.getLong("keeper.gasPrice")));
 
         return keeper;
+    }
+
+    public static NeverminedAPI getNeverminedAPI(Config config, VmClient client, String nAddress) throws InvalidConfiguration, InitializationException {
+
+        Properties properties = new Properties();
+        properties.put(NeverminedConfig.MAIN_ACCOUNT_ADDRESS, config.getString("account." + client.toString() + ".address" + nAddress));
+        properties.put(NeverminedConfig.MAIN_ACCOUNT_PASSWORD, config.getString("account." + client.toString() + ".password" + nAddress));
+        properties.put(NeverminedConfig.MAIN_ACCOUNT_CREDENTIALS_FILE, config.getString("account." + client.toString() + ".credentialsFile" + nAddress));
+
+        properties.put(NeverminedConfig.KEEPER_URL, config.getString("keeper.url"));
+        properties.put(NeverminedConfig.KEEPER_GAS_LIMIT, config.getString("keeper.gasLimit"));
+        properties.put(NeverminedConfig.KEEPER_GAS_PRICE, config.getString("keeper.gasPrice"));
+        properties.put(NeverminedConfig.KEEPER_TX_ATTEMPTS, config.getString("keeper.tx.attempts"));
+        properties.put(NeverminedConfig.KEEPER_TX_SLEEPDURATION, config.getString("keeper.tx.sleepDuration"));
+        properties.put(NeverminedConfig.METADATA_URL, config.getString("metadata.url"));
+        properties.put(NeverminedConfig.SECRETSTORE_URL, config.getString("secretstore.url"));
+        properties.put(NeverminedConfig.CONSUME_BASE_PATH, config.getString("consume.basePath"));
+
+        properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
+        properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
+        properties.put(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
+        properties.put(NeverminedConfig.LOCKREWARD_CONDITIONS_ADDRESS, config.getString("contract.LockRewardCondition.address"));
+        properties.put(NeverminedConfig.ESCROWREWARD_CONDITIONS_ADDRESS, config.getString("contract.EscrowReward.address"));
+        properties.put(NeverminedConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
+        properties.put(NeverminedConfig.ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.AccessSecretStoreCondition.address"));
+        properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
+        properties.put(NeverminedConfig.TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
+        properties.put(NeverminedConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
+        properties.put(NeverminedConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.ComputeExecutionCondition.address"));
+        properties.put(NeverminedConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.EscrowComputeExecutionTemplate.address"));
+        properties.put(NeverminedConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
+
+        return NeverminedAPI.getInstance(properties);
+
     }
 
     public static MetadataApiService getMetadataService(Config config) {
