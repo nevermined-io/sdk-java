@@ -12,7 +12,6 @@ import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.service.types.AccessService;
 import io.keyko.nevermined.models.service.types.ComputingService;
 
-import java.math.BigInteger;
 import java.util.*;
 
 public interface ServiceBuilder {
@@ -37,7 +36,6 @@ public interface ServiceBuilder {
             ProviderConfig providerConfig = (ProviderConfig) config.get("providerConfig");
             ComputingService.Provider computingProvider = (ComputingService.Provider) config.get("computingProvider");
             String computingServiceTemplateId = (String) config.get("computingServiceTemplateId");
-            String price = (String)config.get("price");
             String creator = (String)config.get("creator");
 
             return buildComputingService(providerConfig, computingProvider, computingServiceTemplateId, assetRewards, creator);
@@ -45,7 +43,7 @@ public interface ServiceBuilder {
 
     }
 
-    private static ComputingService buildComputingService(ProviderConfig providerConfig, ComputingService.Provider computingProvider, String computingServiceTemplateId, AssetRewards assetRewards, String creator) throws DDOException {
+    private static ComputingService buildComputingService(ProviderConfig providerConfig, ComputingService.Provider computingProvider, String computingServiceTemplateId, AssetRewards assetRewards, String creator) {
 
         // Definition of a DEFAULT ServiceAgreement Contract
         ComputingService.ServiceAgreementTemplate serviceAgreementTemplate = new ComputingService.ServiceAgreementTemplate();
@@ -85,16 +83,6 @@ public interface ServiceBuilder {
         computingService.attributes.main.creator = creator;
         computingService.attributes.main.datePublished = new Date();
 
-        // Initializing conditions and adding to Computing service
-        /*
-        ServiceAgreementHandler sla = new ServiceComputingAgreementHandler();
-        try {
-            computingService.attributes.main.serviceAgreementTemplate.conditions = sla.initializeConditions(
-                    getComputingConditionParams(did, price, escrowRewardAddress, lockRewardConditionAddress, execComputeConditionAddress));
-        }catch (InitializeConditionsException  e) {
-            throw new DDOException("Error registering Asset.", e);
-        }
-         */
         return computingService;
     }
 
@@ -105,7 +93,6 @@ public interface ServiceBuilder {
 
             ProviderConfig providerConfig = (ProviderConfig) config.get("providerConfig");
             String accessServiceTemplateId = (String) config.get("accessServiceTemplateId");
-            String price = (String)config.get("price");
             String creator = (String)config.get("creator");
             return buildAccessService(providerConfig, accessServiceTemplateId, assetRewards, creator);
         };
@@ -141,16 +128,6 @@ public interface ServiceBuilder {
         accessService.attributes.main.creator = creator;
         accessService.attributes.main.datePublished = new Date();
 
-        /*
-        // Initializing conditions and adding to Access service
-        ServiceAgreementHandler sla = new ServiceAccessAgreementHandler();
-        try {
-            accessService.attributes.main.serviceAgreementTemplate.conditions = sla.initializeConditions(
-                    getAccessConditionParams(did, price, escrowRewardAddress, lockRewardConditionAddress, accessSecretStoreConditionAddress));
-        }catch (InitializeConditionsException  e) {
-            throw new DDOException("Error registering Asset.", e);
-        }
-         */
         return accessService;
     }
 
@@ -173,25 +150,16 @@ public interface ServiceBuilder {
         params.put("parameter.assetId", ddo.getDid().getHash());
         params.put("parameter.price", assetRewards.totalPrice);
 
-//        Condition escrowRewardCondition = null;
-//        BigInteger totalPrice = BigInteger.ZERO;
-
-        ServiceAgreementHandler sla = null;
+        ServiceAgreementHandler sla;
         List<Condition> conditions;
 
         if (service instanceof AccessService) {
             sla = new ServiceAccessAgreementHandler();
-//            escrowRewardCondition = ddo.getAccessService().getConditionbyName(Condition.ConditionTypes.escrowReward.name());
         } else if (service instanceof ComputingService) {
             sla = new ServiceComputingAgreementHandler();
-//            escrowRewardCondition = ddo.getComputeService().getConditionbyName(Condition.ConditionTypes.escrowReward.name());
         }   else    {
             throw new DDOException("Unrecognized service");
         }
-
-//        final List<String> amounts = (List<String>) escrowRewardCondition.getParameterByName("_amounts").value;
-//        amounts.forEach(_amount -> { totalPrice.add(new BigInteger(_amount));});
-
 
         try {
             conditions = sla.initializeConditions(params, assetRewards);
