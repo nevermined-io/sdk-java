@@ -245,8 +245,8 @@
               "parameters": [
                 {
                   "name": "_amounts",
-                  "type": "uint256",
-                  "value": [10]
+                  "type": "uint256[]",
+                  "value": ["10"]
                 },
                 {
                   "name": "_receivers",

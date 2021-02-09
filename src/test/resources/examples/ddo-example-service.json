@@ -211,13 +211,13 @@
               "functionName": "fulfill",
               "parameters": [
                 {
-                  "name": "_amounts",
-                  "type": "uint256",
+                  "name": "_amounts[]",
+                  "type": "uint256[]",
                   "value": []
                 },
                 {
-                  "name": "_receivers",
-                  "type": "address",
+                  "name": "_receivers[]",
+                  "type": "address[]",
                   "value": []
                 },
                 {

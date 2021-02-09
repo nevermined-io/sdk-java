@@ -8,7 +8,9 @@ import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.config.NeverminedConfig;
 import io.keyko.nevermined.contracts.EscrowAccessSecretStoreTemplate;
 import io.keyko.nevermined.contracts.TemplateStoreManager;
-import io.keyko.nevermined.exceptions.*;
+import io.keyko.nevermined.exceptions.DDOException;
+import io.keyko.nevermined.exceptions.DownloadServiceException;
+import io.keyko.nevermined.exceptions.ServiceException;
 import io.keyko.nevermined.external.GatewayService;
 import io.keyko.nevermined.manager.ManagerHelper;
 import io.keyko.nevermined.models.AssetRewards;
@@ -170,11 +172,11 @@ public class AssetsApiIT {
         assertTrue(receivers.contains(neverminedAPI.getMainAccount().address));
         assertTrue(receivers.contains(config.getString("provider.address")));
 
-        final List<BigInteger> _amounts = (List<BigInteger>) resolvedDDO.getAccessService()
+        final List<String> _amounts = (List<String>) resolvedDDO.getAccessService()
                 .getConditionbyName(Condition.ConditionTypes.escrowReward.name())
                 .getParameterByName("_amounts").value;
-        assertTrue(_amounts.contains(BigInteger.valueOf(10)));
-        assertTrue(_amounts.contains(BigInteger.valueOf(2)));
+        assertTrue(_amounts.contains("10"));
+        assertTrue(_amounts.contains("2"));
 
     }
 
