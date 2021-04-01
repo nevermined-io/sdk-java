@@ -107,4 +107,13 @@ public class ProviderConfig {
     public String getAccessTokenEndpoint() {
         return this.gatewayUrl + "/api/v1/gateway/services/oauth/token";
     }
+
+    /**
+     * Get the url for the upload to filecoin endpoint
+     *
+     * @return the url
+     */
+    public String getUploadToFilecoinEndpoint() {
+        return this.gatewayUrl + "/api/v1/gateway/services/upload/filecoin";
+    }
 }

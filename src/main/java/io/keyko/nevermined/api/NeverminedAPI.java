@@ -69,6 +69,7 @@ public class NeverminedAPI {
     private ProvenanceAPI provenanceAPI;
     private SecretStoreAPI secretStoreAPI;
     private TemplatesAPI templatesAPI;
+    private FilesAPI filesAPI;
 
     private Account mainAccount;
 
@@ -247,6 +248,7 @@ public class NeverminedAPI {
             neverminedAPI.assetsAPI = new AssetsImpl(neverminedAPI.neverminedManager, neverminedAPI.assetsManager, neverminedAPI.agreementsManager);
             neverminedAPI.provenanceAPI = new ProvenanceImpl(neverminedAPI.neverminedManager, neverminedAPI.provenanceManager);
             neverminedAPI.templatesAPI = new TemplatesImpl(neverminedAPI.templatesManager);
+            neverminedAPI.filesAPI = new FilesImpl();
 
             return neverminedAPI;
         } catch (Exception e) {
@@ -348,6 +350,15 @@ public class NeverminedAPI {
      */
     public TemplatesAPI getTemplatesAPI() {
         return this.templatesAPI;
+    }
+
+    /**
+     * Gets the FilesAPI
+     *
+     * @return and instance of an implementation class of FilesAPI
+     */
+    public FilesAPI getFilesAPI() {
+        return this.filesAPI;
     }
 
     // TODO: Review an alternative to introduce a cleaner dependency injection

@@ -137,6 +137,48 @@ public class GatewayService {
     }
 
     /**
+     * Result returned when using the upload to Filecoin service
+     */
+    public static class UploadToFilecoinResult extends AbstractModel {
+        private Boolean ok;
+        private Integer code;
+        private String url;
+        private String msg;
+
+        public Boolean getOk() {
+            return ok;
+        }
+
+        public void setOk(Boolean ok) {
+            this.ok = ok;
+        }
+
+        public Integer getCode() {
+            return code;
+        }
+
+        public void setCode(Integer code) {
+            this.code = code;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        public String getMsg() {
+            return msg;
+        }
+
+        public void setMsg(String msg) {
+            this.msg = msg;
+        }
+    }
+
+    /**
      * This method is Deprecated and will be removed in further versions Calls a
      * Gateway's endpoint to request the initialization of a new Service Agreement
      *
@@ -311,6 +353,51 @@ public class GatewayService {
 
         fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
 
+    }
+
+    /**
+     * Calls the gateway to upload a file to Filecoin
+     *
+     * @param serviceEndpoint the upload to Filecoin endpoint in the gateway
+     * @param file the file to upload
+     * @return an UploadToFilecoinResult with the result of the upload
+     */
+    public static UploadToFilecoinResult uploadToFilecoin(String serviceEndpoint, File file) {
+        HttpResponse response;
+        UploadToFilecoinResult result = new UploadToFilecoinResult();
+
+        try {
+            response = HttpHelper.upload(serviceEndpoint, file);
+        } catch (IOException e) {
+            String msg = "Error uploading " + file.getName() + " to Filecoin: " + e.getMessage();
+            log.error(msg);
+            result.setOk(false);
+            result.setMsg(msg);
+            return result;
+        }
+
+        if (response.getStatusCode() != 201) {
+            String msg = "Unable to upload to Filecoin: " + response.toString();
+            log.error(msg);
+            result.setOk(false);
+            result.setMsg(msg);
+            return result;
+        }
+
+        String url;
+        try {
+            url = getFilecoinUrlFromBody(response.getBody());
+        } catch (IOException e) {
+            String msg = "Error parsing the upload to filecoin response: " + e.getMessage();
+            log.error(msg);
+            result.setOk(false);
+            result.setMsg(msg);
+            return result;
+        }
+
+        result.setUrl(url);
+        result.setOk(true);
+        return result;
     }
 
     /**
@@ -613,5 +700,20 @@ public class GatewayService {
         });
 
         return responseMap.get("access_token");
+    }
+
+    /**
+     * Retrieve the Filecoin url from the json body of the HTTP response.
+     *
+     * @param bodyResponse The body of the HTTP response
+     * @return String The url to access the file.
+     * @throws IOException IOException
+     */
+    private static String getFilecoinUrlFromBody(String bodyResponse) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, String> responseMap = mapper.readValue(bodyResponse, new TypeReference<Map<String, String>>() {
+        });
+
+        return responseMap.get("url");
     }
 }
