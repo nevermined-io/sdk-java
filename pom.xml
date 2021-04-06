@@ -29,7 +29,7 @@
             Take that into account before updating this version number.
         -->
         <web3j.version>4.8.2</web3j.version>
-        <common-utils.version>0.4.0</common-utils.version>
+        <common-utils.version>0.5.0</common-utils.version>
 
         <nevermined.contracts.version>0.6.2</nevermined.contracts.version>
         <secretstore.version>0.1.0</secretstore.version>
@@ -517,6 +517,11 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.5</version>
         </dependency>
         <!-- Command line & Environment vars parser -->
         <dependency>
