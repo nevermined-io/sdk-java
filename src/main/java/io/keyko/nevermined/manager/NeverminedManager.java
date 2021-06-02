@@ -127,6 +127,42 @@ public class NeverminedManager extends BaseManager {
         }
     }
 
+
+    /**
+     * Given a DID and a Metadata API url, register on-chain the DID. It allows to
+     * resolve DDO's using DID's as input
+     *
+     * @param did       the did
+     * @param url       metadata url
+     * @param checksum  calculated hash of the metadata
+     * @param providers list of providers addresses to give access
+     * @return boolean success
+     * @throws DIDRegisterException DIDRegisterException
+     */
+    public boolean registerMintableDID(DID did, String url, String checksum, List<String> providers, BigInteger cap, BigInteger royalties)
+            throws DIDRegisterException {
+        log.debug("Registering Mintable DID " + did.getHash() + " into Registry " + didRegistry.getContractAddress());
+
+        try {
+
+            TransactionReceipt receipt = didRegistry.registerMintableDID(
+                    EncodingHelper.hexStringToBytes(did.getHash()),
+                    EncodingHelper.hexStringToBytes(checksum.replace("0x", "")),
+                    providers,
+                    url,
+                    cap,
+                    royalties,
+                    EncodingHelper.hexStringToBytes(did.getHash()),
+                    ""
+            ).send();
+
+            return receipt.getStatus().equals("0x1");
+
+        } catch (Exception e) {
+            throw new DIDRegisterException("Error registering DID " + did.getHash(), e);
+        }
+    }
+
     /**
      * Given a seed and a public address it hash to generate a DID
      *
