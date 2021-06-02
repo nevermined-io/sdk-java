@@ -51,13 +51,13 @@ public class NeverminedConfigFactory {
         neverminedConfig.setFaucetUrl((String) properties.getOrDefault(NeverminedConfig.FAUCET_URL, DEFAULT_FAUCET_URL));
         neverminedConfig.setProviderAddress((String) properties.getOrDefault(NeverminedConfig.PROVIDER_ADDRESS, ""));
         neverminedConfig.setDidRegistryAddress((String) properties.getOrDefault(NeverminedConfig.DID_REGISTRY_ADDRESS, ""));
-        neverminedConfig.setEscrowRewardConditionsAddress((String) properties.getOrDefault(NeverminedConfig.ESCROWREWARD_CONDITIONS_ADDRESS, ""));
-        neverminedConfig.setEscrowAccessSecretStoreTemplateAddress((String) properties.getOrDefault(NeverminedConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS, ""));
-        neverminedConfig.setLockrewardConditionsAddress((String) properties.getOrDefault(NeverminedConfig.LOCKREWARD_CONDITIONS_ADDRESS, ""));
-        neverminedConfig.setAccessSsConditionsAddress((String) properties.getOrDefault(NeverminedConfig.ACCESS_SS_CONDITIONS_ADDRESS, ""));
+        neverminedConfig.setEscrowPaymentConditionConditionsAddress((String) properties.getOrDefault(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, ""));
+        neverminedConfig.setAccessTemplateAddress((String) properties.getOrDefault(NeverminedConfig.ACCESS_TEMPLATE_ADDRESS, ""));
+        neverminedConfig.setLockrewardConditionsAddress((String) properties.getOrDefault(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, ""));
+        neverminedConfig.setAccessSsConditionsAddress((String) properties.getOrDefault(NeverminedConfig.ACCESS_CONDITION_ADDRESS, ""));
         neverminedConfig.setAgreementStoreManagerAddress((String) properties.getOrDefault(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, ""));
         neverminedConfig.setConditionStoreManagerAddress((String) properties.getOrDefault(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, ""));
-        neverminedConfig.setTokenAddress((String) properties.getOrDefault(NeverminedConfig.TOKEN_ADDRESS, ""));
+        neverminedConfig.setTokenAddress((String) properties.getOrDefault(NeverminedConfig.NEVERMINED_TOKEN_ADDRESS, ""));
         neverminedConfig.setTemplateStoreManagerAddress((String) properties.getOrDefault(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, ""));
         neverminedConfig.setDispenserAddress((String) properties.getOrDefault(NeverminedConfig.DISPENSER_ADDRESS, ""));
         neverminedConfig.setConsumeBasePath((String) properties.getOrDefault(NeverminedConfig.CONSUME_BASE_PATH, DEFAULT_CONSUME_PATH));

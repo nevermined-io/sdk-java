@@ -18,17 +18,22 @@ import io.keyko.nevermined.models.service.Service;
 import io.keyko.nevermined.models.service.types.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.web3j.abi.TypeEncoder;
+import org.web3j.abi.datatypes.Address;
 import org.web3j.crypto.Credentials;
+import org.web3j.crypto.Hash;
 import org.web3j.crypto.Keys;
 import org.web3j.crypto.Sign;
 
+import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 import static io.keyko.nevermined.models.DDO.PublicKey.ETHEREUM_KEY_TYPE;
 
 @JsonPropertyOrder(alphabetic = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class DDO extends AbstractModel implements FromJsonToModel {
+public class
+DDO extends AbstractModel implements FromJsonToModel {
 
     private static final Logger log = LogManager.getLogger(DDO.class);
 
@@ -306,8 +311,9 @@ public class DDO extends AbstractModel implements FromJsonToModel {
             // 2. Setting up the checksums in the DDO.proof.checksum entry
             proof.checksum= generateChecksums();
 
-            // 3. Calculating the DID as a Hash of the DDO.services checksums
-            this.did = DID.builder(toJson(proof.checksum));
+            // 3. Calculating the DID Seed as a Hash of the DDO.services checksums
+            String didSeed = EthereumHelper.remove0x(Hash.sha3(toJson(proof.checksum)));
+            this.did = DID.getFromSeed(didSeed, credentials.getAddress());
             this.id = this.did.getDid();
 
             // 4. Completing the DDO.proof signing the DID and adding the rest of the values
@@ -319,8 +325,10 @@ public class DDO extends AbstractModel implements FromJsonToModel {
             // Replace any {did} entry in the JSON by the real DID generated
             String ddoJson= this.toJson();
 
-            return fromJSON(new TypeReference<DDO>() {},
+            final DDO ddo = fromJSON(new TypeReference<DDO>() {},
                     ddoJson.replaceAll("\\{did}", this.id));
+            ddo.did = this.did;
+            return ddo;
 
         } catch (Exception ex)  {
             throw new DDOException("Unable to generate service checksum: " + ex.getMessage());
@@ -399,10 +407,13 @@ public class DDO extends AbstractModel implements FromJsonToModel {
     }
 
 
-    public DID getDid() {
+    public DID getDID() {
         return did;
     }
 
+    public DID fetchDIDSeed() throws DIDFormatException {
+        return DID.getFromHash(did.seed);
+    }
 
     public AccessService getAccessService(int index) throws ServiceException {
         for (Service service : services) {
@@ -431,7 +442,15 @@ public class DDO extends AbstractModel implements FromJsonToModel {
                 .filter(s -> s.templateId instanceof String && s.templateId.toLowerCase().equals(templateId.toLowerCase()))
                 .findFirst()
                 .orElseThrow(() -> new ServiceException("Service with template=" + templateId + " not found"));
+    }
 
+    @JsonIgnore
+    public Service getServiceByType(Service.ServiceTypes serviceType) throws ServiceException {
+        // We assume there is only one service in the DDO with a specific templateId
+        return services.stream()
+                .filter(s -> s.type instanceof String && s.type.toLowerCase().equals(serviceType.toString()))
+                .findFirst()
+                .orElseThrow(() -> new ServiceException("Service with type=" + serviceType.toString() + " not found"));
     }
 
     @JsonIgnore

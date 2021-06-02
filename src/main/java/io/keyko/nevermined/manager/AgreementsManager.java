@@ -4,7 +4,6 @@ import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.exceptions.ConditionNotFoundException;
 import io.keyko.nevermined.exceptions.EthereumException;
-import io.keyko.nevermined.exceptions.ServiceAgreementException;
 import io.keyko.nevermined.exceptions.ServiceException;
 import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.models.DDO;
@@ -22,8 +21,7 @@ import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.tuples.generated.Tuple6;
-import org.web3j.tuples.generated.Tuple7;
+import org.web3j.tuples.generated.Tuple8;
 import org.web3j.utils.Numeric;
 
 import java.io.IOException;
@@ -68,13 +66,14 @@ public class AgreementsManager extends BaseManager {
                                          String accessConsumer, Service service) throws Exception {
 
         log.debug("Creating agreement with id: " + agreementId);
-        TransactionReceipt txReceipt = escrowAccessSecretStoreTemplate.createAgreement(
+        TransactionReceipt txReceipt = accessTemplate.createAgreement(
                 EncodingHelper.hexStringToBytes("0x" + agreementId),
-                EncodingHelper.hexStringToBytes("0x" + ddo.getDid().getHash()),
+                EncodingHelper.hexStringToBytes("0x" + ddo.getDID().getHash()),
                 conditionIds,
                 service.retrieveTimeOuts(),
                 service.retrieveTimeLocks(),
-                accessConsumer).send();
+                Keys.toChecksumAddress(accessConsumer)
+        ).send();
         return txReceipt.isStatusOK();
     }
 
@@ -95,11 +94,12 @@ public class AgreementsManager extends BaseManager {
         log.debug("Creating agreement with id: " + agreementId);
         TransactionReceipt txReceipt = escrowComputeExecutionTemplate.createAgreement(
                 EncodingHelper.hexStringToBytes("0x" + agreementId),
-                EncodingHelper.hexStringToBytes("0x" + ddo.getDid().getHash()),
+                EncodingHelper.hexStringToBytes("0x" + ddo.getDID().getHash()),
                 conditionIds,
                 service.retrieveTimeOuts(),
                 service.retrieveTimeLocks(),
-                accessConsumer).send();
+                Keys.toChecksumAddress(accessConsumer)
+        ).send();
         return txReceipt.isStatusOK();
     }
 
@@ -130,7 +130,7 @@ public class AgreementsManager extends BaseManager {
 
         boolean isFulfilled = true;
         for (int i = 0; i <= condition_ids.size() - 1; i++) {
-            Tuple7<String, BigInteger, BigInteger, BigInteger, BigInteger, String, BigInteger> agreementCondition =
+            final Tuple8<String, BigInteger, BigInteger, BigInteger, BigInteger, String, String, BigInteger> agreementCondition =
                     conditionStoreManager.getCondition(condition_ids.get(i)).send();
 
             String address = agreementCondition.component1();
@@ -155,9 +155,9 @@ public class AgreementsManager extends BaseManager {
      * @throws Exception exception
      */
     private String getConditionNameByAddress(String address) throws Exception {
-        if (this.lockRewardCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.lockReward.toString();
-        else if (this.accessSecretStoreCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.accessSecretStore.toString();
-        else if (this.escrowReward.getContractAddress().equals(address)) return Condition.ConditionTypes.escrowReward.toString();
+        if (this.lockCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.lockPayment.toString();
+        else if (this.accessCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.access.toString();
+        else if (this.escrowCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.escrowPayment.toString();
         else if (this.computeExecutionCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.execCompute.toString();
         else log.error("The current address" + address + "is not a condition address.");
         throw new ConditionNotFoundException("The current address" + address + "is not a condition address.");
@@ -170,11 +170,11 @@ public class AgreementsManager extends BaseManager {
         EthFilter didFilter = new EthFilter(
                 DefaultBlockParameterName.EARLIEST,
                 DefaultBlockParameterName.LATEST,
-                accessSecretStoreCondition.getContractAddress()
+                accessCondition.getContractAddress()
         );
         try {
 
-            final Event event = accessSecretStoreCondition.FULFILLED_EVENT;
+            final Event event = accessCondition.FULFILLED_EVENT;
             final String eventSignature = EventEncoder.encode(event);
             didFilter.addSingleTopic(eventSignature);
             didFilter.addNullTopic();

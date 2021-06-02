@@ -75,12 +75,12 @@ public class PermissionsIT {
         properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
         properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
         properties.put(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
-        properties.put(NeverminedConfig.LOCKREWARD_CONDITIONS_ADDRESS, config.getString("contract.LockRewardCondition.address"));
-        properties.put(NeverminedConfig.ESCROWREWARD_CONDITIONS_ADDRESS, config.getString("contract.EscrowReward.address"));
-        properties.put(NeverminedConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
-        properties.put(NeverminedConfig.ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.AccessSecretStoreCondition.address"));
+        properties.put(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.LockPaymentCondition.address"));
+        properties.put(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.EscrowPaymentCondition.address"));
+        properties.put(NeverminedConfig.ACCESS_TEMPLATE_ADDRESS, config.getString("contract.AccessTemplate.address"));
+        properties.put(NeverminedConfig.ACCESS_CONDITION_ADDRESS, config.getString("contract.AccessCondition.address"));
         properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
-        properties.put(NeverminedConfig.TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
+        properties.put(NeverminedConfig.NEVERMINED_TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
         properties.put(NeverminedConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
         properties.put(NeverminedConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
 
@@ -101,18 +101,18 @@ public class PermissionsIT {
         metadataBase.attributes.main.dateCreated = new Date();
 
         DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
-        String ownerAddress = neverminedAPI.getAssetsAPI().owner(ddo.getDid());
+        String ownerAddress = neverminedAPI.getAssetsAPI().owner(ddo.getDID());
         assertEquals(neverminedAPI.getMainAccount().address, ownerAddress);
 
-        Boolean consumerPermission = neverminedAPI.getAssetsAPI().getPermissions(ddo.getDid(), neverminedAPIConsumer.getMainAccount().address);
+        Boolean consumerPermission = neverminedAPI.getAssetsAPI().getPermissions(ddo.getDID(), neverminedAPIConsumer.getMainAccount().address);
         assertEquals(false, consumerPermission);
 
-        neverminedAPI.getAssetsAPI().delegatePermissions(ddo.getDid(), neverminedAPIConsumer.getMainAccount().address);
-        consumerPermission = neverminedAPI.getAssetsAPI().getPermissions(ddo.getDid(), neverminedAPIConsumer.getMainAccount().address);
+        neverminedAPI.getAssetsAPI().delegatePermissions(ddo.getDID(), neverminedAPIConsumer.getMainAccount().address);
+        consumerPermission = neverminedAPI.getAssetsAPI().getPermissions(ddo.getDID(), neverminedAPIConsumer.getMainAccount().address);
         assertEquals(true, consumerPermission);
 
-        neverminedAPI.getAssetsAPI().revokePermissions(ddo.getDid(), neverminedAPIConsumer.getMainAccount().address);
-        consumerPermission = neverminedAPI.getAssetsAPI().getPermissions(ddo.getDid(), neverminedAPIConsumer.getMainAccount().address);
+        neverminedAPI.getAssetsAPI().revokePermissions(ddo.getDID(), neverminedAPIConsumer.getMainAccount().address);
+        consumerPermission = neverminedAPI.getAssetsAPI().getPermissions(ddo.getDID(), neverminedAPIConsumer.getMainAccount().address);
         assertEquals(false, consumerPermission);
 
     }
@@ -124,18 +124,18 @@ public class PermissionsIT {
         metadataBase.attributes.main.dateCreated = new Date();
 
         DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
-        String ownerAddress = neverminedAPI.getAssetsAPI().owner(ddo.getDid());
+        String ownerAddress = neverminedAPI.getAssetsAPI().owner(ddo.getDID());
         assertEquals(neverminedAPI.getMainAccount().address, ownerAddress);
 
-        Boolean consumerPermission = neverminedAPI.getAssetsAPI().getPermissions(ddo.getDid(), neverminedAPIConsumer.getMainAccount().address);
+        Boolean consumerPermission = neverminedAPI.getAssetsAPI().getPermissions(ddo.getDID(), neverminedAPIConsumer.getMainAccount().address);
         assertEquals(false, consumerPermission);
 
-        neverminedAPI.getAssetsAPI().transferOwnership(ddo.getDid(), neverminedAPIConsumer.getMainAccount().address);
-        ownerAddress = neverminedAPI.getAssetsAPI().owner(ddo.getDid());
+        neverminedAPI.getAssetsAPI().transferOwnership(ddo.getDID(), neverminedAPIConsumer.getMainAccount().address);
+        ownerAddress = neverminedAPI.getAssetsAPI().owner(ddo.getDID());
         assertEquals(neverminedAPIConsumer.getMainAccount().address, ownerAddress);
 
-        neverminedAPIConsumer.getAssetsAPI().transferOwnership(ddo.getDid(), neverminedAPI.getMainAccount().address);
-        ownerAddress = neverminedAPIConsumer.getAssetsAPI().owner(ddo.getDid());
+        neverminedAPIConsumer.getAssetsAPI().transferOwnership(ddo.getDID(), neverminedAPI.getMainAccount().address);
+        ownerAddress = neverminedAPIConsumer.getAssetsAPI().owner(ddo.getDID());
         assertEquals(neverminedAPI.getMainAccount().address, ownerAddress);
 
 

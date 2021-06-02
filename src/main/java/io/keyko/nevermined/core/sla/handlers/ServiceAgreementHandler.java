@@ -3,9 +3,9 @@ package io.keyko.nevermined.core.sla.handlers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.common.helpers.EncodingHelper;
-import io.keyko.nevermined.contracts.AccessSecretStoreCondition;
+import io.keyko.nevermined.contracts.AccessCondition;
 import io.keyko.nevermined.contracts.ComputeExecutionCondition;
-import io.keyko.nevermined.contracts.EscrowAccessSecretStoreTemplate;
+import io.keyko.nevermined.contracts.AccessTemplate;
 import io.keyko.nevermined.contracts.EscrowComputeExecutionTemplate;
 import io.keyko.nevermined.exceptions.InitializeConditionsException;
 import io.keyko.nevermined.models.AbstractModel;
@@ -56,7 +56,7 @@ public abstract class ServiceAgreementHandler {
      * @param serviceAgreementId the service agreement Id
      * @return a Flowable to handle the in an asynchronous fashion
      */
-    public static Flowable<String> listenExecuteAgreement(EscrowAccessSecretStoreTemplate slaContract, String serviceAgreementId) {
+    public static Flowable<String> listenExecuteAgreement(AccessTemplate slaContract, String serviceAgreementId) {
         EthFilter slaFilter = new EthFilter(
                 DefaultBlockParameterName.EARLIEST,
                 DefaultBlockParameterName.LATEST,
@@ -99,13 +99,13 @@ public abstract class ServiceAgreementHandler {
     }
 
     /**
-     * Define and execute a Filter over the AccessSecretStoreCondition Contract to listen for an Fulfilled event
+     * Define and execute a Filter over the AccessCondition Contract to listen for an Fulfilled event
      *
-     * @param accessCondition     the AccessSecretStoreCondition contract
+     * @param accessCondition     the AccessCondition contract
      * @param serviceAgreementId the serviceAgreement Id
      * @return a Flowable to handle the event in an asynchronous fashion
      */
-    public static Flowable<String> listenForFulfilledEvent(AccessSecretStoreCondition accessCondition, String serviceAgreementId) {
+    public static Flowable<String> listenForFulfilledEvent(AccessCondition accessCondition, String serviceAgreementId) {
 
         EthFilter grantedFilter = new EthFilter(
                 DefaultBlockParameterName.EARLIEST,
@@ -113,7 +113,7 @@ public abstract class ServiceAgreementHandler {
                 accessCondition.getContractAddress()
         );
 
-        final Event event = AccessSecretStoreCondition.FULFILLED_EVENT;
+        final Event event = AccessCondition.FULFILLED_EVENT;
         final String eventSignature = EventEncoder.encode(event);
         String slaTopic = "0x" + serviceAgreementId;
 

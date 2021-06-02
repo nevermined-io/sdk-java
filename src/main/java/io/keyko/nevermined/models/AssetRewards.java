@@ -3,6 +3,7 @@ package io.keyko.nevermined.models;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import io.keyko.nevermined.api.helper.AccountsHelper;
 
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -20,9 +21,12 @@ public class AssetRewards extends AbstractModel implements FromJsonToModel {
     @JsonProperty
     public Map<String, String> rewards;
 
+    public String tokenAddress = AccountsHelper.ZERO_ADDRESS;
+
     public AssetRewards()  {
         this.totalPrice = "0";
         this.rewards = new HashMap<>();
+        this.tokenAddress = AccountsHelper.ZERO_ADDRESS;
     }
 
     public AssetRewards(Map<String, String> _rewards)  {

@@ -20,7 +20,7 @@ public interface AgreementsAPI {
      * @return Tuple with agreement id and signature.
      * @throws ServiceAgreementException Exception
      */
-    Tuple2<String, String> prepare(DID did, int serviceDefinitionId, Account consumerAccount) throws ServiceAgreementException;
+//    Tuple2<String, String> prepare(DID did, int serviceDefinitionId, Account consumerAccount) throws ServiceAgreementException;
 
     /**
      * Create a service agreement.

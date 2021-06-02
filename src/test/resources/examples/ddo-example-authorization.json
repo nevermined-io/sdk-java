@@ -51,19 +51,18 @@
       "signatureValue": "ABCJSDAO23...1tzjn4w=="
     }
   }],
-  "service": [
-    {
-      "index": 2,
-      "type": "authorization",
-      "attributes": {
-        "main": {
-          "service": "PSK-ECDSA",
-          "publicKey": "0xd793eb43ef7d191bf64f127c9f1a2c9037406d72706d3be7dc564fb9a9f08f21156b32d1ee3afbe64cc9f676f6facffac1377f7804daf932d3b8aa04fdeb0630",
-          "threshold": "1"
-        }
-      },
-      "serviceEndpoint": "http://localhost:8030/"
+  "service": [{
+    "index": 2,
+    "type": "authorization",
+    "attributes": {
+      "main": {
+        "service": "PSK-ECDSA",
+        "publicKey": "0xd793eb43ef7d191bf64f127c9f1a2c9037406d72706d3be7dc564fb9a9f08f21156b32d1ee3afbe64cc9f676f6facffac1377f7804daf932d3b8aa04fdeb0630",
+        "threshold": "1"
+      }
     },
+    "serviceEndpoint": "http://localhost:8030/"
+  },
     {
       "index": 0,
       "serviceEndpoint": "http://localhost:5000/api/v1/metadata/assets/ddo/{did}",
@@ -74,17 +73,15 @@
           "author": "Met Office",
           "dateCreated": "2019-02-08T08:13:49Z",
           "datePublished": "2019-02-08T08:13:49Z",
-          "files": [
-            {
-              "url": "https://raw.githubusercontent.com/tbertinmahieux/MSongsDB/master/Tasks_Demos/CoverSongs/shs_dataset_test.txt",
-              "index": 0,
-              "checksum": "efb2c764274b745f5fc37f97c6b0e761",
-              "contentLength": "4535431",
-              "contentType": "text/csv",
-              "encoding": "UTF-8",
-              "compression": "zip"
-            }
-          ],
+          "files": [{
+            "url": "https://raw.githubusercontent.com/tbertinmahieux/MSongsDB/master/Tasks_Demos/CoverSongs/shs_dataset_test.txt",
+            "index": 0,
+            "checksum": "efb2c764274b745f5fc37f97c6b0e761",
+            "contentLength": "4535431",
+            "contentType": "text/csv",
+            "encoding": "UTF-8",
+            "compression": "zip"
+          }],
           "license": "CC-BY",
           "name": "UK Weather information 2011",
           "price": "1",
@@ -97,12 +94,11 @@
           "tags": ["weather", "uk", "2011", "temperature", "humidity"],
           "workExample": "423432fsd,51.509865,-0.118092,2011-01-01T10:55:11+00:00,7.2,68",
           "copyrightHolder": "Met Office",
-          "links": [
-            {
-              "name": "Sample of Asset Data",
-              "type": "sample",
-              "url": "https://foo.com/sample.csv"
-            },
+          "links": [{
+            "name": "Sample of Asset Data",
+            "type": "sample",
+            "url": "https://foo.com/sample.csv"
+          },
             {
               "name": "Data Format Definition",
               "type": "format",
@@ -112,11 +108,10 @@
           "inLanguage": "en",
 
           "updateFrecuency": "yearly",
-          "structuredMarkup": [
-            {
-              "uri": "http://skos.um.es/unescothes/C01194/jsonld",
-              "mediaType": "application/ld+json"
-            },
+          "structuredMarkup": [{
+            "uri": "http://skos.um.es/unescothes/C01194/jsonld",
+            "mediaType": "application/ld+json"
+          },
             {
               "uri": "http://skos.um.es/unescothes/C01194/turtle",
               "mediaType": "text/turtle"
@@ -149,117 +144,121 @@
           "description": ""
         },
         "serviceAgreementTemplate": {
-          "contractName": "EscrowAccessSecretStoreTemplate",
-          "events": [
-            {
-              "name": "AgreementCreated",
-              "actorType": "consumer",
-              "handler": {
-                "moduleName": "escrowAccessSecretStoreTemplate",
-                "functionName": "fulfillLockRewardCondition",
-                "version": "0.1"
-              }
-            }
-          ],
-          "fulfillmentOrder": [
-            "lockReward.fulfill",
-            "accessSecretStore.fulfill",
-            "escrowReward.fulfill"
-          ],
           "conditionDependency": {
-            "lockReward": [],
-            "grantSecretStoreAccess": [],
-            "releaseReward": [
-              "lockReward",
-              "accessSecretStore"
-            ]
+            "access": [],
+            "escrowPayment": [
+              "lockPayment",
+              "access"
+            ],
+            "execCompute": [],
+            "lockPayment": []
           },
-          "conditions": [
+          "conditions": [{
+            "contractName": "LockPaymentCondition",
+            "events": [{
+              "actorType": "publisher",
+              "handler": {
+                "functionName": "fulfillAccessCondition",
+                "moduleName": "lockPaymentConditon",
+                "version": "0.1"
+              },
+              "name": "Fulfilled"
+            }],
+            "functionName": "fulfill",
+            "name": "lockPayment",
+            "parameters": [{
+              "name": "_did",
+              "type": "bytes32",
+              "value": ""
+            },
+              {
+                "name": "_rewardAddress",
+                "type": "address",
+                "value": "0x886dE2b3F8F27eEd43bA2FD4bC2AabDc14E0d9dD"
+              },
+              {
+                "name": "_tokenAddress",
+                "type": "address",
+                "value": "0x0"
+              },
+              {
+                "name": "_amounts",
+                "type": "uint256[]",
+                "value": ["10", "2"]
+              },
+              {
+                "name": "_receivers",
+                "type": "address[]",
+                "value": ["0xa99d43d86a0758d5632313b8fa3972b6088a21bb", "0x068ed00cf0441e4829d9784fcbe7b9e26d4bd8d0"]
+              }
+            ],
+            "timelock": 0,
+            "timeout": 0
+          },
             {
-              "name": "lockReward",
-              "timelock": 0,
-              "timeout": 0,
-              "contractName": "LockRewardCondition",
-              "functionName": "fulfill",
-              "parameters": [
-                {
-                  "name": "_rewardAddress",
-                  "type": "address",
-                  "value": ""
+              "contractName": "AccessCondition",
+              "events": [{
+                "actorType": "publisher",
+                "handler": {
+                  "functionName": "fulfillEscrowPaymentCondition",
+                  "moduleName": "access",
+                  "version": "0.1"
                 },
+                "name": "Fulfilled"
+              },
                 {
-                  "name": "_amount",
-                  "type": "uint256",
-                  "value": ""
+                  "actorType": "consumer",
+                  "handler": {
+                    "functionName": "fulfillEscrowPaymentCondition",
+                    "moduleName": "access",
+                    "version": "0.1"
+                  },
+                  "name": "TimedOut"
                 }
               ],
-              "events": [
-                {
-                  "name": "Fulfilled",
-                  "actorType": "publisher",
-                  "handler": {
-                    "moduleName": "lockRewardCondition",
-                    "functionName": "fulfillAccessSecretStoreCondition",
-                    "version": "0.1"
-                  }
-                }
-              ]
-            },
-            {
-              "name": "accessSecretStore",
-              "timelock": 0,
-              "timeout": 0,
-              "contractName": "AccessSecretStoreCondition",
               "functionName": "fulfill",
-              "parameters": [
-                {
-                  "name": "_documentId",
-                  "type": "bytes32",
-                  "value": ""
-                },
+              "name": "access",
+              "parameters": [{
+                "name": "_did",
+                "type": "bytes32",
+                "value": "3b5607872397a527cd69e41743b07ddbeeb8aa865f3decd1fab4be679e6c6eef"
+              },
                 {
                   "name": "_grantee",
                   "type": "address",
                   "value": ""
                 }
               ],
-              "events": [
-                {
-                  "name": "Fulfilled",
-                  "actorType": "publisher",
-                  "handler": {
-                    "moduleName": "accessSecretStore",
-                    "functionName": "fulfillEscrowRewardCondition",
-                    "version": "0.1"
-                  }
-                },
-                {
-                  "name": "TimedOut",
-                  "actorType": "consumer",
-                  "handler": {
-                    "moduleName": "accessSecretStore",
-                    "functionName": "fulfillEscrowRewardCondition",
-                    "version": "0.1"
-                  }
-                }
-              ]
+              "timelock": 0,
+              "timeout": 0
             },
             {
-              "name": "escrowReward",
-              "timelock": 0,
-              "timeout": 0,
-              "contractName": "EscrowReward",
+              "contractName": "EscrowPaymentCondition",
+              "events": [{
+                "actorType": "publisher",
+                "handler": {
+                  "functionName": "verifyRewardTokens",
+                  "moduleName": "escrowPaymentConditon",
+                  "version": "0.1"
+                },
+                "name": "Fulfilled"
+              }],
               "functionName": "fulfill",
-              "parameters": [
+              "name": "escrowPayment",
+              "parameters": [{
+                "name": "_did",
+                "type": "bytes32",
+                "value": ""
+              },
                 {
                   "name": "_amounts",
                   "type": "uint256[]",
-                  "value": []
+                  "value": ["10", "2"]
                 },
                 {
                   "name": "_receivers",
                   "type": "address[]",
-                  "value": []
+                  "value": ["0xa99d43d86a0758d5632313b8fa3972b6088a21bb", "0x068ed00cf0441e4829d9784fcbe7b9e26d4bd8d0"]
                 },
                 {
                   "name": "_sender",
@@ -267,28 +266,39 @@
                   "value": ""
                 },
                 {
+                  "name": "_tokenAddress",
+                  "type": "address",
+                  "value": "0x0"
+                },
+                {
                   "name": "_lockCondition",
                   "type": "bytes32",
-                  "value": ""
+                  "value": "0xBDB91cF0a8449a2848Ba6194eE45579E81B1A0F9"
                 },
                 {
                   "name": "_releaseCondition",
                   "type": "bytes32",
-                  "value": ""
+                  "value": "0xFF3a12191A703939b1466eC1Fc7679AbbFf88545"
                 }
               ],
-              "events": [
-                {
-                  "name": "Fulfilled",
-                  "actorType": "publisher",
-                  "handler": {
-                    "moduleName": "escrowRewardCondition",
-                    "functionName": "verifyRewardTokens",
-                    "version": "0.1"
-                  }
-                }
-              ]
+              "timelock": 0,
+              "timeout": 0
             }
+          ],
+          "contractName": "EscrowAccessSecretStoreTemplate",
+          "events": [{
+            "actorType": "consumer",
+            "handler": {
+              "functionName": "fulfillLockPaymentCondition",
+              "moduleName": "escrowAccessSecretStoreTemplate",
+              "version": "0.1"
+            },
+            "name": "AgreementCreated"
+          }],
+          "fulfillmentOrder": [
+            "lockPayment.fulfill",
+            "access.fulfill",
+            "escrowPayment.fulfill"
           ]
         }
       }

@@ -25,7 +25,6 @@ public class TokensApiIT {
     @BeforeClass
     public static void setUp() throws Exception {
 
-
         config = ConfigFactory.load();
         neverminedAPI = NeverminedAPI.getInstance(config);
 

@@ -1,0 +1,76 @@
+[
+  {
+    "name": "nftHolder",
+    "timelock": 0,
+    "timeout": 0,
+    "contractName": "NftHolderCondition",
+    "functionName": "fulfill",
+    "parameters": [
+      {
+        "name": "_documentId",
+        "type": "bytes32",
+        "value": "{parameter.assetId}"
+      },
+      {
+        "name": "_holderAddress",
+        "type": "address",
+        "value": "{parameter.holderAddress}"
+      },
+      {
+        "name": "_amount",
+        "type": "uint256",
+        "value": "{parameter.amount}"
+      }
+    ],
+    "events": [
+      {
+        "name": "Fulfilled",
+        "actorType": "publisher",
+        "handler": {
+          "moduleName": "nftHolderCondition",
+          "functionName": "fulfillNftHolderCondition",
+          "version": "0.1"
+        }
+      }
+    ]
+  },
+  {
+    "name": "accessSecretStore",
+    "timelock": 0,
+    "timeout": 0,
+    "contractName": "AccessCondition",
+    "functionName": "fulfill",
+    "parameters": [
+      {
+        "name": "_documentId",
+        "type": "bytes32",
+        "value": "{parameter.assetId}"
+      },
+      {
+        "name": "_grantee",
+        "type": "address",
+        "value": ""
+      }
+    ],
+    "events": [
+      {
+        "name": "Fulfilled",
+        "actorType": "publisher",
+        "handler": {
+          "moduleName": "accessSecretStore",
+          "functionName": "fulfillEscrowPaymentConditionCondition",
+          "version": "0.1"
+        }
+      },
+      {
+        "name": "TimedOut",
+        "actorType": "consumer",
+        "handler": {
+          "moduleName": "accessSecretStore",
+          "functionName": "fulfillEscrowPaymentConditionCondition",
+          "version": "0.1"
+        }
+      }
+    ]
+  }
+]

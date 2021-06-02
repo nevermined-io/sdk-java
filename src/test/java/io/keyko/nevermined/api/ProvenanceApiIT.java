@@ -3,7 +3,6 @@ package io.keyko.nevermined.api;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.common.web3.KeeperService;
@@ -21,7 +20,6 @@ import io.keyko.nevermined.models.service.types.ComputingService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.web3j.crypto.Sign;
 
@@ -91,11 +89,11 @@ public class ProvenanceApiIT {
         final DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
 
         final boolean success = neverminedAPI.getProvenanceAPI().used(
-                provenanceId, ddo.getDid(), DEFAULT_ACCOUNT, activityId, "", "used test");
+                provenanceId, ddo.getDID(), DEFAULT_ACCOUNT, activityId, "", "used test");
         assertTrue(success);
 
         final List<ProvenanceEvent> provenanceEvents = neverminedAPI.getProvenanceAPI()
-                .getDIDProvenanceEvents(ddo.getDid());
+                .getDIDProvenanceEvents(ddo.getDID());
 
         assertEquals(2, provenanceEvents.size());
     }
@@ -109,12 +107,12 @@ public class ProvenanceApiIT {
         final DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
 
         final boolean success = neverminedAPI.getProvenanceAPI().used(
-                provenanceId, ddo.getDid(), DEFAULT_ACCOUNT, activityId, "", "used test");
+                provenanceId, ddo.getDID(), DEFAULT_ACCOUNT, activityId, "", "used test");
         assertTrue(success);
 
         final ProvenanceEntry provenanceEntry = neverminedAPI.getProvenanceAPI().getProvenanceEntry(provenanceId);
         assertEquals("0x" + activityId, provenanceEntry.activityId);
-        assertEquals(ddo.getDid().getHash(), provenanceEntry.did.getHash());
+        assertEquals(ddo.getDID().getHash(), provenanceEntry.did.getHash());
         assertEquals(ProvenanceEntry.ProvenanceMethod.USED, provenanceEntry.method);
         assertEquals(DEFAULT_ACCOUNT, provenanceEntry.createdBy);
 
@@ -129,12 +127,12 @@ public class ProvenanceApiIT {
 
         final DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
 
-        assertFalse(neverminedAPI.getProvenanceAPI().isProvenanceDelegate(ddo.getDid(), DELEGATED_ACCOUNT));
-        assertFalse(neverminedAPI.getProvenanceAPI().isProvenanceDelegate(ddo.getDid(), DEFAULT_ACCOUNT));
-        assertTrue(neverminedAPI.getProvenanceAPI().addDIDProvenanceDelegate(ddo.getDid(), DELEGATED_ACCOUNT));
-        assertTrue(neverminedAPI.getProvenanceAPI().isProvenanceDelegate(ddo.getDid(), DELEGATED_ACCOUNT));
-        assertTrue(neverminedAPI.getProvenanceAPI().removeDIDProvenanceDelegate(ddo.getDid(), DELEGATED_ACCOUNT));
-        assertFalse(neverminedAPI.getProvenanceAPI().isProvenanceDelegate(ddo.getDid(), DELEGATED_ACCOUNT));
+        assertFalse(neverminedAPI.getProvenanceAPI().isProvenanceDelegate(ddo.getDID(), DELEGATED_ACCOUNT));
+        assertFalse(neverminedAPI.getProvenanceAPI().isProvenanceDelegate(ddo.getDID(), DEFAULT_ACCOUNT));
+        assertTrue(neverminedAPI.getProvenanceAPI().addDIDProvenanceDelegate(ddo.getDID(), DELEGATED_ACCOUNT));
+        assertTrue(neverminedAPI.getProvenanceAPI().isProvenanceDelegate(ddo.getDID(), DELEGATED_ACCOUNT));
+        assertTrue(neverminedAPI.getProvenanceAPI().removeDIDProvenanceDelegate(ddo.getDID(), DELEGATED_ACCOUNT));
+        assertFalse(neverminedAPI.getProvenanceAPI().isProvenanceDelegate(ddo.getDID(), DELEGATED_ACCOUNT));
 
     }
 
@@ -148,18 +146,18 @@ public class ProvenanceApiIT {
         final DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
 
         neverminedAPI.getProvenanceAPI().used(
-                provenanceId, ddo.getDid(), DEFAULT_ACCOUNT, activityId, "", "used test");
+                provenanceId, ddo.getDID(), DEFAULT_ACCOUNT, activityId, "", "used test");
         neverminedAPI.getProvenanceAPI().wasDerivedFrom(
-                generateRandomID(), derivedDid, ddo.getDid(), DEFAULT_ACCOUNT, activityId, "derived test");
+                generateRandomID(), derivedDid, ddo.getDID(), DEFAULT_ACCOUNT, activityId, "derived test");
         neverminedAPI.getProvenanceAPI().wasAssociatedWith(
-                generateRandomID(),  ddo.getDid(), DEFAULT_ACCOUNT, activityId, "associated test");
+                generateRandomID(),  ddo.getDID(), DEFAULT_ACCOUNT, activityId, "associated test");
 
         List<ProvenanceEvent> provenanceEvents = neverminedAPI.getProvenanceAPI()
-                .getProvenanceMethodEvents(ProvenanceEntry.ProvenanceMethod.WAS_GENERATED_BY, ddo.getDid());
+                .getProvenanceMethodEvents(ProvenanceEntry.ProvenanceMethod.WAS_GENERATED_BY, ddo.getDID());
         assertEquals(1, provenanceEvents.size());
 
         provenanceEvents = neverminedAPI.getProvenanceAPI()
-                .getProvenanceMethodEvents(ProvenanceEntry.ProvenanceMethod.USED, ddo.getDid());
+                .getProvenanceMethodEvents(ProvenanceEntry.ProvenanceMethod.USED, ddo.getDID());
         assertEquals(1, provenanceEvents.size());
 
         provenanceEvents = neverminedAPI.getProvenanceAPI()
@@ -167,7 +165,7 @@ public class ProvenanceApiIT {
         assertEquals(1, provenanceEvents.size());
 
         provenanceEvents = neverminedAPI.getProvenanceAPI()
-                .getProvenanceMethodEvents(ProvenanceEntry.ProvenanceMethod.WAS_ASSOCIATED_WITH, ddo.getDid());
+                .getProvenanceMethodEvents(ProvenanceEntry.ProvenanceMethod.WAS_ASSOCIATED_WITH, ddo.getDID());
         assertEquals(1, provenanceEvents.size());
     }
 
@@ -182,7 +180,7 @@ public class ProvenanceApiIT {
         final DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
 
         final boolean success = neverminedAPI.getProvenanceAPI().used(
-                provenanceId, ddo.getDid(), DEFAULT_ACCOUNT, activityId, signature, "used test");
+                provenanceId, ddo.getDID(), DEFAULT_ACCOUNT, activityId, signature, "used test");
         assertTrue(success);
     }
 
@@ -198,11 +196,11 @@ public class ProvenanceApiIT {
         final DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
 
         final boolean success = neverminedAPI.getProvenanceAPI().actedOnBehalf(
-                provenanceId, ddo.getDid(), DEFAULT_ACCOUNT, DEFAULT_ACCOUNT, activityId, signature, "actedOnBehalf test");
+                provenanceId, ddo.getDID(), DEFAULT_ACCOUNT, DEFAULT_ACCOUNT, activityId, signature, "actedOnBehalf test");
         assertTrue(success);
 
         List<ProvenanceEvent> provenanceEvents = neverminedAPI.getProvenanceAPI()
-                .getProvenanceMethodEvents(ProvenanceEntry.ProvenanceMethod.ACTED_ON_BEHALF, ddo.getDid());
+                .getProvenanceMethodEvents(ProvenanceEntry.ProvenanceMethod.ACTED_ON_BEHALF, ddo.getDID());
         assertEquals(1, provenanceEvents.size());
 
     }
@@ -215,9 +213,9 @@ public class ProvenanceApiIT {
         final DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
 
         neverminedAPI.getProvenanceAPI().used(
-                provenanceId, ddo.getDid(), DEFAULT_ACCOUNT, activityId, "", "used test");
+                provenanceId, ddo.getDID(), DEFAULT_ACCOUNT, activityId, "", "used test");
         boolean success = neverminedAPI.getProvenanceAPI().used(
-                provenanceId, ddo.getDid(), DEFAULT_ACCOUNT, activityId, "", "used test");
+                provenanceId, ddo.getDID(), DEFAULT_ACCOUNT, activityId, "", "used test");
         assertFalse(success);
     }
 
@@ -232,38 +230,6 @@ public class ProvenanceApiIT {
 
         int assetsOwnedAfter = neverminedAPI.getAssetsAPI().ownerAssets(neverminedAPI.getMainAccount().address).size();
         assertEquals(assetsOwnedAfter, assetsOwnedBefore + 1);
-    }
-
-    @Ignore
-    @Test
-    public void signAndValidateMessages() throws Exception {
-        String signingAdders = provenanceManager.getKeeperService().getAddress();
-        String _sourceMessage = "hi there";
-        String message = CryptoHelper.sha3256(_sourceMessage).replace("0x", "");
-        String prefix = "\u0019Ethereum Signed Message:\n32";
-        String _message = CryptoHelper.sha3256(prefix + message);
-        String _messageHash = CryptoHelper.sha3256("\u0019Ethereum Signed Message:\n" + _message.length() + _message);
-
-        Sign.SignatureData signatureData =
-                EthereumHelper.signMessage(_message, provenanceManager.getKeeperService().getCredentials());
-
-        String _signature = EncodingHelper.signatureToString(signatureData);
-        log.info("Source Message Hash: " + CryptoHelper.sha3256(_sourceMessage));
-        log.info("Message: " + _message);
-        log.info("Message Hash: " + _messageHash);
-        log.info("Signature: " + _signature);
-
-        assertTrue(EthereumHelper.wasSignedByAddress(signingAdders, signatureData, _messageHash.getBytes()));
-
-        byte[] signatureBytes = EncodingHelper.signatureToString(signatureData).getBytes();
-
-        final Boolean result = didRegistry.provenanceSignatureIsCorrect(
-                signingAdders,
-                _messageHash.getBytes(),
-                signatureBytes
-        ).send();
-        assertTrue(result);
-
     }
 
     private String generateRandomID() {

@@ -28,7 +28,7 @@ public class SecretStoreApiIT {
     private static NeverminedAPI neverminedAPIConsumer;
 
     // This test only made sense when Secret Store `acl_contract` is set to "none"
-    // If not the complete encryption/decryption is tested in the purchase/order
+    // If not the complete encryption/decryption is tested in the purchase/purchaseOrder
 
     @BeforeClass
     @Ignore

@@ -1,5 +1,6 @@
 package io.keyko.nevermined.api;
 
+import io.keyko.nevermined.core.conditions.LockPaymentConditionPayable;
 import io.keyko.secretstore.core.EvmDto;
 import io.keyko.secretstore.core.SecretStoreDto;
 import com.typesafe.config.Config;
@@ -50,10 +51,10 @@ public class NeverminedAPI {
     private NeverminedToken tokenContract;
     private Dispenser dispenser;
     private DIDRegistry didRegistryContract;
-    private EscrowAccessSecretStoreTemplate escrowAccessSecretStoreTemplate;
-    private LockRewardCondition lockRewardCondition;
-    private AccessSecretStoreCondition accessSecretStoreCondition;
-    private EscrowReward escrowReward;
+    private AccessTemplate accessTemplate;
+    private LockPaymentConditionPayable lockPaymentCondition;
+    private AccessCondition accessCondition;
+    private EscrowPaymentCondition escrowPaymentCondition;
     private TemplateStoreManager templateStoreManagerContract;
     private AgreementStoreManager agreementStoreManagerContract;
     private ConditionStoreManager conditionStoreManager;
@@ -168,10 +169,10 @@ public class NeverminedAPI {
             neverminedAPI.secretStoreManager = initializationHelper.getSecretStoreManager(neverminedAPI.secretStoreDto, neverminedAPI.evmDto);
 
             neverminedAPI.didRegistryContract = initializationHelper.loadDIDRegistryContract(neverminedAPI.keeperService);
-            neverminedAPI.escrowAccessSecretStoreTemplate = initializationHelper.loadEscrowAccessSecretStoreTemplate(neverminedAPI.keeperService);
-            neverminedAPI.lockRewardCondition = initializationHelper.loadLockRewardCondition(neverminedAPI.keeperService);
-            neverminedAPI.accessSecretStoreCondition = initializationHelper.loadAccessSecretStoreCondition(neverminedAPI.keeperService);
-            neverminedAPI.escrowReward = initializationHelper.loadEscrowReward(neverminedAPI.keeperService);
+            neverminedAPI.accessTemplate = initializationHelper.loadAccessTemplate(neverminedAPI.keeperService);
+            neverminedAPI.lockPaymentCondition = initializationHelper.loadLockPaymentCondition(neverminedAPI.keeperService);
+            neverminedAPI.accessCondition = initializationHelper.loadAccessCondition(neverminedAPI.keeperService);
+            neverminedAPI.escrowPaymentCondition = initializationHelper.loadEscrowPaymentCondition(neverminedAPI.keeperService);
             neverminedAPI.dispenser = initializationHelper.loadDispenserContract(neverminedAPI.keeperService);
             neverminedAPI.tokenContract = initializationHelper.loadNeverminedTokenContract(neverminedAPI.keeperService);
             neverminedAPI.templateStoreManagerContract = initializationHelper.loadTemplateStoreManagerContract(neverminedAPI.keeperService);
@@ -183,36 +184,17 @@ public class NeverminedAPI {
             neverminedAPI.agreementsManager = initializationHelper.getAgreementsManager(neverminedAPI.keeperService, neverminedAPI.metadataApiService);
             neverminedAPI.agreementsManager
                     .setConditionStoreManagerContract(neverminedAPI.conditionStoreManager)
-                    .setEscrowAccessSecretStoreTemplate(neverminedAPI.escrowAccessSecretStoreTemplate)
                     .setAgreementStoreManagerContract(neverminedAPI.agreementStoreManagerContract)
-                    .setLockRewardCondition(neverminedAPI.lockRewardCondition)
-                    .setAccessSecretStoreCondition(neverminedAPI.accessSecretStoreCondition)
-                    .setEscrowReward(neverminedAPI.escrowReward)
+                    .setAccessTemplate(neverminedAPI.accessTemplate)
+                    .setLockCondition(neverminedAPI.lockPaymentCondition)
+                    .setAccessCondition(neverminedAPI.accessCondition)
+                    .setEscrowCondition(neverminedAPI.escrowPaymentCondition)
                     .setComputeExecutionCondition(neverminedAPI.computeExecutionCondition)
                     .setEscrowComputeExecutionTemplate(neverminedAPI.escrowComputeExecutionTemplate);
 
             neverminedAPI.templatesManager = initializationHelper.getTemplatesManager(neverminedAPI.keeperService, neverminedAPI.metadataApiService);
             neverminedAPI.templatesManager.setMainAccount(neverminedAPI.mainAccount);
             neverminedAPI.templatesManager.setTemplateStoreManagerContract(neverminedAPI.templateStoreManagerContract);
-
-            neverminedAPI.neverminedManager = initializationHelper.getNeverminedManager(neverminedAPI.keeperService, neverminedAPI.metadataApiService);
-            neverminedAPI.neverminedManager
-                    .setAgreementManager(neverminedAPI.agreementsManager)
-                    .setTemplatesManager(neverminedAPI.templatesManager)
-                    .setSecretStoreManager(neverminedAPI.secretStoreManager)
-                    .setDidRegistryContract(neverminedAPI.didRegistryContract)
-                    .setEscrowAccessSecretStoreTemplate(neverminedAPI.escrowAccessSecretStoreTemplate)
-                    .setLockRewardCondition(neverminedAPI.lockRewardCondition)
-                    .setEscrowReward(neverminedAPI.escrowReward)
-                    .setAccessSecretStoreCondition(neverminedAPI.accessSecretStoreCondition)
-                    .setTokenContract(neverminedAPI.tokenContract)
-                    .setTemplateStoreManagerContract(neverminedAPI.templateStoreManagerContract)
-                    .setAgreementStoreManagerContract(neverminedAPI.agreementStoreManagerContract)
-                    .setConditionStoreManagerContract(neverminedAPI.conditionStoreManager)
-                    .setComputeExecutionCondition(neverminedAPI.computeExecutionCondition)
-                    .setEscrowComputeExecutionTemplate(neverminedAPI.escrowComputeExecutionTemplate)
-                    .setMainAccount(neverminedAPI.mainAccount)
-                    .setEvmDto(neverminedAPI.evmDto);
 
             neverminedAPI.accountsManager = initializationHelper.getAccountsManager(neverminedAPI.keeperService, neverminedAPI.metadataApiService);
             neverminedAPI.accountsManager
@@ -223,12 +205,13 @@ public class NeverminedAPI {
             neverminedAPI.conditionsManager = initializationHelper.getConditionsManager(neverminedAPI.keeperService, neverminedAPI.metadataApiService);
             neverminedAPI.conditionsManager
                     .setTokenContract(neverminedAPI.tokenContract)
+                    .setDidRegistryContract(neverminedAPI.didRegistryContract)
                     .setConditionStoreManagerContract(neverminedAPI.conditionStoreManager)
-                    .setEscrowAccessSecretStoreTemplate(neverminedAPI.escrowAccessSecretStoreTemplate)
+                    .setAccessTemplate(neverminedAPI.accessTemplate)
                     .setAgreementStoreManagerContract(neverminedAPI.agreementStoreManagerContract)
-                    .setLockRewardCondition(neverminedAPI.lockRewardCondition)
-                    .setAccessSecretStoreCondition(neverminedAPI.accessSecretStoreCondition)
-                    .setEscrowReward(neverminedAPI.escrowReward)
+                    .setLockCondition(neverminedAPI.lockPaymentCondition)
+                    .setAccessCondition(neverminedAPI.accessCondition)
+                    .setEscrowCondition(neverminedAPI.escrowPaymentCondition)
                     .setComputeExecutionCondition(neverminedAPI.computeExecutionCondition)
                     .setEscrowComputeExecutionTemplate(neverminedAPI.escrowComputeExecutionTemplate);
 
@@ -239,6 +222,27 @@ public class NeverminedAPI {
 
             neverminedAPI.provenanceManager = initializationHelper.getProvenanceManager(neverminedAPI.keeperService);
             neverminedAPI.provenanceManager.setDidRegistryContract(neverminedAPI.didRegistryContract);
+
+            neverminedAPI.neverminedManager = initializationHelper.getNeverminedManager(neverminedAPI.keeperService, neverminedAPI.metadataApiService);
+            neverminedAPI.neverminedManager
+                    .setAgreementManager(neverminedAPI.agreementsManager)
+                    .setTemplatesManager(neverminedAPI.templatesManager)
+                    .setConditionsManager(neverminedAPI.conditionsManager)
+                    .setAccountsManager(neverminedAPI.accountsManager)
+                    .setSecretStoreManager(neverminedAPI.secretStoreManager)
+                    .setDidRegistryContract(neverminedAPI.didRegistryContract)
+                    .setAccessTemplate(neverminedAPI.accessTemplate)
+                    .setLockCondition(neverminedAPI.lockPaymentCondition)
+                    .setEscrowCondition(neverminedAPI.escrowPaymentCondition)
+                    .setAccessCondition(neverminedAPI.accessCondition)
+                    .setTokenContract(neverminedAPI.tokenContract)
+                    .setTemplateStoreManagerContract(neverminedAPI.templateStoreManagerContract)
+                    .setAgreementStoreManagerContract(neverminedAPI.agreementStoreManagerContract)
+                    .setConditionStoreManagerContract(neverminedAPI.conditionStoreManager)
+                    .setComputeExecutionCondition(neverminedAPI.computeExecutionCondition)
+                    .setEscrowComputeExecutionTemplate(neverminedAPI.escrowComputeExecutionTemplate)
+                    .setMainAccount(neverminedAPI.mainAccount)
+                    .setEvmDto(neverminedAPI.evmDto);
 
             neverminedAPI.accountsAPI = new AccountsImpl(neverminedAPI.accountsManager);
             neverminedAPI.agreementsAPI = new AgreementsImpl(neverminedAPI.agreementsManager, neverminedAPI.neverminedManager);

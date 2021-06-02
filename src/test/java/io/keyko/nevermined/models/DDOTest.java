@@ -76,7 +76,7 @@ public class DDOTest {
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, DDO_JSON_CONTENT);
 
         assertTrue(ddo.id.startsWith(DID.PREFIX));
-        assertEquals(64, ddo.getDid().getHash().length());
+        assertEquals(64, ddo.getDID().getHash().length());
     }
 
 
@@ -210,12 +210,12 @@ public class DDOTest {
         }, DDO_JSON_CONTENT);
 
         DDO newDDO= ddo.integrityBuilder(credentials);
-        log.debug("DDO generated with DID: " + newDDO.getDid().did);
+        log.debug("DDO generated with DID: " + newDDO.getDID().did);
 
         log.debug(ddo.toJson(newDDO.proof));
         assertEquals(2, newDDO.proof.checksum.size());
-        assertEquals(64 + DID.PREFIX.length(), newDDO.getDid().did.length());
-        assertEquals(newDDO.id, newDDO.getDid().did);
+        assertEquals(64 + DID.PREFIX.length(), newDDO.getDID().did.length());
+        assertEquals(newDDO.id, newDDO.getDID().did);
     }
 
 
@@ -267,18 +267,19 @@ public class DDOTest {
 
     @Test
     public void modelToJson() throws Exception {
-        String did = "did:nv:12345";
+//        String did = "did:nv:12345";
+        DID did = DID.builder();
         DDO ddo = new DDO();
 
         DDO.PublicKey pk = new DDO.PublicKey();
-        pk.id = did;
+        pk.id = did.getDid();
         pk.type = "RsaVerificationKey2018";
-        pk.owner = did + "owner";
+        pk.owner = did.getDid() + "owner";
 
         ddo.publicKeys.add(pk);
         ddo.publicKeys.add(pk);
 
-        DDO.Authentication auth = new DDO.Authentication(did);
+        DDO.Authentication auth = new DDO.Authentication(did.getDid());
         auth.type = "AuthType";
         auth.publicKey = "AuthPK";
 
@@ -300,7 +301,7 @@ public class DDOTest {
 
         JSONObject json = new JSONObject(modelJson);
         assertEquals(2, (json.getJSONArray("publicKey").length()));
-        assertEquals(did, ((JSONObject) (json.getJSONArray("publicKey").get(0))).getString("id"));
+        assertEquals(did.getDid(), ((JSONObject) (json.getJSONArray("publicKey").get(0))).getString("id"));
 
         assertEquals(3, (json.getJSONArray("authentication").length()));
         assertEquals("AuthType", ((JSONObject) (json.getJSONArray("authentication").get(1))).getString("type"));

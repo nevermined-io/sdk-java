@@ -5,13 +5,18 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import io.keyko.common.helpers.CryptoHelper;
 import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.nevermined.exceptions.DIDFormatException;
+import org.web3j.abi.TypeEncoder;
+import org.web3j.abi.datatypes.Address;
+import org.web3j.crypto.Hash;
 
+import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DID {
 
     public String did;
+    public String seed;
 
     public static final String PREFIX = "did:nv:";
 
@@ -21,15 +26,17 @@ public class DID {
 
     public DID(String did) throws DIDFormatException {
         setDid(did);
+        seed = did.replace(PREFIX, "");
     }
 
-    public static DID builder(String seed) throws DIDFormatException {
+    public static DID builder(String hash) throws DIDFormatException {
         DID _did= new DID(
                 PREFIX +
                 EthereumHelper.remove0x(
-                    CryptoHelper.sha3_256(seed))
+                    CryptoHelper.sha3_256(hash))
         );
         _did.setDid(_did.getDid());
+        _did.seed = hash;
         return _did;
     }
 
@@ -38,7 +45,16 @@ public class DID {
     }
 
     public static DID getFromHash(String hash) throws DIDFormatException {
-        return new DID(PREFIX + hash);
+        return new DID(PREFIX + EthereumHelper.remove0x(hash));
+    }
+
+    public static DID getFromSeed(String seed, String address) throws UnsupportedEncodingException, DIDFormatException {
+        String params = EthereumHelper.add0x(
+                EthereumHelper.encodeParameterValue("bytes32", seed)
+                        + TypeEncoder.encode(new Address(address)));
+        final DID did = DID.getFromHash(Hash.sha3(params));
+        did.seed = seed;
+        return did;
     }
 
     @JsonValue

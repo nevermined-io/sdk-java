@@ -3,6 +3,7 @@ package io.keyko.nevermined.api;
 import io.keyko.nevermined.models.DID;
 
 import java.math.BigInteger;
+import java.util.List;
 
 /**
  * Exposes the Public API related with the management of ConditionStatusMap
@@ -13,11 +14,10 @@ public interface ConditionsAPI {
      * Lock the amount of token that are going to be paid for the asset.
      *
      * @param agreementId the agreement id
-     * @param amount      the amount to be locked
-     * @return a flag if the execution was good
+     * @return true if the execution was good
      * @throws Exception Exception
      */
-    boolean lockReward(String agreementId, BigInteger amount) throws Exception;
+    boolean lockPayment(String agreementId) throws Exception;
 
     /**
      * Grant access to an address using the parity secret store.
@@ -45,7 +45,7 @@ public interface ConditionsAPI {
      * Release the payment to the data publisher and/or provider addresses
      *
      * @param agreementId the agreement id.
-     * @return a flag if the execution was good
+     * @return true if the execution was good
      * @throws Exception Exception
      */
     boolean releaseReward(String agreementId) throws Exception;

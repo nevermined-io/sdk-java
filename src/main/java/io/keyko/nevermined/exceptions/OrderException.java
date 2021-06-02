@@ -1,7 +1,7 @@
 package io.keyko.nevermined.exceptions;
 
 /**
- * Business Exception related with issues during the order process
+ * Business Exception related with issues during the purchaseOrder process
  */
 public class OrderException extends NeverminedException {
     public OrderException(String message, Throwable e) {

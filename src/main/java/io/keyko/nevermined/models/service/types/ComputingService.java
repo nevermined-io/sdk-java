@@ -123,44 +123,45 @@ public class ComputingService extends Service {
     }
 
 
-    @Override
-    public List<String> generateConditionIds(String agreementId, Map<String, String> conditionsAddresses, String publisherAddress, String consumerAddress)  throws Exception{
-
-        String escrowRewardAddress = conditionsAddresses.get("escrowRewardAddress");
-        String lockRewardConditionAddress = conditionsAddresses.get("lockRewardConditionAddress");
-        String computeExecutionConditionAddress = conditionsAddresses.get("computeExecutionConditionAddress");
-
-        List<String> conditionIds = new ArrayList<>();
-        String lockRewardId = generateLockRewardId(agreementId, escrowRewardAddress,lockRewardConditionAddress);
-        String computeExecutionConditionId = generateComputeExecutionConditionId(agreementId, consumerAddress, computeExecutionConditionAddress);
-        String escrowRewardId = generateEscrowRewardConditionId(agreementId, consumerAddress, publisherAddress, escrowRewardAddress, lockRewardId, computeExecutionConditionId);
-        conditionIds.add(computeExecutionConditionId);
-        conditionIds.add(lockRewardId);
-        conditionIds.add(escrowRewardId);
-        return conditionIds;
-    }
-
-    public String generateComputeExecutionConditionId(String serviceAgreementId, String consumerAddress, String computeExecutionConditionAddress) throws UnsupportedEncodingException {
-
-        Condition accessSecretStoreCondition = this.getConditionbyName("execCompute");
-
-        Condition.ConditionParameter documentId = accessSecretStoreCondition.getParameterByName("_documentId");
-        Condition.ConditionParameter grantee = accessSecretStoreCondition.getParameterByName("_grantee");
-
-
-        String params = EthereumHelper.add0x(EthereumHelper.encodeParameterValue(documentId.type, documentId.value)
-                + EthereumHelper.encodeParameterValue(grantee.type, consumerAddress));
-
-        String valuesHash = Hash.sha3(params);
-
-        return Hash.sha3(
-                EthereumHelper.add0x(
-                        EthereumHelper.encodeParameterValue("bytes32", serviceAgreementId)
-                                + EthereumHelper.encodeParameterValue("address", computeExecutionConditionAddress)
-                                + EthereumHelper.encodeParameterValue("bytes32", valuesHash)
-                )
-        );
-
-    }
+//    TODO: REMOVE
+//    @Override
+//    public List<String> generateConditionIds(String agreementId, Map<String, String> conditionsAddresses, String publisherAddress, String consumerAddress)  throws Exception{
+//
+//        String escrowRewardAddress = conditionsAddresses.get("escrowPaymentAddress");
+//        String lockRewardConditionAddress = conditionsAddresses.get("lockPaymentConditionAddress");
+//        String computeExecutionConditionAddress = conditionsAddresses.get("computeExecutionConditionAddress");
+//
+//        List<String> conditionIds = new ArrayList<>();
+//        String lockRewardId = buildLockPaymentConditionId(agreementId, escrowRewardAddress,lockRewardConditionAddress);
+//        String computeExecutionConditionId = generateComputeExecutionConditionId(agreementId, consumerAddress, computeExecutionConditionAddress);
+//        String escrowRewardId = generateEscrowRewardConditionId(agreementId, consumerAddress, publisherAddress, escrowRewardAddress, lockRewardId, computeExecutionConditionId);
+//        conditionIds.add(computeExecutionConditionId);
+//        conditionIds.add(lockRewardId);
+//        conditionIds.add(escrowRewardId);
+//        return conditionIds;
+//    }
+//
+//    public String generateComputeExecutionConditionId(String serviceAgreementId, String consumerAddress, String computeExecutionConditionAddress) throws UnsupportedEncodingException {
+//
+//        Condition accessSecretStoreCondition = this.getConditionbyName("execCompute");
+//
+//        Condition.ConditionParameter documentId = accessSecretStoreCondition.getParameterByName("_documentId");
+//        Condition.ConditionParameter grantee = accessSecretStoreCondition.getParameterByName("_grantee");
+//
+//
+//        String params = EthereumHelper.add0x(EthereumHelper.encodeParameterValue(documentId.type, documentId.value)
+//                + EthereumHelper.encodeParameterValue(grantee.type, consumerAddress));
+//
+//        String valuesHash = Hash.sha3(params);
+//
+//        return Hash.sha3(
+//                EthereumHelper.add0x(
+//                        EthereumHelper.encodeParameterValue("bytes32", serviceAgreementId)
+//                                + EthereumHelper.encodeParameterValue("address", computeExecutionConditionAddress)
+//                                + EthereumHelper.encodeParameterValue("bytes32", valuesHash)
+//                )
+//        );
+//
+//    }
 
 }

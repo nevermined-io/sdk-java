@@ -25,12 +25,12 @@ public class NeverminedConfig {
     public static final String DID_REGISTRY_ADDRESS = "contract.DIDRegistry.address";
     public static final String AGREEMENT_STORE_MANAGER_ADDRESS = "contract.AgreementStoreManager.address";
     public static final String CONDITION_STORE_MANAGER_ADDRESS = "contract.ConditionStoreManager.address";
-    public static final String LOCKREWARD_CONDITIONS_ADDRESS = "contract.LockRewardCondition.address";
-    public static final String ESCROWREWARD_CONDITIONS_ADDRESS = "contract.EscrowReward.address";
-    public static final String ESCROW_ACCESS_SS_CONDITIONS_ADDRESS = "contract.EscrowAccessSecretStoreTemplate.address";
+    public static final String LOCKPAYMENT_CONDITIONS_ADDRESS = "contract.LockPaymentCondition.address";
+    public static final String ESCROWPAYMENT_CONDITIONS_ADDRESS = "contract.EscrowPaymentCondition.address";
+    public static final String ACCESS_TEMPLATE_ADDRESS = "contract.AccessTemplate.address";
     public static final String TEMPLATE_STORE_MANAGER_ADDRESS = "contract.TemplateStoreManager.address";
-    public static final String ACCESS_SS_CONDITIONS_ADDRESS = "contract.AccessSecretStoreCondition.address";
-    public static final String TOKEN_ADDRESS = "contract.NeverminedToken.address";
+    public static final String ACCESS_CONDITION_ADDRESS = "contract.AccessCondition.address";
+    public static final String NEVERMINED_TOKEN_ADDRESS = "contract.NeverminedToken.address";
     public static final String DISPENSER_ADDRESS = "contract.Dispenser.address";
     public static final String COMPUTE_EXECUTION_CONDITION_ADDRESS = "contract.ComputeExecutionCondition.address";
     public static final String ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS = "contract.EscrowComputeExecutionTemplate.address";
@@ -121,28 +121,28 @@ public class NeverminedConfig {
                     + NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS);
         }
 
-        if (neverminedConfig.getEscrowRewardConditionsAddress() == null || neverminedConfig.getEscrowRewardConditionsAddress().isEmpty()) {
+        if (neverminedConfig.getEscrowPaymentConditionConditionsAddress() == null || neverminedConfig.getEscrowPaymentConditionConditionsAddress().isEmpty()) {
             validation.setValid(false);
-            validation.addErrorMessage("The Address of EscrowReward Contract must be set with the property "
-                    + NeverminedConfig.ESCROWREWARD_CONDITIONS_ADDRESS);
+            validation.addErrorMessage("The Address of EscrowPaymentCondition Contract must be set with the property "
+                    + NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS);
         }
 
-        if (neverminedConfig.getEscrowAccessSecretStoreTemplateAddress() == null || neverminedConfig.getEscrowAccessSecretStoreTemplateAddress().isEmpty()) {
+        if (neverminedConfig.getAccessTemplateAddress() == null || neverminedConfig.getAccessTemplateAddress().isEmpty()) {
             validation.setValid(false);
-            validation.addErrorMessage("The Address of EscrowAccessSecretStoreTemplate Contract must be set with the property "
-                    + NeverminedConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS);
+            validation.addErrorMessage("The Address of AccessTemplate Contract must be set with the property "
+                    + NeverminedConfig.ACCESS_TEMPLATE_ADDRESS);
         }
 
         if (neverminedConfig.getLockrewardConditionsAddress() == null || neverminedConfig.getLockrewardConditionsAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of LockReward Contract must be set with the property "
-                    + NeverminedConfig.LOCKREWARD_CONDITIONS_ADDRESS);
+                    + NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS);
         }
 
         if (neverminedConfig.getAccessSsConditionsAddress() == null || neverminedConfig.getAccessSsConditionsAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of AccessSecretsToreConditions Contract must be set with the property "
-                    + NeverminedConfig.ACCESS_SS_CONDITIONS_ADDRESS);
+                    + NeverminedConfig.ACCESS_CONDITION_ADDRESS);
         }
 
         if (neverminedConfig.getTemplateStoreManagerAddress() == null || neverminedConfig.getTemplateStoreManagerAddress().isEmpty()) {
@@ -271,11 +271,11 @@ public class NeverminedConfig {
         return this;
     }
 
-    public String getEscrowRewardConditionsAddress() {
+    public String getEscrowPaymentConditionConditionsAddress() {
         return escrowRewardAddress;
     }
 
-    public NeverminedConfig setEscrowRewardConditionsAddress(String address) {
+    public NeverminedConfig setEscrowPaymentConditionConditionsAddress(String address) {
         this.escrowRewardAddress = address;
         return this;
     }
@@ -380,11 +380,11 @@ public class NeverminedConfig {
         return this;
     }
 
-    public String getEscrowAccessSecretStoreTemplateAddress() {
+    public String getAccessTemplateAddress() {
         return escrowAccessSecretStoreTemplateAddress;
     }
 
-    public void setEscrowAccessSecretStoreTemplateAddress(String escrowAccessSecretStoreTemplateAddress) {
+    public void setAccessTemplateAddress(String escrowAccessSecretStoreTemplateAddress) {
         this.escrowAccessSecretStoreTemplateAddress = escrowAccessSecretStoreTemplateAddress;
     }
 

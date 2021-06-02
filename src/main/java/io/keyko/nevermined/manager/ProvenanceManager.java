@@ -120,22 +120,6 @@ public class ProvenanceManager extends BaseManager {
         }
     }
 
-    public boolean provenanceSignatureIsCorrect(String delegateAgentId, String provenanceId, String signature)
-            throws ProvenanceException {
-
-        try {
-            final Boolean result = didRegistry.provenanceSignatureIsCorrect(
-                    delegateAgentId,
-                    EncodingHelper.hexStringToBytes(provenanceId.replace("0x", "")),
-                    EncodingHelper.hexStringToBytes(signature)
-            ).send();
-            return result.booleanValue();
-
-        } catch (Exception e) {
-            throw new ProvenanceException("Error in Provenance actedOnBehalf method ", e);
-        }
-    }
-
     // Manage delegates
     public boolean isProvenanceDelegate(DID did, String delegate)
             throws ProvenanceException {

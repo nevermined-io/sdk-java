@@ -265,7 +265,7 @@ public interface AssetsAPI {
      * @return a Flowable instance over an OrderResult to get the result of the flow in an asynchronous fashion
      * @throws OrderException OrderException
      */
-    Flowable<OrderResult> order(DID did, int serviceIndex) throws OrderException;
+    Flowable<OrderResult> purchaseOrder(DID did, int serviceIndex) throws OrderException;
 
     /**
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
@@ -274,35 +274,9 @@ public interface AssetsAPI {
      * @return OrderResult
      * @throws OrderException OrderException
      * @throws ServiceException ServiceException
-     * @throws EscrowRewardException EscrowRewardException
+     * @throws EscrowPaymentException EscrowPaymentException
      */
-    OrderResult orderDirect(DID did) throws OrderException, ServiceException, EscrowRewardException;
-
-
-    /**
-     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
-     *
-     * @param did                 the did of the DDO
-     * @param serviceIndex the service definition id
-     * @return OrderResult
-     * @throws OrderException OrderException
-     * @throws ServiceException ServiceException
-     * @throws EscrowRewardException EscrowRewardException
-     */
-    OrderResult orderDirect(DID did, int serviceIndex) throws OrderException, ServiceException, EscrowRewardException;
-
-
-    /**
-     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
-     *
-     * @param did                 the did of the DDO
-     * @param serviceTypes service type to order
-     * @return OrderResult
-     * @throws OrderException OrderException
-     * @throws ServiceException ServiceException
-     * @throws EscrowRewardException EscrowRewardException
-     */
-    OrderResult orderDirect(DID did, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException;
+    OrderResult order(DID did) throws OrderException, ServiceException, EscrowPaymentException;
 
 
     /**
@@ -310,13 +284,39 @@ public interface AssetsAPI {
      *
      * @param did                 the did of the DDO
      * @param serviceIndex the service definition id
-     * @param serviceTypes service type to order
      * @return OrderResult
      * @throws OrderException OrderException
      * @throws ServiceException ServiceException
-     * @throws EscrowRewardException EscrowRewardException
+     * @throws EscrowPaymentException EscrowPaymentException
      */
-    OrderResult orderDirect(DID did, int serviceIndex, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException;
+    OrderResult order(DID did, int serviceIndex) throws OrderException, ServiceException, EscrowPaymentException;
+
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did of the DDO
+     * @param serviceTypes service type to purchaseOrder
+     * @return OrderResult
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowPaymentException EscrowPaymentException
+     */
+    OrderResult order(DID did, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowPaymentException;
+
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did of the DDO
+     * @param serviceIndex the service definition id
+     * @param serviceTypes service type to purchaseOrder
+     * @return OrderResult
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowPaymentException EscrowPaymentException
+     */
+    OrderResult order(DID did, int serviceIndex, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowPaymentException;
 
 
     /**

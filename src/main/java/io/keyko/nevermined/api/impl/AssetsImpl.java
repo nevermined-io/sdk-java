@@ -5,6 +5,7 @@ import io.keyko.nevermined.exceptions.*;
 import io.keyko.nevermined.external.GatewayService;
 import io.keyko.nevermined.manager.AgreementsManager;
 import io.keyko.nevermined.manager.AssetsManager;
+import io.keyko.nevermined.manager.ConditionsManager;
 import io.keyko.nevermined.manager.NeverminedManager;
 import io.keyko.nevermined.models.AssetRewards;
 import io.keyko.nevermined.models.DDO;
@@ -191,24 +192,24 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
-    public Flowable<OrderResult> order(DID did, int serviceIndex) throws OrderException {
+    public Flowable<OrderResult> purchaseOrder(DID did, int serviceIndex) throws OrderException {
         return neverminedManager.purchaseAssetFlowable(did, serviceIndex);
     }
 
-    public OrderResult orderDirect(DID did) throws OrderException, ServiceException, EscrowRewardException {
+    public OrderResult order(DID did) throws OrderException, ServiceException, EscrowPaymentException {
         return neverminedManager.purchaseAssetDirect(did);
     }
 
-    public OrderResult orderDirect(DID did, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException {
+    public OrderResult order(DID did, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowPaymentException {
         return neverminedManager.purchaseAssetDirect(did, serviceTypes);
     }
 
-    public OrderResult orderDirect(DID did, int serviceIndex, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException {
+    public OrderResult order(DID did, int serviceIndex, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowPaymentException {
         return neverminedManager.purchaseAssetDirect(did, serviceIndex, serviceTypes);
     }
 
 
-    public OrderResult orderDirect(DID did, int serviceIndex) throws OrderException, ServiceException, EscrowRewardException {
+    public OrderResult order(DID did, int serviceIndex) throws OrderException, ServiceException, EscrowPaymentException {
         return neverminedManager.purchaseAssetDirect(did, serviceIndex);
     }
 
