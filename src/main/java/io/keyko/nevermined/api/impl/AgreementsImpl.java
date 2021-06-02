@@ -1,24 +1,16 @@
 package io.keyko.nevermined.api.impl;
 
 import io.keyko.nevermined.api.AgreementsAPI;
-import io.keyko.nevermined.core.sla.handlers.ServiceAgreementHandler;
 import io.keyko.nevermined.exceptions.ServiceAgreementException;
 import io.keyko.nevermined.manager.AgreementsManager;
 import io.keyko.nevermined.manager.NeverminedManager;
-import io.keyko.nevermined.models.Account;
 import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.service.Agreement;
 import io.keyko.nevermined.models.service.AgreementStatus;
 import io.keyko.nevermined.models.service.Service;
-import io.keyko.nevermined.models.service.types.AccessService;
-import io.keyko.nevermined.models.service.types.ComputingService;
-import org.web3j.crypto.Keys;
-import org.web3j.tuples.generated.Tuple2;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AgreementsImpl implements AgreementsAPI {
 
@@ -36,22 +28,6 @@ public class AgreementsImpl implements AgreementsAPI {
         this.neverminedManager = neverminedManager;
         this.agreementsManager = agreementsManager;
     }
-
-    // TODO: REMOVE
-//    @Override
-//    public Tuple2<String, String> prepare(DID did, int serviceDefinitionId, Account consumerAccount) throws ServiceAgreementException {
-//
-//        String agreementId = "";
-//        String signature;
-//
-//        try {
-//            agreementId = ServiceAgreementHandler.generateSlaId();
-//            signature = this.sign(agreementId, did, serviceDefinitionId, consumerAccount);
-//            return new Tuple2<String, String>(agreementId, signature);
-//        }catch (Exception e) {
-//            throw new ServiceAgreementException(agreementId, "There was a problem preparing the agreement", e);
-//        }
-//    }
 
     @Override
     public boolean create(DID did, String agreementId, int serviceIndex, String consumerAddress) throws ServiceAgreementException {
@@ -110,27 +86,4 @@ public class AgreementsImpl implements AgreementsAPI {
         }
     }
 
-//    TODO: REMOVE
-//    public String sign(String agreementId, DID did, int serviceDefinitionId, Account consumerAccount) throws Exception {
-//
-//        DDO ddo = neverminedManager.resolveDID(did);
-//        Service service = ddo.getService(serviceDefinitionId);
-//
-//        Map<String, String> conditionsAddresses = new HashMap<>();
-//        conditionsAddresses.put("escrowPaymentAddress", this.agreementsManager.getEscrowCondition().getContractAddress());
-//        conditionsAddresses.put("lockPaymentConditionAddress", this.agreementsManager.getLockCondition().getContractAddress());
-//
-//        if (service.type.equals(Service.ServiceTypes.ACCESS.toString())) {
-//            service = (AccessService) service;
-//            conditionsAddresses.put("accessConditionAddress",  this.agreementsManager.getAccessCondition().getContractAddress());
-//        }
-//        else if (service.type.equals(Service.ServiceTypes.COMPUTE.toString())) {
-//            service = (ComputingService) service;
-//            conditionsAddresses.put("computeExecutionCondition", this.agreementsManager.getComputeExecutionCondition().getContractAddress());
-//        }
-//        else throw new ServiceAgreementException(agreementId, "Service type not supported");
-//
-//        String hash = service.generateServiceAgreementHash(agreementId, consumerAccount.address, ddo.proof.creator, conditionsAddresses);
-//        return service.generateServiceAgreementSignatureFromHash(this.agreementsManager.getKeeperService().getWeb3(), this.agreementsManager.getKeeperService().getAddress(), consumerAccount.password, hash);
-//    }
 }

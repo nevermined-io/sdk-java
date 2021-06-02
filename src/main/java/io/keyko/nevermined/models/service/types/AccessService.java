@@ -3,15 +3,7 @@ package io.keyko.nevermined.models.service.types;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import io.keyko.common.helpers.EthereumHelper;
-import io.keyko.nevermined.models.service.Condition;
 import io.keyko.nevermined.models.service.Service;
-import org.web3j.crypto.Hash;
-
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonPropertyOrder(alphabetic = true)
@@ -43,47 +35,5 @@ public class AccessService extends Service {
         this.attributes.serviceAgreementTemplate = serviceAgreementTemplate;
 
     }
-
-//  TODO: REMOVE
-//    public String generateAccessConditionId(String serviceAgreementId, String consumerAddress, String accessSecretStoreConditionAddress) throws UnsupportedEncodingException {
-//
-//        Condition accessSecretStoreCondition = this.getConditionbyName("accessSecretStore");
-//
-//        Condition.ConditionParameter documentId = accessSecretStoreCondition.getParameterByName("_documentId");
-//        Condition.ConditionParameter grantee = accessSecretStoreCondition.getParameterByName("_grantee");
-//
-//
-//        String params = EthereumHelper.add0x(EthereumHelper.encodeParameterValue(documentId.type, documentId.value)
-//                + EthereumHelper.encodeParameterValue(grantee.type, consumerAddress));
-//
-//        String valuesHash = Hash.sha3(params);
-//
-//        return Hash.sha3(
-//                EthereumHelper.add0x(
-//                        EthereumHelper.encodeParameterValue("bytes32", serviceAgreementId)
-//                                + EthereumHelper.encodeParameterValue("address", accessSecretStoreConditionAddress)
-//                                + EthereumHelper.encodeParameterValue("bytes32", valuesHash)
-//                )
-//        );
-//
-//    }
-//
-//
-//    @Override
-//    public List<String> generateConditionIds(String agreementId, Map<String, String> conditionsAddresses, String publisherAddress, String consumerAddress)  throws Exception{
-//
-//        String escrowRewardAddress = conditionsAddresses.get("escrowPaymentAddress");
-//        String lockRewardConditionAddress = conditionsAddresses.get("lockPaymentConditionAddress");
-//        String accessSecretStoreConditionAddress = conditionsAddresses.get("accessConditionAddress");
-//
-//        List<String> conditionIds = new ArrayList<>();
-//        String lockRewardId = buildLockPaymentConditionId(agreementId, escrowRewardAddress,lockRewardConditionAddress);
-//        String accessSecretStoreId = generateAccessConditionId(agreementId, consumerAddress,accessSecretStoreConditionAddress);
-//        String escrowRewardId = generateEscrowRewardConditionId(agreementId, consumerAddress, publisherAddress, escrowRewardAddress, lockRewardId, accessSecretStoreId);
-//        conditionIds.add(accessSecretStoreId);
-//        conditionIds.add(lockRewardId);
-//        conditionIds.add(escrowRewardId);
-//        return conditionIds;
-//    }
 
 }
