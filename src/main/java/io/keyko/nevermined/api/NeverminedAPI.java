@@ -1,8 +1,5 @@
 package io.keyko.nevermined.api;
 
-import io.keyko.nevermined.core.conditions.LockPaymentConditionPayable;
-import io.keyko.secretstore.core.EvmDto;
-import io.keyko.secretstore.core.SecretStoreDto;
 import com.typesafe.config.Config;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.config.NeverminedConfig;
@@ -10,11 +7,14 @@ import io.keyko.nevermined.api.config.NeverminedConfigFactory;
 import io.keyko.nevermined.api.helper.InitializationHelper;
 import io.keyko.nevermined.api.impl.*;
 import io.keyko.nevermined.contracts.*;
+import io.keyko.nevermined.core.conditions.LockPaymentConditionPayable;
 import io.keyko.nevermined.exceptions.InitializationException;
 import io.keyko.nevermined.exceptions.InvalidConfiguration;
 import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.manager.*;
 import io.keyko.nevermined.models.Account;
+import io.keyko.secretstore.core.EvmDto;
+import io.keyko.secretstore.core.SecretStoreDto;
 import io.reactivex.exceptions.UndeliverableException;
 import io.reactivex.plugins.RxJavaPlugins;
 import org.apache.logging.log4j.LogManager;
@@ -67,6 +67,7 @@ public class NeverminedAPI {
     private ConditionsAPI conditionsAPI;
     private TokensAPI tokensAPI;
     private AssetsAPI assetsAPI;
+    private NFTsAPI nftsAPI;
     private ProvenanceAPI provenanceAPI;
     private SecretStoreAPI secretStoreAPI;
     private TemplatesAPI templatesAPI;
@@ -250,6 +251,7 @@ public class NeverminedAPI {
             neverminedAPI.tokensAPI = new TokensImpl(neverminedAPI.accountsManager);
             neverminedAPI.secretStoreAPI = new SecretStoreImpl(neverminedAPI.secretStoreManager);
             neverminedAPI.assetsAPI = new AssetsImpl(neverminedAPI.neverminedManager, neverminedAPI.assetsManager, neverminedAPI.agreementsManager);
+            neverminedAPI.nftsAPI = new NFTsImpl(neverminedAPI.neverminedManager, neverminedAPI.assetsManager);
             neverminedAPI.provenanceAPI = new ProvenanceImpl(neverminedAPI.neverminedManager, neverminedAPI.provenanceManager);
             neverminedAPI.templatesAPI = new TemplatesImpl(neverminedAPI.templatesManager);
             neverminedAPI.filesAPI = new FilesImpl();
@@ -327,6 +329,15 @@ public class NeverminedAPI {
      */
     public AssetsAPI getAssetsAPI() {
         return this.assetsAPI;
+    }
+
+    /**
+     * Gets the NFTsAPI
+     *
+     * @return an instance of an Implementation class of NFTsAPI
+     */
+    public NFTsAPI getNFTsAPI() {
+        return this.nftsAPI;
     }
 
     /**

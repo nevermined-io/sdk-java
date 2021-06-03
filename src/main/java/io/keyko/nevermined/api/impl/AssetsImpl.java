@@ -107,37 +107,13 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
-    public boolean mint(DID did, BigInteger amount) throws NftException {
-        return assetsManager.mint(did, amount);
-    }
-
-    @Override
-    public boolean burn(DID did, BigInteger amount) throws NftException {
-        return assetsManager.burn(did, amount);
-    }
-
-    @Override
-    public boolean transfer(DID did, String address, BigInteger amount) throws NftException {
-        return assetsManager.transfer(did, address, amount);
-    }
-
-    @Override
-    public BigInteger balance(String address, DID did) throws NftException {
-        return assetsManager.balance(address, did);
-    }
-
-    @Override
     public List<AssetMetadata.File> getMetadataFiles(DID did) throws DDOException {
-
         try {
-
             DDO ddo = this.resolve(did);
             return neverminedManager.getDecriptedSecretStoreMetadataFiles(ddo);
-
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new DDOException("Error trying to get the files of the DDO", e);
         }
-
     }
 
     @Override

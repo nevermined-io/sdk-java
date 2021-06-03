@@ -192,12 +192,12 @@ public class AssetsApiIT {
         assertEquals(ddo.id, resolvedDDO.id);
         assertTrue(resolvedDDO.services.size() == 4);
 
-        assertEquals(BigInteger.ZERO, neverminedAPI.getAssetsAPI().balance(clientAddress, did));
-        neverminedAPI.getAssetsAPI().mint(did, BigInteger.TEN);
-        assertEquals(BigInteger.TEN, neverminedAPI.getAssetsAPI().balance(clientAddress, did));
+        assertEquals(BigInteger.ZERO, neverminedAPI.getNFTsAPI().balance(clientAddress, did));
+        neverminedAPI.getNFTsAPI().mint(did, BigInteger.TEN);
+        assertEquals(BigInteger.TEN, neverminedAPI.getNFTsAPI().balance(clientAddress, did));
 
-        neverminedAPI.getAssetsAPI().burn(did, BigInteger.TWO);
-        assertEquals(BigInteger.valueOf(8), neverminedAPI.getAssetsAPI().balance(clientAddress, did));
+        neverminedAPI.getNFTsAPI().burn(did, BigInteger.TWO);
+        assertEquals(BigInteger.valueOf(8), neverminedAPI.getNFTsAPI().balance(clientAddress, did));
     }
 
     @Test
