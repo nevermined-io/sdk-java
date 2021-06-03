@@ -1,6 +1,7 @@
 package io.keyko.nevermined.manager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import io.keyko.nevermined.core.conditions.LockPaymentConditionPayable;
 import io.keyko.secretstore.core.EvmDto;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -20,7 +21,6 @@ import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.web3j.protocol.Web3j;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -52,10 +52,10 @@ public class NeverminedManagerIT {
     private static String providerAddress;
 
     private static DIDRegistry didRegistry;
-    private static EscrowReward escrowReward;
-    private static AccessSecretStoreCondition accessSecretStoreCondition;
-    private static LockRewardCondition lockRewardCondition;
-    private static EscrowAccessSecretStoreTemplate escrowAccessSecretStoreTemplate;
+    private static EscrowPaymentCondition escrowPaymentCondition;
+    private static AccessCondition accessCondition;
+    private static LockPaymentConditionPayable lockPaymentCondition;
+    private static AccessTemplate accessTemplate;
 
 
     private static final Config config = ConfigFactory.load();
@@ -67,23 +67,23 @@ public class NeverminedManagerIT {
 
     private static final String ESCROW_REWARD_CONTRACT;
     static {
-        ESCROW_REWARD_CONTRACT = config.getString("contract.EscrowReward.address");
+        ESCROW_REWARD_CONTRACT = config.getString("contract.EscrowPaymentCondition.address");
     }
 
     private static final String LOCK_REWARD_CONTRACT;
     static {
-        LOCK_REWARD_CONTRACT = config.getString("contract.LockRewardCondition.address");
+        LOCK_REWARD_CONTRACT = config.getString("contract.LockPaymentCondition.address");
     }
 
 
-    private static final String ACCESS_SS_CONDITION_CONTRACT;
+    private static final String ACCESS_CONDITION_CONTRACT;
     static {
-        ACCESS_SS_CONDITION_CONTRACT = config.getString("contract.AccessSecretStoreCondition.address");
+        ACCESS_CONDITION_CONTRACT = config.getString("contract.AccessCondition.address");
     }
 
     private static final String ESCROW_ACCESS_CONTRACT;
     static {
-        ESCROW_ACCESS_CONTRACT = config.getString("contract.EscrowAccessSecretStoreTemplate.address");
+        ESCROW_ACCESS_CONTRACT = config.getString("contract.AccessTemplate.address");
     }
 
 
@@ -104,20 +104,20 @@ public class NeverminedManagerIT {
         providerAddress= config.getString("provider.address");
 
         didRegistry= ManagerHelper.loadDIDRegistryContract(keeperPublisher, DID_REGISTRY_CONTRACT);
-        escrowReward= ManagerHelper.loadEscrowRewardContract(keeperPublisher, ESCROW_REWARD_CONTRACT);
-        accessSecretStoreCondition= ManagerHelper.loadAccessSecretStoreConditionContract(keeperPublisher, ACCESS_SS_CONDITION_CONTRACT);
-        lockRewardCondition= ManagerHelper.loadLockRewardCondition(keeperPublisher, LOCK_REWARD_CONTRACT);
-        escrowAccessSecretStoreTemplate= ManagerHelper.loadEscrowAccessSecretStoreTemplate(keeperPublisher, ESCROW_ACCESS_CONTRACT);
+        escrowPaymentCondition = ManagerHelper.loadEscrowPaymentConditionContract(keeperPublisher, ESCROW_REWARD_CONTRACT);
+        accessCondition = ManagerHelper.loadAccessConditionContract(keeperPublisher, ACCESS_CONDITION_CONTRACT);
+        lockPaymentCondition = ManagerHelper.loadLockPaymentCondition(keeperPublisher, LOCK_REWARD_CONTRACT);
+        accessTemplate = ManagerHelper.loadAccessTemplate(keeperPublisher, ESCROW_ACCESS_CONTRACT);
 
 
-        // Initializing the OceanManager for the Publisher
+        // Initializing the NeverminedManager for the Publisher
         managerPublisher = NeverminedManager.getInstance(keeperPublisher, metadataApiService);
         managerPublisher.setSecretStoreManager(secretStore)
                 .setDidRegistryContract(didRegistry)
-                .setEscrowReward(escrowReward)
-                .setAccessSecretStoreCondition(accessSecretStoreCondition)
-                .setLockRewardCondition(lockRewardCondition)
-                .setEscrowAccessSecretStoreTemplate(escrowAccessSecretStoreTemplate)
+                .setEscrowCondition(escrowPaymentCondition)
+                .setAccessCondition(accessCondition)
+                .setLockCondition(lockPaymentCondition)
+                .setAccessTemplate(accessTemplate)
                 .setMainAccount(publisherAccount)
                 .setEvmDto(evmDto);
 
@@ -125,10 +125,10 @@ public class NeverminedManagerIT {
         managerConsumer = NeverminedManager.getInstance(keeperConsumer, metadataApiService);
         managerConsumer.setSecretStoreManager(secretStore)
                 .setDidRegistryContract(didRegistry)
-                .setEscrowReward(escrowReward)
-                .setAccessSecretStoreCondition(accessSecretStoreCondition)
-                .setLockRewardCondition(lockRewardCondition)
-                .setEscrowAccessSecretStoreTemplate(escrowAccessSecretStoreTemplate)
+                .setEscrowCondition(escrowPaymentCondition)
+                .setAccessCondition(accessCondition)
+                .setLockCondition(lockPaymentCondition)
+                .setAccessTemplate(accessTemplate)
                 .setMainAccount(consumerAccount)
                 .setEvmDto(evmDto);
 
@@ -190,7 +190,7 @@ public class NeverminedManagerIT {
 
         DDO ddo= managerPublisher.registerAccessServiceAsset(metadataBase, providerConfig);
 
-        DID did= ddo.getDid();
+        DID did= ddo.getDID();
         DDO resolvedDDO= managerPublisher.resolveDID(did);
 
         assertEquals(ddo.id, resolvedDDO.id);
@@ -202,7 +202,9 @@ public class NeverminedManagerIT {
     @Test
     public void resolveDID() throws Exception {
 
-        DID did= DID.builder();
+        DID seed= DID.builder();
+        DID did = managerPublisher.hashDID(seed.getHash(), managerPublisher.getMainAccount().getAddress());
+
         String checksum = "0xd190bc85ee50643baffe7afe84ec6a9dd5212b67223523cd8e4d88f9069255fb";
 
         ddoBase.id = did.toString();
@@ -211,7 +213,7 @@ public class NeverminedManagerIT {
         ddoBase.services.get(0).serviceEndpoint = newUrl;
         metadataApiService.createDDO(ddoBase);
 
-        boolean didRegistered= managerPublisher.registerDID(did, newUrl, checksum, Arrays.asList(providerAddress));
+        boolean didRegistered= managerPublisher.registerDID(seed, newUrl, checksum, Arrays.asList(providerAddress));
         assertTrue(didRegistered);
 
         DDO ddo= managerPublisher.resolveDID(did);
@@ -225,7 +227,9 @@ public class NeverminedManagerIT {
 
     @Test(expected = DDOException.class)
     public void resolveDIDException() throws Exception {
-        DID did= DID.builder();
+        DID seed= DID.builder();
+        DID did = managerPublisher.hashDID(seed.getHash(), managerPublisher.getMainAccount().getAddress());
+
         String url= "http://badhostname.inet:5000/api/v1/metadata/assets/ddo/{did}";
         String checksum = "0xd190bc85ee50643baffe7afe84ec6a9dd5212b67223523cd8e4d88f9069255fb";
 
@@ -234,7 +238,7 @@ public class NeverminedManagerIT {
         ddoBase.services.get(0).serviceEndpoint = url;
         metadataApiService.createDDO(ddoBase);
 
-        boolean didRegistered= managerPublisher.registerDID(did, url, checksum, Arrays.asList(providerAddress));
+        boolean didRegistered= managerPublisher.registerDID(seed, url, checksum, Arrays.asList(providerAddress));
         assertTrue(didRegistered);
 
         managerPublisher.resolveDID(did);
@@ -243,7 +247,7 @@ public class NeverminedManagerIT {
 
     @Test
     public void generateDID() throws Exception {
-        DID did= managerPublisher.generateDID(newRegisteredAsset());
+        DID did= managerPublisher.generateDID();
         assertEquals(64, did.getHash().length());
     }
 

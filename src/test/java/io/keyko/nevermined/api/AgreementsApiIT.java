@@ -61,8 +61,8 @@ public class AgreementsApiIT {
     public void create() throws Exception {
         DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
         String agreementId = ServiceAgreementHandler.generateSlaId();
-        assertTrue(neverminedAPI.getAgreementsAPI().create(ddo.getDid(), agreementId, 3, neverminedAPI.getMainAccount().address));
+        assertTrue(neverminedAPI.getAgreementsAPI().create(ddo.getDID(), agreementId, 3, neverminedAPI.getMainAccount().address));
         assertEquals(agreementId.toLowerCase(), neverminedAPI.getAgreementsAPI().status(agreementId).agreementId.toLowerCase());
-        assertFalse(neverminedAPI.getAgreementsAPI().isAccessGranted(agreementId, ddo.getDid(), neverminedAPI.getMainAccount().address));
+        assertFalse(neverminedAPI.getAgreementsAPI().isAccessGranted(agreementId, ddo.getDID(), neverminedAPI.getMainAccount().address));
     }
 }

@@ -5,30 +5,20 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.keyko.common.helpers.EncodingHelper;
-import io.keyko.common.helpers.EthereumHelper;
+import io.keyko.nevermined.exceptions.DDOException;
 import io.keyko.nevermined.exceptions.NeverminedRuntimeException;
-import io.keyko.nevermined.exceptions.ServiceAgreementException;
 import io.keyko.nevermined.models.AbstractModel;
 import io.keyko.nevermined.models.FromJsonToModel;
 import io.keyko.nevermined.models.service.attributes.ServiceAdditionalInformation;
 import io.keyko.nevermined.models.service.attributes.ServiceCuration;
 import io.keyko.nevermined.models.service.attributes.ServiceMain;
-import org.web3j.abi.TypeEncoder;
-import org.web3j.abi.datatypes.Address;
-import org.web3j.abi.datatypes.DynamicArray;
-import org.web3j.abi.datatypes.Type;
-import org.web3j.abi.datatypes.generated.Uint256;
-import org.web3j.crypto.Hash;
-import org.web3j.protocol.Web3j;
-import org.web3j.utils.Numeric;
+import org.web3j.crypto.Keys;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 //@JsonIgnoreProperties(ignoreUnknown = true)
@@ -39,11 +29,11 @@ public class Service extends AbstractModel implements FromJsonToModel {
      * Type of service in the DDO
      */
     public enum ServiceTypes {
-        ACCESS, METADATA, AUTHORIZATION, COMPUTE, PROVENANCE;
+        ACCESS, METADATA, AUTHORIZATION, COMPUTE, PROVENANCE, NFT_ACCESS, NFT_SALES, DID_SALES;
 
         @Override
         public String toString() {
-            return super.toString().toLowerCase();
+            return super.toString().toLowerCase().replace("_", "-");
         }
     }
 
@@ -101,6 +91,10 @@ public class Service extends AbstractModel implements FromJsonToModel {
     @JsonProperty
     public Attributes attributes;
 
+    public ServiceTypes fetchServiceType()   {
+        return ServiceTypes.valueOf(type.toUpperCase().replace("-", "_"));
+    }
+
     @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonPropertyOrder(alphabetic = true)
     public static class Attributes {
@@ -134,9 +128,9 @@ public class Service extends AbstractModel implements FromJsonToModel {
 
         @JsonProperty
         public List<String> fulfillmentOrder = Arrays.asList(
-                "lockReward.fulfill",
-                "accessSecretStore.fulfill",
-                "escrowReward.fulfill");
+                "lockPayment.fulfill",
+                "access.fulfill",
+                "escrowPayment.fulfill");
 
         @JsonProperty
         public ConditionDependency conditionDependency = new ConditionDependency();
@@ -161,12 +155,12 @@ public class Service extends AbstractModel implements FromJsonToModel {
 
         @JsonProperty
         public List<String> escrowReward = Arrays.asList(
-                Condition.ConditionTypes.lockReward.toString(),
-                Condition.ConditionTypes.accessSecretStore.toString());
+                Condition.ConditionTypes.lockPayment.toString(),
+                Condition.ConditionTypes.access.toString());
 
-        public static List<String> defaultComputeEscrowReward() {
+        public static List<String> defaultComputeEscrowPaymentCondition() {
             return Arrays.asList(
-                    Condition.ConditionTypes.lockReward.toString(),
+                    Condition.ConditionTypes.lockPayment.toString(),
                     Condition.ConditionTypes.execCompute.toString());
         }
     }
@@ -184,18 +178,8 @@ public class Service extends AbstractModel implements FromJsonToModel {
         this.attributes.additionalInformation = new ServiceAdditionalInformation();
     }
 
-
     public String getTemplateId()   {
-        try {
-//            return this.attributes.serviceAgreementTemplate.contractName;
-            return this.templateId;
-        } catch (Exception e)   {
-            return "";
-        }
-    }
-
-    public byte[] fetchTemplateIdEncoded() throws UnsupportedEncodingException {
-        return EncodingHelper.hexStringToBytes(getTemplateId());
+        return this.templateId;
     }
 
     public List<BigInteger> retrieveTimeOuts() {
@@ -204,12 +188,6 @@ public class Service extends AbstractModel implements FromJsonToModel {
             timeOutsList.add(BigInteger.valueOf(condition.timeout));
         }
         return timeOutsList;
-    }
-
-    public Integer calculateServiceTimeout() {
-
-        List<BigInteger> timeOutsList = retrieveTimeOuts();
-        return timeOutsList.stream().mapToInt(BigInteger::intValue).max().orElse(0);
     }
 
     public List<BigInteger> retrieveTimeLocks() {
@@ -228,48 +206,54 @@ public class Service extends AbstractModel implements FromJsonToModel {
                 .orElse(null);
     }
 
-    public String fetchConditionValues() throws UnsupportedEncodingException {
+    public List<BigInteger> fetchAmounts() throws DDOException {
+        List<BigInteger> _amounts = new ArrayList<>();
 
-        String data = "";
+        final Condition.ConditionParameter amounts = attributes.serviceAgreementTemplate.conditions.stream()
+                .flatMap(condition -> condition.parameters.stream())
+                .filter(param -> param.name.equals("_amounts"))
+                .findFirst()
+                .orElseThrow(() -> new DDOException("Unable to find the _amounts parameter"));
 
-        for (Condition condition : attributes.serviceAgreementTemplate.conditions) {
-            String token = "";
-
-            for (Condition.ConditionParameter param : condition.parameters) {
-                token = token + EthereumHelper.encodeParameterValue(param.type, param.value);
-            }
-
-            data = data + EthereumHelper.remove0x(Hash.sha3(token));
+        for (Object _someAmount: (ArrayList) amounts.value) {
+            if (_someAmount instanceof Integer || _someAmount instanceof Long)
+                _amounts.add(new BigInteger(String.valueOf(_someAmount)));
+            else if (_someAmount instanceof BigInteger)
+                _amounts.add((BigInteger) _someAmount);
+            else
+                _amounts.add(new BigInteger(_someAmount.toString()));
         }
-
-        return data;
+        return _amounts;
     }
 
-    public String fetchTimeout() throws IOException {
-        String data = "";
-
-        for (Condition condition : attributes.serviceAgreementTemplate.conditions) {
-            data = data + EthereumHelper.remove0x(
-                    EncodingHelper.hexEncodeAbiType("uint256", condition.timeout));
-        }
-
-        return data;
+    public List<String> fetchReceivers() throws DDOException {
+        final Condition.ConditionParameter receivers = attributes.serviceAgreementTemplate.conditions.stream()
+                .flatMap(condition -> condition.parameters.stream())
+                .filter(param -> param.name.equals("_receivers"))
+                .findFirst()
+                .orElseThrow(() -> new DDOException("Unable to find the _receivers parameter"));
+        return ((List<String>) receivers.value).stream().map(a -> Keys.toChecksumAddress(a))
+                .collect(Collectors.toList());
     }
 
-
-    public String fetchTimelock() throws IOException {
-        String data = "";
-
-        for (Condition condition : attributes.serviceAgreementTemplate.conditions) {
-            data = data + EthereumHelper.remove0x(
-                    EncodingHelper.hexEncodeAbiType("uint256", condition.timelock));
-        }
-
-        return data;
+    public BigInteger fetchTotalPrice() throws DDOException {
+        return fetchAmounts().stream().reduce(BigInteger.ZERO, BigInteger::add);
     }
 
+    public BigInteger fetchNumberNFTs() throws DDOException {
+        return new BigInteger(fetchConditionValue("_numberNfts"));
+    }
 
-    private byte[] wrappedEncoder(String s) {
+    public String fetchConditionValue(String paramName) throws DDOException {
+        final Condition.ConditionParameter parameter = attributes.serviceAgreementTemplate.conditions.stream()
+                .flatMap(condition -> condition.parameters.stream())
+                .filter(param -> param.name.equals(paramName))
+                .findFirst()
+                .orElseThrow(() -> new DDOException("Unable to find the " + paramName + " parameter"));
+        return (String) parameter.value;
+    }
+
+    private static byte[] wrappedEncoder(String s) {
         try {
             return EncodingHelper.hexStringToBytes(s);
         }
@@ -278,157 +262,8 @@ public class Service extends AbstractModel implements FromJsonToModel {
         }
     }
 
-    public List<byte[]> generateByteConditionIds(String agreementId, Map<String, String> conditionsAddresses, String publisherAddress, String consumerAddress) throws Exception{
-
-        List<String> conditions = generateConditionIds(agreementId,  conditionsAddresses, publisherAddress,  consumerAddress);
-        return conditions.stream().map(this::wrappedEncoder).collect(Collectors.toList());
-    }
-
-    public List<String> generateConditionIds(String agreementId, Map<String, String> conditionsAddresses, String publisherAddress, String consumerAddress) throws Exception{
-        return null;
-    }
-
-    public String generateLockRewardId(String serviceAgreementId, String escrowRewardAddress, String lockRewardConditionAddress) throws UnsupportedEncodingException {
-
-        Condition lockRewardCondition = this.getConditionbyName(Condition.ConditionTypes.lockReward.toString());
-
-        Condition.ConditionParameter rewardAddress = lockRewardCondition.getParameterByName("_rewardAddress");
-        Condition.ConditionParameter amount = lockRewardCondition.getParameterByName("_amount");
-
-        String params = EthereumHelper.add0x(EthereumHelper.encodeParameterValue(rewardAddress.type, escrowRewardAddress)
-                + EthereumHelper.encodeParameterValue(amount.type, amount.value.toString())
-        );
-
-        String valuesHash = Hash.sha3(params);
-
-        return Hash.sha3(
-                EthereumHelper.add0x(
-                        EthereumHelper.encodeParameterValue("bytes32", serviceAgreementId)
-                                + EthereumHelper.encodeParameterValue("address", lockRewardConditionAddress)
-                                + EthereumHelper.encodeParameterValue("bytes32", valuesHash)
-                )
-        );
-
-    }
-
-    public String generateEscrowRewardConditionId(String serviceAgreementId, String consumerAddress, String publisherAddress, String escrowRewardConditionAddress,
-                                                  String lockConditionId, String releaseConditionId) throws UnsupportedEncodingException {
-
-        Condition escrowRewardCondition = this.getConditionbyName("escrowReward");
-
-        Condition.ConditionParameter amounts = escrowRewardCondition.getParameterByName("_amounts");
-        Condition.ConditionParameter receivers = escrowRewardCondition.getParameterByName("_receivers");
-        Condition.ConditionParameter sender = escrowRewardCondition.getParameterByName("_sender");
-        Condition.ConditionParameter lockCondition = escrowRewardCondition.getParameterByName("_lockCondition");
-        Condition.ConditionParameter releaseCondition = escrowRewardCondition.getParameterByName("_releaseCondition");
-
-        String params = null;
-        if (amounts.value instanceof String)    {
-            params = EthereumHelper.add0x(EthereumHelper.encodeParameterValue("uint256", amounts.value)
-                    + EthereumHelper.encodeParameterValue("address", publisherAddress)
-                    + EthereumHelper.encodeParameterValue("address", publisherAddress)
-                    + EthereumHelper.encodeParameterValue(lockCondition.type, lockConditionId)
-                    + EthereumHelper.encodeParameterValue(releaseCondition.type, releaseConditionId));
-
-        }   else    {
-            StringBuilder encodedReceivers = new StringBuilder();
-            for (String _receiver: (List<String>) receivers.value)  {
-                encodedReceivers.append(TypeEncoder.encode(new Address(_receiver)));
-            }
-
-            StringBuilder encodedAmounts = new StringBuilder();
-//            List<Uint256> uintAmounts = new ArrayList<>();
-            for (Object _someAmount: (List) amounts.value) {
-                final Uint256 uint256 = new Uint256(new BigInteger(String.valueOf(_someAmount)));
-//                uintAmounts.add(uint256);
-                encodedAmounts.append(TypeEncoder.encode(uint256));
-            }
-
-            params = EthereumHelper.add0x(encodedAmounts.toString()
-                    + encodedReceivers.toString()
-                    + EthereumHelper.encodeParameterValue(sender.type, publisherAddress)
-                    + EthereumHelper.encodeParameterValue(lockCondition.type, lockConditionId)
-                    + EthereumHelper.encodeParameterValue(releaseCondition.type, releaseConditionId));
-        }
-
-        String valuesHash = Hash.sha3(params);
-
-        return Hash.sha3(
-                EthereumHelper.add0x(
-                        EthereumHelper.encodeParameterValue("bytes32", serviceAgreementId)
-                                + EthereumHelper.encodeParameterValue("address", escrowRewardConditionAddress)
-                                + EthereumHelper.encodeParameterValue("bytes32", valuesHash)
-                )
-        );
-
-    }
-
-    public String generateReleaseConditionId(String serviceAgreementId, String consumerAddress, String releaseConditionAddress, String conditionName) throws UnsupportedEncodingException {
-
-        Condition accessSecretStoreCondition = this.getConditionbyName(conditionName);
-
-        Condition.ConditionParameter documentId = accessSecretStoreCondition.getParameterByName("_documentId");
-        Condition.ConditionParameter grantee = accessSecretStoreCondition.getParameterByName("_grantee");
-
-        String params = EthereumHelper.add0x(EthereumHelper.encodeParameterValue(documentId.type, documentId.value)
-                + EthereumHelper.encodeParameterValue(grantee.type, consumerAddress));
-
-        String valuesHash = Hash.sha3(params);
-
-        return Hash.sha3(
-                EthereumHelper.add0x(
-                        EthereumHelper.encodeParameterValue("bytes32", serviceAgreementId)
-                                + EthereumHelper.encodeParameterValue("address", releaseConditionAddress)
-                                + EthereumHelper.encodeParameterValue("bytes32", valuesHash)
-                )
-        );
-
-    }
-
-    public String generateServiceAgreementSignatureFromHash(Web3j web3, String consumerAddress, String consumerPassword, String hash) throws IOException {
-        return EthereumHelper.ethSignMessage(web3, hash, consumerAddress, consumerPassword);
-    }
-
-    /**
-     * Generates a Hash representing a Service Agreement
-     * The Hash is having the following parameters:
-     * (templateId, conditionKeys, conditionValues, timeout, serviceAgreementId)
-     *
-     * @param serviceAgreementId                Service Agreement Id
-     * @param consumerAddress                   the address of the consumer of the service
-     * @param publisherAddress                  the address of the publisher of the asset
-     * @param conditionsAddresses               addresses of the conditions
-     * @return Hash
-     * @throws ServiceAgreementException ServiceAgreementException
-     */
-    public String generateServiceAgreementHash(String serviceAgreementId, String consumerAddress, String publisherAddress,
-                                               Map<String, String> conditionsAddresses ) throws ServiceAgreementException {
-
-        String params = "";
-
-        try {
-            List<String> conditions = this.generateConditionIds(serviceAgreementId, conditionsAddresses, publisherAddress, consumerAddress);
-
-            String releaseId = conditions.get(0);
-            String lockRewardId = conditions.get(1);
-            String escrowRewardId = conditions.get(2);
-
-            params =
-                    EthereumHelper.remove0x(
-                            templateId
-                                    + releaseId
-                                    + lockRewardId
-                                    + escrowRewardId
-                                    + fetchTimelock()
-                                    + fetchTimeout()
-                                    + serviceAgreementId
-                    );
-
-        } catch (Exception e) {
-            throw new ServiceAgreementException(serviceAgreementId, "Error generating Service Agreement Hash ", e);
-        }
-
-        return Hash.sha3(EthereumHelper.add0x(params));
+    public static List<byte[]> transformConditionIdsToByte(List<String> conditions) {
+        return conditions.stream().map(Service::wrappedEncoder).collect(Collectors.toList());
     }
 
 }

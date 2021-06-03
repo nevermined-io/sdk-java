@@ -10,6 +10,8 @@ import java.security.NoSuchProviderException;
 
 public abstract class AccountsHelper {
 
+    public static final String ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
     public static String createAccount(String password, String destinationDirectory) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidAlgorithmParameterException, CipherException, IOException {
         return WalletUtils.generateNewWalletFile(password, new File(destinationDirectory));
     }

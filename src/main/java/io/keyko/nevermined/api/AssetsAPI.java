@@ -72,13 +72,27 @@ public interface AssetsAPI {
     DDO create(AssetMetadata metadata, ProviderConfig providerConfig, AssetRewards assetRewards) throws DDOException;
 
     /**
-     * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
+     * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata. This asset will be mintable
      *
      * @param metadata       the metadata of the DDO
      * @param providerConfig the endpoints of the DDO's services
+     * @param assetRewards   the rewards to be distributed
+     * @param cap            max number of NFTs that can be minted
+     * @param royalties      royalties going to the oringinal creator after sales
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
+    DDO createMintableDID(AssetMetadata metadata, ProviderConfig providerConfig, AssetRewards assetRewards, BigInteger cap, BigInteger royalties) throws DDOException;
+
+
+        /**
+         * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
+         *
+         * @param metadata       the metadata of the DDO
+         * @param providerConfig the endpoints of the DDO's services
+         * @return an instance of the DDO created
+         * @throws DDOException DDOException
+         */
     DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException;
 
     /**
@@ -265,7 +279,7 @@ public interface AssetsAPI {
      * @return a Flowable instance over an OrderResult to get the result of the flow in an asynchronous fashion
      * @throws OrderException OrderException
      */
-    Flowable<OrderResult> order(DID did, int serviceIndex) throws OrderException;
+    Flowable<OrderResult> purchaseOrder(DID did, int serviceIndex) throws OrderException;
 
     /**
      * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
@@ -274,35 +288,9 @@ public interface AssetsAPI {
      * @return OrderResult
      * @throws OrderException OrderException
      * @throws ServiceException ServiceException
-     * @throws EscrowRewardException EscrowRewardException
+     * @throws EscrowPaymentException EscrowPaymentException
      */
-    OrderResult orderDirect(DID did) throws OrderException, ServiceException, EscrowRewardException;
-
-
-    /**
-     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
-     *
-     * @param did                 the did of the DDO
-     * @param serviceIndex the service definition id
-     * @return OrderResult
-     * @throws OrderException OrderException
-     * @throws ServiceException ServiceException
-     * @throws EscrowRewardException EscrowRewardException
-     */
-    OrderResult orderDirect(DID did, int serviceIndex) throws OrderException, ServiceException, EscrowRewardException;
-
-
-    /**
-     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
-     *
-     * @param did                 the did of the DDO
-     * @param serviceTypes service type to order
-     * @return OrderResult
-     * @throws OrderException OrderException
-     * @throws ServiceException ServiceException
-     * @throws EscrowRewardException EscrowRewardException
-     */
-    OrderResult orderDirect(DID did, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException;
+    OrderResult order(DID did) throws OrderException, ServiceException, EscrowPaymentException;
 
 
     /**
@@ -310,13 +298,39 @@ public interface AssetsAPI {
      *
      * @param did                 the did of the DDO
      * @param serviceIndex the service definition id
-     * @param serviceTypes service type to order
      * @return OrderResult
      * @throws OrderException OrderException
      * @throws ServiceException ServiceException
-     * @throws EscrowRewardException EscrowRewardException
+     * @throws EscrowPaymentException EscrowPaymentException
      */
-    OrderResult orderDirect(DID did, int serviceIndex, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowRewardException;
+    OrderResult order(DID did, int serviceIndex) throws OrderException, ServiceException, EscrowPaymentException;
+
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did of the DDO
+     * @param serviceTypes service type to purchaseOrder
+     * @return OrderResult
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowPaymentException EscrowPaymentException
+     */
+    OrderResult order(DID did, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowPaymentException;
+
+
+    /**
+     * Purchases an Asset represented by a DID. It implies to initialize a Service Agreement between publisher and consumer
+     *
+     * @param did                 the did of the DDO
+     * @param serviceIndex the service definition id
+     * @param serviceTypes service type to purchaseOrder
+     * @return OrderResult
+     * @throws OrderException OrderException
+     * @throws ServiceException ServiceException
+     * @throws EscrowPaymentException EscrowPaymentException
+     */
+    OrderResult order(DID did, int serviceIndex, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowPaymentException;
 
 
     /**

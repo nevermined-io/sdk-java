@@ -34,7 +34,7 @@ public class OrderExecutor extends BaseOceanExecutor{
     @Override
     public Boolean executeRequest() throws Exception {
 
-        if (ddo == null || ddo.getDid() == null)
+        if (ddo == null || ddo.getDID() == null)
             throw new Exception("DDO is not created");
 
         log.info("Executing Request");
@@ -42,10 +42,10 @@ public class OrderExecutor extends BaseOceanExecutor{
         NeverminedAPI neverminedAPI = getNextNeverminedAPI();
         log.info("Using NeverminedAPI Instance with the main Address: " + neverminedAPI.getMainAccount().address);
 
-        Flowable<OrderResult> result = neverminedAPI.getAssetsAPI().order(ddo.getDid(), 1);
+        Flowable<OrderResult> result = neverminedAPI.getAssetsAPI().purchaseOrder(ddo.getDID(), 1);
         OrderResult orderResult = result.blockingFirst();
 
-        log.info("Result of the order flow. AccessGranted: " + orderResult.isAccessGranted() + ". ServiceAgreementId: " + orderResult.getServiceAgreementId());
+        log.info("Result of the purchaseOrder flow. AccessGranted: " + orderResult.isAccessGranted() + ". ServiceAgreementId: " + orderResult.getServiceAgreementId());
 
         if (orderResult.isAccessGranted() && orderResult.getServiceAgreementId()!= null)
             return true;

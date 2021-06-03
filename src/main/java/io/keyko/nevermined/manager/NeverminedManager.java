@@ -5,15 +5,12 @@ import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.common.helpers.UrlHelper;
 import io.keyko.common.web3.KeeperService;
-import io.keyko.nevermined.core.sla.functions.FulfillEscrowReward;
-import io.keyko.nevermined.core.sla.functions.FulfillLockReward;
-import io.keyko.nevermined.core.sla.handlers.ServiceAccessAgreementHandler;
+import io.keyko.nevermined.api.helper.AccountsHelper;
 import io.keyko.nevermined.core.sla.handlers.ServiceAgreementHandler;
-import io.keyko.nevermined.core.sla.handlers.ServiceComputingAgreementHandler;
 import io.keyko.nevermined.exceptions.*;
 import io.keyko.nevermined.external.GatewayService;
-import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.external.GatewayService.AccessTokenResult;
+import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.models.AssetRewards;
 import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
@@ -35,7 +32,6 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -52,6 +48,8 @@ public class NeverminedManager extends BaseManager {
     private static final Logger log = LogManager.getLogger(NeverminedManager.class);
     private AgreementsManager agreementsManager;
     private TemplatesManager templatesManager;
+    private ConditionsManager conditionsManager;
+    private AccountsManager accountsManager;
     private HashMap<String, String> tokenCache;
 
     protected NeverminedManager(KeeperService keeperService, MetadataApiService metadataApiService) {
@@ -81,14 +79,23 @@ public class NeverminedManager extends BaseManager {
         return this;
     }
 
+    public NeverminedManager setConditionsManager(ConditionsManager conditionsManager) {
+        this.conditionsManager = conditionsManager;
+        return this;
+    }
+
+    public NeverminedManager setAccountsManager(AccountsManager accountsManager) {
+        this.accountsManager = accountsManager;
+        return this;
+    }
+
     /**
-     * Given a DDO, returns a DID created using the ddo
+     * Generates a DID
      *
-     * @param ddo the DDO
      * @return DID
      * @throws DIDFormatException DIDFormatException
      */
-    public DID generateDID(DDO ddo) throws DIDFormatException {
+    public DID generateDID() throws DIDFormatException {
         return DID.builder();
     }
 
@@ -119,13 +126,72 @@ public class NeverminedManager extends BaseManager {
         }
     }
 
+
+    /**
+     * Given a DID and a Metadata API url, register on-chain the DID. It allows to
+     * resolve DDO's using DID's as input
+     *
+     * @param did       the did
+     * @param url       metadata url
+     * @param checksum  calculated hash of the metadata
+     * @param providers list of providers addresses to give access
+     * @return boolean success
+     * @throws DIDRegisterException DIDRegisterException
+     */
+    public boolean registerMintableDID(DID did, String url, String checksum, List<String> providers, BigInteger cap, BigInteger royalties)
+            throws DIDRegisterException {
+        log.debug("Registering Mintable DID " + did.getHash() + " into Registry " + didRegistry.getContractAddress());
+
+        try {
+
+            TransactionReceipt receipt = didRegistry.registerMintableDID(
+                    EncodingHelper.hexStringToBytes(did.getHash()),
+                    EncodingHelper.hexStringToBytes(checksum.replace("0x", "")),
+                    providers,
+                    url,
+                    cap,
+                    royalties,
+                    EncodingHelper.hexStringToBytes(did.getHash()),
+                    ""
+            ).send();
+
+            return receipt.getStatus().equals("0x1");
+
+        } catch (Exception e) {
+            throw new DIDRegisterException("Error registering DID " + did.getHash(), e);
+        }
+    }
+
+    /**
+     * Given a seed and a public address it hash to generate a DID
+     *
+     * @param seed      the DID hash
+     * @param address   the creator address used to calculate the final DID
+     * @return DID the new DID generated
+     * @throws DIDRegisterException DIDRegisterException
+     */
+    public DID hashDID(String seed, String address)
+            throws DIDRegisterException {
+        log.debug("Hashing DID Seed " + seed);
+
+        try {
+            return DID.getFromHash(EncodingHelper.toHexString(
+                    didRegistry.hashDID(EncodingHelper.hexStringToBytes(seed), Keys.toChecksumAddress(address))
+                            .send()
+            ));
+
+        } catch (Exception e) {
+            throw new DIDRegisterException("Error Hashing DID ", e);
+        }
+    }
+
     private Map<String, Object> buildBasicAccessServiceConfiguration(ProviderConfig providerConfig, AssetRewards assetRewards,
                                                                      String creatorAddress) {
 
         Map<String, Object> configuration = new HashMap<>();
         configuration.put("providerConfig", providerConfig);
-        configuration.put("accessServiceTemplateId", escrowAccessSecretStoreTemplate.getContractAddress());
-        configuration.put("accessSecretStoreConditionAddress", accessSecretStoreCondition.getContractAddress());
+        configuration.put("accessServiceTemplateId", accessTemplate.getContractAddress());
+        configuration.put("accessConditionAddress", accessCondition.getContractAddress());
         configuration.put("price", assetRewards.totalPrice);
         configuration.put("rewards", assetRewards.rewards);
         configuration.put("creator", creatorAddress);
@@ -206,6 +272,23 @@ public class NeverminedManager extends BaseManager {
      */
     public DDO registerAccessServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig, AuthConfig authConfig, AssetRewards assetRewards)
             throws DDOException {
+        return registerAccessServiceAsset(metadata, providerConfig, authConfig, assetRewards, BigInteger.valueOf(-1), BigInteger.ZERO);
+    }
+
+    /**
+     * Creates a new DDO with an AccessService
+     *
+     * @param metadata       the metadata
+     * @param providerConfig the service Endpoints
+     * @param authConfig     auth configuration
+     * @param assetRewards   asset rewards distribution
+     * @param cap            max number of NFTs that can be minted
+     * @param royalties      royalties going to the oringinal creator after sales
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
+    public DDO registerAccessServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig, AuthConfig authConfig, AssetRewards assetRewards, BigInteger cap, BigInteger royalties)
+            throws DDOException {
 
         try {
             Map<String, Object> configuration = buildBasicAccessServiceConfiguration(providerConfig,
@@ -213,12 +296,11 @@ public class NeverminedManager extends BaseManager {
             Service accessService = ServiceBuilder.getServiceBuilder(Service.ServiceTypes.ACCESS, assetRewards)
                     .buildService(configuration);
 
-            return registerAsset(metadata, providerConfig, accessService, authConfig, assetRewards);
+            return registerAsset(metadata, providerConfig, accessService, authConfig, assetRewards, cap, royalties);
 
         } catch (ServiceException e) {
             throw new DDOException("Error registering Asset.", e);
         }
-
     }
 
     /**
@@ -265,6 +347,27 @@ public class NeverminedManager extends BaseManager {
      */
     private DDO registerAsset(AssetMetadata metadata, ProviderConfig providerConfig, Service service,
                               AuthConfig authConfig, AssetRewards assetRewards) throws DDOException {
+        return registerAsset(metadata, providerConfig, service, authConfig, assetRewards, BigInteger.valueOf(-1), BigInteger.ZERO);
+    }
+
+
+    /**
+     * Creates a new DDO, registering it on-chain through DidRegistry contract and
+     * off-chain in Metadata Api
+     *
+     * @param metadata       the metadata
+     * @param providerConfig the service Endpoints
+     * @param service        the service
+     * @param authConfig     auth configuration
+     * @param assetRewards   asset rewards distribution
+     * @param cap            max number of NFTs that can be minted
+     * @param royalties      royalties going to the oringinal creator after sales
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
+    private DDO registerAsset(AssetMetadata metadata, ProviderConfig providerConfig, Service service,
+                              AuthConfig authConfig, AssetRewards assetRewards,
+                              BigInteger cap, BigInteger royalties) throws DDOException {
 
         try {
 
@@ -327,15 +430,22 @@ public class NeverminedManager extends BaseManager {
 
             // Substitution of the did token in the url. The ddo will be registered using
             // the complete metadata url
-            metadataEndpoint = UrlHelper.parseDDOUrl(metadataEndpoint, ddo.getDid().toString());
+            metadataEndpoint = UrlHelper.parseDDOUrl(metadataEndpoint, ddo.getDID().toString());
 
             // Registering DID
-            registerDID(ddo.getDid(), metadataEndpoint, ddo.getDid().getHash(), providerConfig.getProviderAddresses());
+            boolean success;
+            if (cap.compareTo(BigInteger.ZERO) >= 0) {
+                success = registerMintableDID(ddo.fetchDIDSeed(), metadataEndpoint, ddo.getDID().getHash(), providerConfig.getProviderAddresses(), cap, royalties);
+            }   else {
+                success = registerDID(ddo.fetchDIDSeed(), metadataEndpoint, ddo.getDID().getHash(), providerConfig.getProviderAddresses());
+            }
 
+            if (!success)
+                throw new DIDRegisterException("Error registering DID on-chain");
             // Storing DDO
             return getMetadataApiService().createDDO(ddo);
 
-        } catch (DDOException | DIDRegisterException | IOException | CipherException | ServiceException e) {
+        } catch (DDOException | DIDRegisterException | IOException | CipherException | ServiceException | DIDFormatException e) {
             throw new DDOException("Error registering Asset.", e);
         }
 
@@ -344,13 +454,13 @@ public class NeverminedManager extends BaseManager {
     public boolean isConditionFulfilled(String serviceAgreementId, Condition.ConditionTypes conditionType)
             throws Exception {
         final int maxRetries = 5;
-        final long sleepTime = 500l;
+        final long sleepTime = 500L;
         int iteration = 0;
 
         while (iteration < maxRetries) {
             AgreementStatus status = agreementsManager.getStatus(serviceAgreementId);
             BigInteger conditionStatus = status.conditions.get(0).conditions.get(conditionType.toString());
-            log.debug("Condition check[" + conditionType.toString() + "] :" + conditionStatus);
+            log.debug("Condition check[" + conditionType + "] :" + conditionStatus);
             if (conditionStatus.equals(Condition.ConditionStatus.Fulfilled.getStatus())) // Condition is fullfilled
                 return true;
             iteration++;
@@ -367,9 +477,8 @@ public class NeverminedManager extends BaseManager {
      * @return true if the asset was purchased successfully, if not false
      * @throws OrderException        OrderException
      * @throws ServiceException      ServiceException
-     * @throws EscrowRewardException EscrowRewardException
      */
-    public OrderResult purchaseAssetDirect(DID did) throws OrderException, ServiceException, EscrowRewardException {
+    public OrderResult purchaseAssetDirect(DID did) throws OrderException, ServiceException {
         return purchaseAssetDirect(did, -1, Service.ServiceTypes.ACCESS);
     }
 
@@ -382,10 +491,9 @@ public class NeverminedManager extends BaseManager {
      * @return true if the asset was purchased successfully, if not false
      * @throws OrderException        OrderException
      * @throws ServiceException      ServiceException
-     * @throws EscrowRewardException EscrowRewardException
      */
     public OrderResult purchaseAssetDirect(DID did, int serviceIndex)
-            throws OrderException, ServiceException, EscrowRewardException {
+            throws OrderException, ServiceException {
         return purchaseAssetDirect(did, serviceIndex, null);
     }
 
@@ -398,10 +506,9 @@ public class NeverminedManager extends BaseManager {
      * @return true if the asset was purchased successfully, if not false
      * @throws OrderException        OrderException
      * @throws ServiceException      ServiceException
-     * @throws EscrowRewardException EscrowRewardException
      */
     public OrderResult purchaseAssetDirect(DID did, Service.ServiceTypes serviceType)
-            throws OrderException, ServiceException, EscrowRewardException {
+            throws OrderException, ServiceException {
         return purchaseAssetDirect(did, -1, serviceType);
     }
 
@@ -415,10 +522,9 @@ public class NeverminedManager extends BaseManager {
      * @return true if the asset was purchased successfully, if not false
      * @throws OrderException        OrderException
      * @throws ServiceException      ServiceException
-     * @throws EscrowRewardException EscrowRewardException
      */
     public OrderResult purchaseAssetDirect(DID did, int serviceIndex, Service.ServiceTypes serviceType)
-            throws OrderException, ServiceException, EscrowRewardException {
+            throws OrderException, ServiceException {
 
         String serviceAgreementId = ServiceAgreementHandler.generateSlaId();
         OrderResult orderResult;
@@ -459,17 +565,25 @@ public class NeverminedManager extends BaseManager {
 
         try {
             log.debug("Service Agreement " + serviceAgreementId + " initialized successfully");
-            String price = service.attributes.main.price;
-            tokenApprove(this.tokenContract, lockRewardCondition.getContractAddress(), price);
-            BigInteger balance = this.tokenContract.balanceOf(getMainAccount().address).send();
-            if (balance.compareTo(new BigInteger(price)) < 0) {
-                log.warn("Consumer account does not have sufficient token balance to fulfill the "
-                        + "LockRewardCondition. Do `requestTokens` using the `dispenser` contract then try this again.");
-                log.warn("token balance is: " + balance + " price is: " + price);
-                throw new LockRewardFulfillException(
-                        "LockRewardCondition.fulfill will fail due to insufficient token balance in the consumer account.");
+            final BigInteger totalPrice = service.fetchTotalPrice();
+            final String tokenAddress = conditionsManager.getTokenAddress(
+                    service.fetchConditionValue("_tokenAddress"));
+            BigInteger balance;
+            if (!tokenAddress.equals(AccountsHelper.ZERO_ADDRESS))  {
+                balance = tokenContract.balanceOf(getMainAccount().address).send();
+                tokenApprove(tokenContract, lockCondition.getContractAddress(), totalPrice.toString());
+            }   else    {
+                balance = accountsManager.getEthAccountBalance(getMainAccount().address);
             }
-        } catch (TokenApproveException | LockRewardFulfillException e) {
+
+            if (balance.compareTo(totalPrice) < 0) {
+                log.warn("Consumer account does not have sufficient token balance to fulfill the "
+                        + "LockPaymentCondition. Do `requestTokens` using the `dispenser` contract then try this again.");
+                log.warn("token balance is: " + balance + " price is: " + totalPrice);
+                throw new LockPaymentFulfillException(
+                        "LockPaymentCondition.fulfill will fail due to insufficient token balance in the consumer account.");
+            }
+        } catch (TokenApproveException | LockPaymentFulfillException e) {
             String msg = "Error approving token";
             log.error(msg + ": " + e.getMessage());
             throw new OrderException(msg, e);
@@ -480,16 +594,16 @@ public class NeverminedManager extends BaseManager {
         }
 
         try {
-            // Step 2. We fulfull the Lock Reward (we make the payment)
-            this.fulfillLockReward(ddo, serviceIndex, eventServiceAgreementId);
-            final boolean isFulfilled = isConditionFulfilled(serviceAgreementId, Condition.ConditionTypes.lockReward);
+            // Step 2. We fulfill the Lock Payment (we make the payment)
+            this.fulfillLockPaymentCondition(eventServiceAgreementId, serviceIndex);
+            final boolean isFulfilled = isConditionFulfilled(serviceAgreementId, Condition.ConditionTypes.lockPayment);
             orderResult = new OrderResult(serviceAgreementId, isFulfilled, false, serviceIndex);
 
-        } catch (LockRewardFulfillException e) {
-            this.fulfillEscrowReward(ddo, serviceIndex, serviceAgreementId);
+        } catch (LockPaymentFulfillException e) {
+            this.fulfillEscrowPaymentCondition(serviceAgreementId, serviceIndex);
             return new OrderResult(serviceAgreementId, false, true);
         } catch (Exception e) {
-            this.fulfillEscrowReward(ddo, serviceIndex, serviceAgreementId);
+            this.fulfillEscrowPaymentCondition(serviceAgreementId, serviceIndex);
             return new OrderResult(serviceAgreementId, false, true);
         }
         return orderResult;
@@ -531,21 +645,21 @@ public class NeverminedManager extends BaseManager {
                         else {
                             log.debug("Received AgreementCreated Event with Id: " + eventServiceAgreementId);
                             String price = ddo.getMetadataService().attributes.main.price;
-                            tokenApprove(this.tokenContract, lockRewardCondition.getContractAddress(), price);
+                            tokenApprove(this.tokenContract, lockCondition.getContractAddress(), price);
                             BigInteger balance = this.tokenContract.balanceOf(getMainAccount().address).send();
                             if (balance.compareTo(new BigInteger(price)) < 0) {
                                 log.warn("Consumer account does not have sufficient token balance to fulfill the "
-                                        + "LockRewardCondition. Do `requestTokens` using the `dispenser` contract then try this again.");
+                                        + "LockPaymentCondition. Do `requestTokens` using the `dispenser` contract then try this again.");
                                 log.info("token balance is: " + balance + " price is: " + price);
                                 throw new Exception(
-                                        "LockRewardCondition.fulfill will fail due to insufficient token balance in the consumer account.");
+                                        "LockPaymentCondition.fulfill will fail due to insufficient token balance in the consumer account.");
                             }
-                            this.fulfillLockReward(ddo, serviceIndex, eventServiceAgreementId);
-                            Flowable<String> conditionFulilledEvent = null;
+                            this.fulfillLockPaymentCondition(eventServiceAgreementId, serviceIndex);
+                            Flowable<String> conditionFulilledEvent;
 
                             if (service.type.equals(Service.ServiceTypes.ACCESS.toString()))
                                 conditionFulilledEvent = ServiceAgreementHandler
-                                        .listenForFulfilledEvent(accessSecretStoreCondition, serviceAgreementId);
+                                        .listenForFulfilledEvent(accessCondition, serviceAgreementId);
                             else if (service.type.equals(Service.ServiceTypes.COMPUTE.toString()))
                                 conditionFulilledEvent = ServiceAgreementHandler
                                         .listenForFulfilledEvent(computeExecutionCondition, serviceAgreementId);
@@ -560,8 +674,8 @@ public class NeverminedManager extends BaseManager {
 
                         if (throwable instanceof TimeoutException) {
                             // If we get a timeout listening for a Condition Fulfilled Event,
-                            // we must perform a refund executing escrowReward.fulfill
-                            this.fulfillEscrowReward(ddo, serviceIndex, serviceAgreementId);
+                            // we must perform a refund executing escrowPayment.fulfill
+                            this.fulfillEscrowPaymentCondition(serviceAgreementId, serviceIndex);
                             return new OrderResult(serviceAgreementId, false, true);
                         }
 
@@ -659,30 +773,39 @@ public class NeverminedManager extends BaseManager {
 
         Service service = ddo.getService(serviceIndex);
 
-        Map<String, String> conditionsAddresses = new HashMap<>();
-        conditionsAddresses.put("escrowRewardAddress", escrowReward.getContractAddress());
-        conditionsAddresses.put("lockRewardConditionAddress", lockRewardCondition.getContractAddress());
-
-        if (service.type.equals(Service.ServiceTypes.ACCESS.toString())) {
-            conditionsAddresses.put("accessSecretStoreConditionAddress",
-                    accessSecretStoreCondition.getContractAddress());
-            service = (AccessService) service;
-        } else if (service.type.equals(Service.ServiceTypes.COMPUTE.toString())) {
-            conditionsAddresses.put("computeExecutionConditionAddress", computeExecutionCondition.getContractAddress());
-            service = (ComputingService) service;
-        } else
-            throw new ServiceAgreementException(serviceAgreementId, "Service type not supported");
-
-        List<byte[]> conditionsId;
-
-        try {
-            conditionsId = service.generateByteConditionIds(serviceAgreementId, conditionsAddresses, ddo.proof.creator,
-                    Keys.toChecksumAddress(consumerAddress));
-        } catch (Exception e) {
-            throw new ServiceAgreementException(serviceAgreementId, "Exception generating conditions id", e);
-        }
-
-        return conditionsId;
+        final List<String> conditionIds = conditionsManager.generateAgreementConditionIds(
+                service.fetchServiceType(),
+                serviceAgreementId,
+                Keys.toChecksumAddress(consumerAddress),
+                ddo,
+                serviceIndex);
+        return Service.transformConditionIdsToByte(conditionIds);
+//
+//        Map<String, String> conditionsAddresses = new HashMap<>();
+//        conditionsAddresses.put("escrowPaymentAddress", escrowCondition.getContractAddress());
+//        conditionsAddresses.put("lockPaymentConditionAddress", lockCondition.getContractAddress());
+//
+//        if (service.type.equals(Service.ServiceTypes.ACCESS.toString())) {
+//            conditionsAddresses.put("accessConditionAddress",
+//                    accessCondition.getContractAddress());
+//            service = (AccessService) service;
+//        } else if (service.type.equals(Service.ServiceTypes.COMPUTE.toString())) {
+//            conditionsAddresses.put("computeExecutionConditionAddress", computeExecutionCondition.getContractAddress());
+//            service = (ComputingService) service;
+//        } else
+//            throw new ServiceAgreementException(serviceAgreementId, "Service type not supported");
+//
+//        List<byte[]> conditionsId;
+//
+//        try {
+//
+//            conditionsId = service.generateByteConditionIds(serviceAgreementId, conditionsAddresses, ddo.proof.creator,
+//                    Keys.toChecksumAddress(consumerAddress));
+//        } catch (Exception e) {
+//            throw new ServiceAgreementException(serviceAgreementId, "Exception generating conditions id", e);
+//        }
+//
+//        return conditionsId;
 
     }
 
@@ -715,11 +838,11 @@ public class NeverminedManager extends BaseManager {
             throw new ServiceAgreementException(serviceAgreementId,
                     "The template " + service.templateId + " is not approved");
 
-        Boolean result = false;
+        Boolean result;
 
         try {
             List<byte[]> conditionsId = generateServiceConditionsId(serviceAgreementId,
-                    Keys.toChecksumAddress(getMainAccount().getAddress()), ddo, serviceIndex);
+                    getMainAccount().getAddress(), ddo, serviceIndex);
 
             if (service.type.equals(Service.ServiceTypes.ACCESS.toString()))
                 result = this.agreementsManager.createAccessAgreement(serviceAgreementId, ddo, conditionsId,
@@ -788,7 +911,7 @@ public class NeverminedManager extends BaseManager {
         Flowable<String> executeAgreementFlowable = null;
 
         if (service.type.equals(Service.ServiceTypes.ACCESS.toString()))
-            executeAgreementFlowable = ServiceAgreementHandler.listenExecuteAgreement(escrowAccessSecretStoreTemplate,
+            executeAgreementFlowable = ServiceAgreementHandler.listenExecuteAgreement(accessTemplate,
                     serviceAgreementId);
         else if (service.type.equals(Service.ServiceTypes.COMPUTE.toString()))
             executeAgreementFlowable = ServiceAgreementHandler.listenExecuteAgreement(escrowComputeExecutionTemplate,
@@ -826,73 +949,44 @@ public class NeverminedManager extends BaseManager {
     }
 
     /**
-     * Executes the fulfill of the LockRewardCondition
+     * Executes the fulfill of the LockPaymentCondition
      *
-     * @param ddo                the ddo
-     * @param serviceIndex       the index of the service
      * @param serviceAgreementId service agreement id
-     * @return a flag that indicates if the function was executed correctly
+     * @param serviceIndex       the index of the service
+     * @return indicates if the function was executed correctly
      * @throws ServiceException           ServiceException
-     * @throws LockRewardFulfillException LockRewardFulfillException
+     * @throws LockPaymentFulfillException LockPaymentFulfillException
      */
-    private boolean fulfillLockReward(DDO ddo, int serviceIndex, String serviceAgreementId)
-            throws ServiceException, LockRewardFulfillException {
+    private boolean fulfillLockPaymentCondition(String serviceAgreementId, int serviceIndex)
+            throws ServiceException, LockPaymentFulfillException {
 
-        Service service = ddo.getService(serviceIndex);
-        String price = service.attributes.main.price;
-
-        return FulfillLockReward.executeFulfill(lockRewardCondition, serviceAgreementId,
-                this.escrowReward.getContractAddress(), price);
+        try {
+            return conditionsManager.lockPayment(serviceAgreementId, serviceIndex);
+        } catch (Exception e) {
+            log.error("Unable to fulfill LockPayment: " + e.getMessage());
+            return false;
+        }
     }
 
     /**
-     * Executes the fulfill of the EscrowReward
+     * Executes the fulfill of the EscrowPaymentCondition
      *
-     * @param ddo                the ddo
-     * @param serviceIndex       the index of the service
      * @param serviceAgreementId service agreement id
+     * @param serviceIndex       the index of the service
      * @return a flag that indicates if the function was executed correctly
      * @throws ServiceException      ServiceException
-     * @throws EscrowRewardException EscrowRewardException
      */
-    private boolean fulfillEscrowReward(DDO ddo, int serviceIndex, String serviceAgreementId)
-            throws ServiceException, EscrowRewardException {
+    private boolean fulfillEscrowPaymentCondition(String serviceAgreementId, int serviceIndex)
+            throws ServiceException {
 
-        Service service = ddo.getService(serviceIndex);
-        String totalPrice = service.attributes.main.price;
-        final Condition escrowRewardCondition = service.getConditionbyName(Condition.ConditionTypes.escrowReward.name());
-        final Condition.ConditionParameter amountsParameter = escrowRewardCondition.getParameterByName("_amounts");
-        final Condition.ConditionParameter receiversParameter = escrowRewardCondition.getParameterByName("_receivers");
-        String lockRewardConditionId = "";
-        String releaseConditionId = "";
-
+        final ConditionsManager conditionsManager = ConditionsManager.getInstance(getKeeperService(), getMetadataApiService());
         try {
-
-            lockRewardConditionId = service.generateLockRewardId(serviceAgreementId, escrowReward.getContractAddress(),
-                    lockRewardCondition.getContractAddress());
-            String conditionAddress;
-            String conditionName;
-
-            if (service.type.equals(Service.ServiceTypes.ACCESS.toString())) {
-                conditionAddress = accessSecretStoreCondition.getContractAddress();
-                conditionName = "accessSecretStore";
-            } else if (service.type.equals(Service.ServiceTypes.COMPUTE.toString())) {
-                conditionAddress = computeExecutionCondition.getContractAddress();
-                conditionName = "computeExecution";
-            } else
-                throw new ServiceException("Service type not supported");
-
-            releaseConditionId = service.generateReleaseConditionId(serviceAgreementId, getMainAccount().getAddress(),
-                    conditionAddress, conditionName);
-
-        } catch (UnsupportedEncodingException e) {
-            throw new EscrowRewardException("Error generating the condition Ids ", e);
+            conditionsManager.releaseReward(serviceAgreementId, serviceIndex);
+        } catch (Exception e) {
+            log.error("Unable to fulfill LockPayment: " + e.getMessage());
+            return false;
         }
-
-        return FulfillEscrowReward.executeFulfill(escrowReward, serviceAgreementId,
-                this.lockRewardCondition.getContractAddress(), (List<BigInteger>) amountsParameter.value,
-                (List<String>) receiversParameter.value,
-                lockRewardConditionId, releaseConditionId);
+        return true;
     }
 
     /**

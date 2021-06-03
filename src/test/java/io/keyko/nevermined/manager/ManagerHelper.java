@@ -1,13 +1,13 @@
 package io.keyko.nevermined.manager;
 
 import io.keyko.nevermined.api.NeverminedAPI;
+import io.keyko.nevermined.core.conditions.LockPaymentConditionPayable;
 import io.keyko.nevermined.exceptions.InitializationException;
 import io.keyko.nevermined.exceptions.InvalidConfiguration;
 import io.keyko.secretstore.core.EvmDto;
 import io.keyko.secretstore.core.SecretStoreDto;
 import com.typesafe.config.Config;
 import io.keyko.common.web3.KeeperService;
-import io.keyko.common.web3.    PersonalTransactionManager;
 import io.keyko.nevermined.api.config.NeverminedConfig;
 import io.keyko.nevermined.contracts.*;
 import io.keyko.nevermined.external.MetadataApiService;
@@ -90,12 +90,12 @@ public abstract class ManagerHelper {
         properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
         properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
         properties.put(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
-        properties.put(NeverminedConfig.LOCKREWARD_CONDITIONS_ADDRESS, config.getString("contract.LockRewardCondition.address"));
-        properties.put(NeverminedConfig.ESCROWREWARD_CONDITIONS_ADDRESS, config.getString("contract.EscrowReward.address"));
-        properties.put(NeverminedConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
-        properties.put(NeverminedConfig.ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.AccessSecretStoreCondition.address"));
+        properties.put(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.LockPaymentCondition.address"));
+        properties.put(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.EscrowPaymentCondition.address"));
+        properties.put(NeverminedConfig.ACCESS_TEMPLATE_ADDRESS, config.getString("contract.AccessTemplate.address"));
+        properties.put(NeverminedConfig.ACCESS_CONDITION_ADDRESS, config.getString("contract.AccessCondition.address"));
         properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
-        properties.put(NeverminedConfig.TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
+        properties.put(NeverminedConfig.NEVERMINED_TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
         properties.put(NeverminedConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
         properties.put(NeverminedConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.ComputeExecutionCondition.address"));
         properties.put(NeverminedConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.EscrowComputeExecutionTemplate.address"));
@@ -200,11 +200,11 @@ public abstract class ManagerHelper {
         properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
         properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
         properties.put(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
-        properties.put(NeverminedConfig.LOCKREWARD_CONDITIONS_ADDRESS, config.getString("contract.LockRewardCondition.address"));
-        properties.put(NeverminedConfig.ESCROWREWARD_CONDITIONS_ADDRESS, config.getString("contract.EscrowReward.address"));
-        properties.put(NeverminedConfig.ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.AccessSecretStoreCondition.address"));
+        properties.put(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.LockPaymentCondition.address"));
+        properties.put(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.EscrowPaymentCondition.address"));
+        properties.put(NeverminedConfig.ACCESS_CONDITION_ADDRESS, config.getString("contract.AccessCondition.address"));
         properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
-        properties.put(NeverminedConfig.TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
+        properties.put(NeverminedConfig.NEVERMINED_TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
         properties.put(NeverminedConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
         properties.put(NeverminedConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
         properties.put(NeverminedConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.ComputeExecutionCondition.address"));
@@ -242,16 +242,16 @@ public abstract class ManagerHelper {
     }
 
 
-    public static EscrowAccessSecretStoreTemplate loadEscrowAccessSecretStoreTemplate(KeeperService keeper, String address) throws Exception, IOException, CipherException {
-        return EscrowAccessSecretStoreTemplate.load(
+    public static AccessTemplate loadAccessTemplate(KeeperService keeper, String address) throws Exception, IOException, CipherException {
+        return AccessTemplate.load(
                 address,
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider());
     }
 
-    public static EscrowReward loadEscrowRewardContract(KeeperService keeper, String address) {
-        return EscrowReward.load(
+    public static EscrowPaymentCondition loadEscrowPaymentConditionContract(KeeperService keeper, String address) {
+        return EscrowPaymentCondition.load(
                 address,
                 keeper.getWeb3(),
                 keeper.getTxManager(),
@@ -259,16 +259,16 @@ public abstract class ManagerHelper {
         );
     }
 
-    public static LockRewardCondition loadLockRewardCondition(KeeperService keeper, String address) {
-        return LockRewardCondition.load(address,
+    public static LockPaymentConditionPayable loadLockPaymentCondition(KeeperService keeper, String address) {
+        return LockPaymentConditionPayable.load(address,
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
         );
     }
 
-    public static AccessSecretStoreCondition loadAccessSecretStoreConditionContract(KeeperService keeper, String address) {
-        return AccessSecretStoreCondition.load(address,
+    public static AccessCondition loadAccessConditionContract(KeeperService keeper, String address) {
+        return AccessCondition.load(address,
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
@@ -310,9 +310,9 @@ public abstract class ManagerHelper {
                 .send();
     }
 
-    public static EscrowAccessSecretStoreTemplate deployEscrowAccessSecretStoreTemplate(KeeperService keeper) throws Exception {
-        log.debug("Deploying EscrowAccessSecretStoreTemplate with address: " + keeper.getCredentials().getAddress());
-        return EscrowAccessSecretStoreTemplate.deploy(
+    public static AccessTemplate deployAccessTemplate(KeeperService keeper) throws Exception {
+        log.debug("Deploying AccessTemplate with address: " + keeper.getCredentials().getAddress());
+        return AccessTemplate.deploy(
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider())

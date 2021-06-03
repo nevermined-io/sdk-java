@@ -5,6 +5,7 @@ import io.keyko.nevermined.manager.ConditionsManager;
 import io.keyko.nevermined.models.DID;
 
 import java.math.BigInteger;
+import java.util.List;
 
 public class ConditionsImpl implements ConditionsAPI {
 
@@ -21,8 +22,8 @@ public class ConditionsImpl implements ConditionsAPI {
     }
 
     @Override
-    public boolean lockReward(String agreementId, BigInteger amount) throws Exception {
-        return conditionsManager.lockReward(agreementId, amount);
+    public boolean lockPayment(String agreementId) throws Exception {
+        return conditionsManager.lockPayment(agreementId);
     }
 
     @Override

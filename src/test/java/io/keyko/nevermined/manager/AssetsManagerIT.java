@@ -19,7 +19,9 @@ import org.junit.Test;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -74,7 +76,8 @@ public class AssetsManagerIT {
         String myAddress = keeper.getAddress();
         String someoneAddress = "0x00a329c0648769A73afAc7F9381E08FB43dBEA72";
 
-        DID did= DID.builder();
+        DID seed= DID.builder();
+        DID did = neverminedManager.hashDID(seed.getHash(), neverminedManager.getMainAccount().getAddress());
         String checksum = "0xd190bc85ee50643baffe7afe84ec6a9dd5212b67223523cd8e4d88f9069255fb";
 
         DDO ddoBase = DDO.fromJSON(new TypeReference<DDO>() {}, DDO_JSON_CONTENT);
@@ -84,13 +87,14 @@ public class AssetsManagerIT {
         ddoBase.services.get(0).serviceEndpoint = newUrl;
         metadataApiService.createDDO(ddoBase);
 
-        boolean didRegistered= neverminedManager.registerDID(did, newUrl, checksum, Arrays.asList());
+        boolean didRegistered= neverminedManager.registerMintableDID(
+                seed, newUrl, checksum, Arrays.asList(), BigInteger.valueOf(100), BigInteger.ZERO);
         assertTrue(didRegistered);
 
-        assertEquals(BigInteger.ONE, manager.balance(myAddress, did));
+        assertEquals(BigInteger.ZERO, manager.balance(myAddress, did));
         assertTrue(manager.mint(did, BigInteger.TEN));
-        assertEquals(BigInteger.valueOf(11), manager.balance(myAddress, did));
-        assertTrue(manager.burn(did, BigInteger.TWO));
+        assertEquals(BigInteger.TEN, manager.balance(myAddress, did));
+        assertTrue(manager.burn(did, BigInteger.ONE));
         assertEquals(BigInteger.valueOf(9), manager.balance(myAddress, did));
         assertTrue(manager.transfer(did, someoneAddress, BigInteger.ONE));
         assertEquals(BigInteger.valueOf(8), manager.balance(myAddress, did));

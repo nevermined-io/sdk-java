@@ -3,6 +3,7 @@ package io.keyko.nevermined.api.helper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.config.NeverminedConfig;
 import io.keyko.nevermined.contracts.*;
+import io.keyko.nevermined.core.conditions.LockPaymentConditionPayable;
 import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.manager.*;
 import io.keyko.secretstore.core.EvmDto;
@@ -181,10 +182,25 @@ public class InitializationHelper {
         return NeverminedToken.load(
                 neverminedConfig.getTokenAddress(),
                 keeper.getWeb3(),
-//                keeper.getCredentials(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider());
     }
+
+    /**
+     * Loads the ERC20Upgradeable contract given a token address
+     *
+     * @param keeper the keeper Service
+     * @return an instance of ERC20Upgradeable contract
+     */
+    public static ERC20Upgradeable loadERC20Contract(KeeperService keeper, String tokenAddress) {
+
+        return ERC20Upgradeable.load(
+                tokenAddress,
+                keeper.getWeb3(),
+                keeper.getTxManager(),
+                keeper.getContractGasProvider());
+    }
+
 
     /**
      * Loads the TemplateStoreManager contract from Keeper
@@ -234,27 +250,27 @@ public class InitializationHelper {
     }
 
     /**
-     * Loads the EscrowAccessSecretStoreTemplate contract from Keeper
+     * Loads the AccessTemplate contract from Keeper
      *
      * @param keeper the keeper Service
-     * @return an instance of EscrowAccessSecretStoreTemplate contract deployed in keeper
+     * @return an instance of AccessTemplate contract deployed in keeper
      */
-    public EscrowAccessSecretStoreTemplate loadEscrowAccessSecretStoreTemplate(KeeperService keeper) {
-        return EscrowAccessSecretStoreTemplate.load(
-                neverminedConfig.getEscrowAccessSecretStoreTemplateAddress(),
+    public AccessTemplate loadAccessTemplate(KeeperService keeper) {
+        return AccessTemplate.load(
+                neverminedConfig.getAccessTemplateAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider());
     }
 
     /**
-     * Loads the LockRewardCondition contract from Keeper
+     * Loads the LockPaymentCondition contract from Keeper
      *
      * @param keeper the keeper Service
-     * @return an instance of LockRewardCondition contract deployed in keeper
+     * @return an instance of LockPaymentCondition contract deployed in keeper
      */
-    public LockRewardCondition loadLockRewardCondition(KeeperService keeper) {
-        return LockRewardCondition.load(
+    public LockPaymentConditionPayable loadLockPaymentCondition(KeeperService keeper) {
+        return LockPaymentConditionPayable.load(
                 neverminedConfig.getLockrewardConditionsAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
@@ -263,14 +279,14 @@ public class InitializationHelper {
     }
 
     /**
-     * Loads the EscrowReward contract from Keeper
+     * Loads the EscrowPaymentCondition contract from Keeper
      *
      * @param keeper the keeper Service
-     * @return an instance of EscrowReward contract deployed in keeper
+     * @return an instance of EscrowPaymentCondition contract deployed in keeper
      */
-    public EscrowReward loadEscrowReward(KeeperService keeper) {
-        return EscrowReward.load(
-                neverminedConfig.getEscrowRewardConditionsAddress(),
+    public EscrowPaymentCondition loadEscrowPaymentCondition(KeeperService keeper) {
+        return EscrowPaymentCondition.load(
+                neverminedConfig.getEscrowPaymentConditionConditionsAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
@@ -309,13 +325,13 @@ public class InitializationHelper {
     }
 
     /**
-     * Loads the AccessSecretStoreCondition contract from Keeper
+     * Loads the AccessCondition contract from Keeper
      *
      * @param keeper the keeper Service
-     * @return an instance of AccessSecretStoreCondition contract deployed in keeper
+     * @return an instance of AccessCondition contract deployed in keeper
      */
-    public AccessSecretStoreCondition loadAccessSecretStoreCondition(KeeperService keeper) {
-        return AccessSecretStoreCondition.load(
+    public AccessCondition loadAccessCondition(KeeperService keeper) {
+        return AccessCondition.load(
                 neverminedConfig.getAccessSsConditionsAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),

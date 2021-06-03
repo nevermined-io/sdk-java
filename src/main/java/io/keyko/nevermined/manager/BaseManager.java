@@ -11,6 +11,7 @@ import io.keyko.common.helpers.JwtHelper;
 import io.keyko.common.helpers.UrlHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.contracts.*;
+import io.keyko.nevermined.core.conditions.LockPaymentConditionPayable;
 import io.keyko.nevermined.exceptions.*;
 import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.models.Account;
@@ -34,7 +35,7 @@ import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.tuples.generated.Tuple6;
+import org.web3j.tuples.generated.Tuple9;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -58,11 +59,11 @@ public abstract class BaseManager {
     protected NeverminedToken tokenContract;
     protected Dispenser dispenser;
     protected DIDRegistry didRegistry;
-    protected LockRewardCondition lockRewardCondition;
-    protected EscrowReward escrowReward;
-    protected AccessSecretStoreCondition accessSecretStoreCondition;
+    protected LockPaymentConditionPayable lockCondition;
+    protected EscrowPaymentCondition escrowCondition;
+    protected AccessCondition accessCondition;
     protected TemplateStoreManager templateStoreManager;
-    protected EscrowAccessSecretStoreTemplate escrowAccessSecretStoreTemplate;
+    protected AccessTemplate accessTemplate;
     protected AgreementStoreManager agreementStoreManager;
     protected ConditionStoreManager conditionStoreManager;
     protected ComputeExecutionCondition computeExecutionCondition;
@@ -82,19 +83,19 @@ public abstract class BaseManager {
         public ContractAddresses() {
         }
 
-        public String getLockRewardConditionAddress() {
+        public String getLockPaymentConditionAddress() {
             return lockRewardConditionAddress;
         }
 
-        public void setLockRewardConditionAddress(String address) {
+        public void setLockPaymentConditionAddress(String address) {
             this.lockRewardConditionAddress = address;
         }
 
-        public String getAccessSecretStoreConditionAddress() {
+        public String getAccessConditionAddress() {
             return accessSecretStoreConditionAddress;
         }
 
-        public void setAccessSecretStoreConditionAddress(String address) {
+        public void setAccessConditionAddress(String address) {
             this.accessSecretStoreConditionAddress = address;
         }
     }
@@ -140,7 +141,7 @@ public abstract class BaseManager {
         String jsonFiles = null;
         while (counter < retries) {
             try {
-                jsonFiles = secretStoreManager.decryptDocument(ddo.getDid().getHash(),
+                jsonFiles = secretStoreManager.decryptDocument(ddo.getDID().getHash(),
                         ddo.getMetadataService().attributes.encryptedFiles);
                 return DDO.fromJSON(new TypeReference<ArrayList<AssetMetadata.File>>() {
                 }, jsonFiles);
@@ -193,7 +194,7 @@ public abstract class BaseManager {
     public DDO resolveDID(DID did) throws DDOException {
 
         try {
-            final Tuple6<String, byte[], String, String, BigInteger, List<String>> didAttributes = didRegistry
+            final Tuple9<String, byte[], String, String, BigInteger, List<String>, BigInteger, BigInteger, BigInteger> didAttributes = didRegistry
                     .getDIDRegister(EncodingHelper.hexStringToBytes(did.getHash())).send();
 
             String didUrl = didAttributes.component3();
@@ -396,13 +397,13 @@ public abstract class BaseManager {
     }
 
     /**
-     * It sets the EscrowAccessSecretStoreTemplate stub instance
+     * It sets the AccessTemplate stub instance
      *
-     * @param contract EscrowAccessSecretStoreTemplate instance
+     * @param contract AccessTemplate instance
      * @return BaseManager instance
      */
-    public BaseManager setEscrowAccessSecretStoreTemplate(EscrowAccessSecretStoreTemplate contract) {
-        this.escrowAccessSecretStoreTemplate = contract;
+    public BaseManager setAccessTemplate(AccessTemplate contract) {
+        this.accessTemplate = contract;
         return this;
     }
 
@@ -442,40 +443,40 @@ public abstract class BaseManager {
     /**
      * It gets the lockRewardCondition stub instance
      *
-     * @return LockRewardCondition instance
+     * @return LockPaymentCondition instance
      */
-    public LockRewardCondition getLockRewardCondition() {
-        return lockRewardCondition;
+    public LockPaymentCondition getLockCondition() {
+        return lockCondition;
     }
 
     /**
-     * It sets the LockRewardCondition instance
+     * It sets the LockPaymentCondition instance
      *
-     * @param lockRewardCondition instance
+     * @param lockCondition instance
      * @return BaseManager instance
      */
-    public BaseManager setLockRewardCondition(LockRewardCondition lockRewardCondition) {
-        this.lockRewardCondition = lockRewardCondition;
+    public BaseManager setLockCondition(LockPaymentConditionPayable lockCondition) {
+        this.lockCondition = lockCondition;
         return this;
     }
 
     /**
-     * It gets the EscrowReward stub instance
+     * It gets the EscrowPaymentCondition stub instance
      *
-     * @return EscrowReward instance
+     * @return EscrowPaymentCondition instance
      */
-    public EscrowReward getEscrowReward() {
-        return escrowReward;
+    public EscrowPaymentCondition getEscrowCondition() {
+        return escrowCondition;
     }
 
     /**
-     * It sets the EscrowReward instance
+     * It sets the EscrowPaymentCondition instance
      *
-     * @param escrowReward EscrowReward instance
+     * @param escrowCondition EscrowPaymentCondition instance
      * @return BaseManager instance
      */
-    public BaseManager setEscrowReward(EscrowReward escrowReward) {
-        this.escrowReward = escrowReward;
+    public BaseManager setEscrowCondition(EscrowPaymentCondition escrowCondition) {
+        this.escrowCondition = escrowCondition;
         return this;
     }
 
@@ -521,22 +522,22 @@ public abstract class BaseManager {
     }
 
     /**
-     * It gets the AccessSecretStoreCondition stub instance
+     * It gets the AccessCondition stub instance
      *
-     * @return AccessSecretStoreCondition instance
+     * @return AccessCondition instance
      */
-    public AccessSecretStoreCondition getAccessSecretStoreCondition() {
-        return accessSecretStoreCondition;
+    public AccessCondition getAccessCondition() {
+        return accessCondition;
     }
 
     /**
-     * It sets the EscrowReward instance
+     * It sets the EscrowPaymentCondition instance
      *
-     * @param accessSecretStoreCondition AccessSecretStoreCondition instance
+     * @param accessCondition AccessCondition instance
      * @return BaseManager instance
      */
-    public BaseManager setAccessSecretStoreCondition(AccessSecretStoreCondition accessSecretStoreCondition) {
-        this.accessSecretStoreCondition = accessSecretStoreCondition;
+    public BaseManager setAccessCondition(AccessCondition accessCondition) {
+        this.accessCondition = accessCondition;
         return this;
     }
 

@@ -20,6 +20,7 @@ import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.tuples.generated.Tuple6;
+import org.web3j.tuples.generated.Tuple9;
 import org.web3j.utils.Numeric;
 
 import java.io.IOException;
@@ -358,7 +359,7 @@ public class AssetsManager extends BaseManager {
     public List<String> listProviders(DID did) throws EthereumException {
         try {
 
-            final Tuple6<String, byte[], String, String, BigInteger, List<String>> didRegisterTuple = didRegistry
+            final Tuple9<String, byte[], String, String, BigInteger, List<String>, BigInteger, BigInteger, BigInteger> didRegisterTuple = didRegistry
                     .getDIDRegister(EncodingHelper.hexStringToBytes(did.getHash()))
                     .send();
             List<String> providers = didRegisterTuple.component6();

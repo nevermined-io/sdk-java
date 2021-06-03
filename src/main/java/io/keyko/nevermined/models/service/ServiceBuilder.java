@@ -49,9 +49,9 @@ public interface ServiceBuilder {
         ComputingService.ServiceAgreementTemplate serviceAgreementTemplate = new ComputingService.ServiceAgreementTemplate();
         serviceAgreementTemplate.contractName = "EscrowComputeExecutionTemplate";
         serviceAgreementTemplate.fulfillmentOrder = Arrays.asList(
-                "lockReward.fulfill",
+                "lockPayment.fulfill",
                 "execCompute.fulfill",
-                "escrowReward.fulfill");
+                "escrowPayment.fulfill");
 
         // AgreementCreated Event
         Condition.Event executeAgreementEvent = new Condition.Event();
@@ -60,12 +60,12 @@ public interface ServiceBuilder {
         // Handler
         Condition.Handler handler = new Condition.Handler();
         handler.moduleName = "EscrowComputeExecutionTemplate";
-        handler.functionName = "fulfillLockRewardCondition";
+        handler.functionName = "fulfillLockPaymentCondition";
         handler.version = "0.1";
         executeAgreementEvent.handler = handler;
 
         Service.ConditionDependency conditionDependency = new Service.ConditionDependency();
-        conditionDependency.escrowReward = Service.ConditionDependency.defaultComputeEscrowReward();
+        conditionDependency.escrowReward = Service.ConditionDependency.defaultComputeEscrowPaymentCondition();
         conditionDependency.accessSecretStore = null;
         serviceAgreementTemplate.conditionDependency = conditionDependency;
         serviceAgreementTemplate.events = Arrays.asList(executeAgreementEvent);
@@ -103,7 +103,7 @@ public interface ServiceBuilder {
 
         // Definition of a DEFAULT ServiceAgreement Contract
         AccessService.ServiceAgreementTemplate serviceAgreementTemplate = new AccessService.ServiceAgreementTemplate();
-        serviceAgreementTemplate.contractName = "EscrowAccessSecretStoreTemplate";
+        serviceAgreementTemplate.contractName = "AccessTemplate";
 
         // AgreementCreated Event
         Condition.Event executeAgreementEvent = new Condition.Event();
@@ -112,7 +112,7 @@ public interface ServiceBuilder {
         // Handler
         Condition.Handler handler = new Condition.Handler();
         handler.moduleName = "escrowAccessSecretStoreTemplate";
-        handler.functionName = "fulfillLockRewardCondition";
+        handler.functionName = "fulfillLockPaymentCondition";
         handler.version = "0.1";
         executeAgreementEvent.handler = handler;
 
@@ -146,9 +146,10 @@ public interface ServiceBuilder {
             String configToken = "contract." + name + ".address";
             params.put(configToken, config.getString(configToken));
         }
-        params.put("parameter.did", ddo.getDid().getDid());
-        params.put("parameter.assetId", ddo.getDid().getHash());
+        params.put("parameter.did", ddo.getDID().getDid());
+        params.put("parameter.assetId", ddo.getDID().getHash());
         params.put("parameter.price", assetRewards.totalPrice);
+        params.put("parameter.tokenAddress", assetRewards.tokenAddress);
 
         ServiceAgreementHandler sla;
         List<Condition> conditions;

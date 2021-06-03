@@ -7,7 +7,9 @@ import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.NeverminedAPI;
 import io.keyko.nevermined.api.config.NeverminedConfig;
 import io.keyko.nevermined.contracts.*;
+import io.keyko.nevermined.core.conditions.LockPaymentConditionPayable;
 import io.keyko.nevermined.external.MetadataApiService;
+import io.keyko.nevermined.models.AssetRewards;
 import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
@@ -38,10 +40,10 @@ public class AgreementsManagerIT {
     private static MetadataApiService metadataApiService;
     private static final Config config = ConfigFactory.load();
     private static DIDRegistry didRegistry;
-    private static AccessSecretStoreCondition accessSecretStoreCondition;
-    private static EscrowAccessSecretStoreTemplate escrowAccessSecretStoreTemplate;
-    private static EscrowReward escrowReward;
-    private static LockRewardCondition lockRewardCondition;
+    private static AccessCondition accessSecretStoreCondition;
+    private static AccessTemplate escrowAccessSecretStoreTemplate;
+    private static EscrowPaymentCondition escrowReward;
+    private static LockPaymentConditionPayable lockRewardCondition;
     private static AgreementStoreManager agreementsStoreManager;
     private static ConditionStoreManager conditionStoreManager;
     private static String METADATA_JSON_SAMPLE = "src/test/resources/examples/metadata.json";
@@ -83,12 +85,12 @@ public class AgreementsManagerIT {
         properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
         properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
         properties.put(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
-        properties.put(NeverminedConfig.LOCKREWARD_CONDITIONS_ADDRESS, config.getString("contract.LockRewardCondition.address"));
-        properties.put(NeverminedConfig.ESCROWREWARD_CONDITIONS_ADDRESS, config.getString("contract.EscrowReward.address"));
-        properties.put(NeverminedConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
-        properties.put(NeverminedConfig.ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.AccessSecretStoreCondition.address"));
+        properties.put(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.LockPaymentCondition.address"));
+        properties.put(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.EscrowPaymentCondition.address"));
+        properties.put(NeverminedConfig.ACCESS_TEMPLATE_ADDRESS, config.getString("contract.AccessTemplate.address"));
+        properties.put(NeverminedConfig.ACCESS_CONDITION_ADDRESS, config.getString("contract.AccessCondition.address"));
         properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
-        properties.put(NeverminedConfig.TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
+        properties.put(NeverminedConfig.NEVERMINED_TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
         properties.put(NeverminedConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
         properties.put(NeverminedConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.ComputeExecutionCondition.address"));
         properties.put(NeverminedConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.EscrowComputeExecutionTemplate.address"));
@@ -103,23 +105,23 @@ public class AgreementsManagerIT {
         neverminedAPIConsumer.getTokensAPI().request(BigInteger.TEN);
         agreementsManager = AgreementsManager.getInstance(keeperConsumer, metadataApiService);
         conditionsManager = ConditionsManager.getInstance(keeperConsumer, metadataApiService);
-        accessSecretStoreCondition = ManagerHelper.loadAccessSecretStoreConditionContract(keeperConsumer, config.getString("contract.AccessSecretStoreCondition.address"));
+        accessSecretStoreCondition = ManagerHelper.loadAccessConditionContract(keeperConsumer, config.getString("contract.AccessCondition.address"));
         didRegistry = ManagerHelper.loadDIDRegistryContract(keeperConsumer, config.getString("contract.DIDRegistry.address"));
-        escrowAccessSecretStoreTemplate = ManagerHelper.loadEscrowAccessSecretStoreTemplate(keeperConsumer, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
-        escrowReward = ManagerHelper.loadEscrowRewardContract(keeperConsumer, config.getString("contract.EscrowReward.address"));
-        lockRewardCondition = ManagerHelper.loadLockRewardCondition(keeperConsumer, config.getString("contract.LockRewardCondition.address"));
+        escrowAccessSecretStoreTemplate = ManagerHelper.loadAccessTemplate(keeperConsumer, config.getString("contract.AccessTemplate.address"));
+        escrowReward = ManagerHelper.loadEscrowPaymentConditionContract(keeperConsumer, config.getString("contract.EscrowPaymentCondition.address"));
+        lockRewardCondition = ManagerHelper.loadLockPaymentCondition(keeperConsumer, config.getString("contract.LockPaymentCondition.address"));
         agreementsStoreManager = ManagerHelper.loadAgreementStoreManager(keeperConsumer, config.getString("contract.AgreementStoreManager.address"));
         conditionStoreManager = ManagerHelper.loadConditionStoreManager(keeperConsumer, config.getString("contract.ConditionStoreManager.address"));
         agreementsManager.setAgreementStoreManagerContract(agreementsStoreManager);
-        agreementsManager.setLockRewardCondition(lockRewardCondition);
-        agreementsManager.setAccessSecretStoreCondition(accessSecretStoreCondition);
-        agreementsManager.setEscrowAccessSecretStoreTemplate(escrowAccessSecretStoreTemplate);
-        agreementsManager.setEscrowReward(escrowReward);
+        agreementsManager.setLockCondition(lockRewardCondition);
+        agreementsManager.setAccessCondition(accessSecretStoreCondition);
+        agreementsManager.setAccessTemplate(escrowAccessSecretStoreTemplate);
+        agreementsManager.setEscrowCondition(escrowReward);
         agreementsManager.setConditionStoreManagerContract(conditionStoreManager);
         conditionsManager.setAgreementStoreManagerContract(agreementsStoreManager);
         conditionsManager.setDidRegistryContract(didRegistry);
-        conditionsManager.setEscrowReward(escrowReward);
-        conditionsManager.setEscrowAccessSecretStoreTemplate(escrowAccessSecretStoreTemplate);
+        conditionsManager.setEscrowCondition(escrowReward);
+        conditionsManager.setAccessTemplate(escrowAccessSecretStoreTemplate);
 
     }
 
@@ -128,13 +130,15 @@ public class AgreementsManagerIT {
         providerConfig.setSecretStoreEndpoint(config.getString("secretstore.url"));
         AssetMetadata metadata = DDO.fromJSON(new TypeReference<AssetMetadata>() {
         }, METADATA_JSON_CONTENT);
-        DDO ddo = neverminedAPIPublisher.getAssetsAPI().create(metadata, providerConfig);
+        AssetRewards assetRewards = new AssetRewards(neverminedAPIPublisher.getMainAccount().getAddress(), "1");
+//        assetRewards.tokenAddress = config.getString("contract.NeverminedToken.address");
+        DDO ddo = neverminedAPIPublisher.getAssetsAPI().create(metadata, providerConfig, assetRewards);
         DID did = new DID(ddo.id);
 
         log.debug("DDO registered!");
         neverminedAPIConsumer.getAccountsAPI().requestTokens(BigInteger.valueOf(9000000));
         log.info("Consumer balance: " + neverminedAPIConsumer.getAccountsAPI().balance(neverminedAPIConsumer.getMainAccount()));
-        OrderResult orderResult = neverminedAPIConsumer.getAssetsAPI().orderDirect(did, Service.DEFAULT_ACCESS_INDEX);
+        OrderResult orderResult = neverminedAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_ACCESS_INDEX);
 
         final InputStream inputStream = neverminedAPIConsumer.getAssetsAPI().downloadBinary(
                 orderResult.getServiceAgreementId(),
@@ -146,16 +150,14 @@ public class AgreementsManagerIT {
 
         final String serviceAgreementId = orderResult.getServiceAgreementId();
         TimeUnit.SECONDS.sleep(6l);
-        final Agreement agreement = agreementsManager.getAgreement(serviceAgreementId);
         AgreementStatus status = agreementsManager.getStatus(serviceAgreementId);
         assertEquals(orderResult.getServiceAgreementId(), status.agreementId);
 
         conditionsManager.releaseReward(serviceAgreementId);
-//        escrowReward.fulfill(serviceAgreementId, )
 
-        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(Condition.ConditionTypes.lockReward.toString()));
-        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(Condition.ConditionTypes.accessSecretStore.toString()));
-        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(Condition.ConditionTypes.escrowReward.toString()));
+        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(Condition.ConditionTypes.lockPayment.toString()));
+        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(Condition.ConditionTypes.access.toString()));
+        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(Condition.ConditionTypes.escrowPayment.toString()));
         assertEquals(true, status.conditionsFulfilled);
 
     }
@@ -180,7 +182,7 @@ public class AgreementsManagerIT {
 
         apiConsumer.getAccountsAPI().requestTokens(BigInteger.valueOf(9000000));
         log.info("Consumer balance: " + apiConsumer.getAccountsAPI().balance(apiConsumer.getMainAccount()));
-        OrderResult orderResult = apiConsumer.getAssetsAPI().orderDirect(did, Service.DEFAULT_ACCESS_INDEX);
+        OrderResult orderResult = apiConsumer.getAssetsAPI().order(did, Service.DEFAULT_ACCESS_INDEX);
 
         final InputStream inputStream = apiConsumer.getAssetsAPI().downloadBinary(
                 orderResult.getServiceAgreementId(),
@@ -197,11 +199,11 @@ public class AgreementsManagerIT {
         assertEquals(orderResult.getServiceAgreementId(), status.agreementId);
 
 //        conditionsManager.releaseReward(serviceAgreementId);
-//        escrowReward.fulfill(serviceAgreementId, )
+//        escrowPayment.fulfill(serviceAgreementId, )
 
-        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(Condition.ConditionTypes.lockReward.toString()));
-        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(Condition.ConditionTypes.accessSecretStore.toString()));
-        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(Condition.ConditionTypes.escrowReward.toString()));
+        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(Condition.ConditionTypes.lockPayment.toString()));
+        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(Condition.ConditionTypes.access.toString()));
+        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(), status.conditions.get(0).conditions.get(Condition.ConditionTypes.escrowPayment.toString()));
         assertEquals(true, status.conditionsFulfilled);
 
     }

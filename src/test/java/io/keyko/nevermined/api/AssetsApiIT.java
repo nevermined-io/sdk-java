@@ -6,7 +6,7 @@ import com.typesafe.config.ConfigFactory;
 import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.config.NeverminedConfig;
-import io.keyko.nevermined.contracts.EscrowAccessSecretStoreTemplate;
+import io.keyko.nevermined.contracts.AccessTemplate;
 import io.keyko.nevermined.contracts.TemplateStoreManager;
 import io.keyko.nevermined.exceptions.DDOException;
 import io.keyko.nevermined.exceptions.DownloadServiceException;
@@ -117,12 +117,12 @@ public class AssetsApiIT {
         properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
         properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
         properties.put(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
-        properties.put(NeverminedConfig.LOCKREWARD_CONDITIONS_ADDRESS, config.getString("contract.LockRewardCondition.address"));
-        properties.put(NeverminedConfig.ESCROWREWARD_CONDITIONS_ADDRESS, config.getString("contract.EscrowReward.address"));
-        properties.put(NeverminedConfig.ESCROW_ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
-        properties.put(NeverminedConfig.ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.AccessSecretStoreCondition.address"));
+        properties.put(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.LockPaymentCondition.address"));
+        properties.put(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.EscrowPaymentCondition.address"));
+        properties.put(NeverminedConfig.ACCESS_TEMPLATE_ADDRESS, config.getString("contract.AccessTemplate.address"));
+        properties.put(NeverminedConfig.ACCESS_CONDITION_ADDRESS, config.getString("contract.AccessCondition.address"));
         properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
-        properties.put(NeverminedConfig.TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
+        properties.put(NeverminedConfig.NEVERMINED_TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
         properties.put(NeverminedConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
         properties.put(NeverminedConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
 
@@ -132,7 +132,7 @@ public class AssetsApiIT {
         neverminedAPIConsumer = NeverminedAPI.getInstance(properties);
 
         keeper = ManagerHelper.getKeeper(config, ManagerHelper.VmClient.parity, "");
-        EscrowAccessSecretStoreTemplate escrowAccessSecretStoreTemplate = ManagerHelper.loadEscrowAccessSecretStoreTemplate(keeper, config.getString("contract.EscrowAccessSecretStoreTemplate.address"));
+        AccessTemplate escrowAccessSecretStoreTemplate = ManagerHelper.loadAccessTemplate(keeper, config.getString("contract.AccessTemplate.address"));
         TemplateStoreManager templateManager = ManagerHelper.loadTemplateStoreManager(keeper, config.getString("contract.TemplateStoreManager.address"));
 
         neverminedAPIConsumer.getTokensAPI().request(BigInteger.TEN);
@@ -167,17 +167,37 @@ public class AssetsApiIT {
         assertEquals(assetRewards.totalPrice, resolvedDDO.getAccessService().attributes.main.price);
 
         final List<String> receivers = (List<String>) resolvedDDO.getAccessService()
-                .getConditionbyName(Condition.ConditionTypes.escrowReward.name())
+                .getConditionbyName(Condition.ConditionTypes.escrowPayment.name())
                 .getParameterByName("_receivers").value;
         assertTrue(receivers.contains(neverminedAPI.getMainAccount().address));
         assertTrue(receivers.contains(config.getString("provider.address")));
 
         final List<String> _amounts = (List<String>) resolvedDDO.getAccessService()
-                .getConditionbyName(Condition.ConditionTypes.escrowReward.name())
+                .getConditionbyName(Condition.ConditionTypes.escrowPayment.name())
                 .getParameterByName("_amounts").value;
         assertTrue(_amounts.contains("10"));
         assertTrue(_amounts.contains("2"));
+    }
 
+    @Test
+    public void createMintable() throws Exception {
+
+        String clientAddress = neverminedAPI.getMainAccount().getAddress();
+        final AssetRewards assetRewards = getTestAssetRewards();
+        metadataBase.attributes.main.dateCreated = new Date();
+        DDO ddo = neverminedAPI.getAssetsAPI().createMintableDID(metadataBase, providerConfig, assetRewards, BigInteger.TEN, BigInteger.ZERO);
+
+        DID did = new DID(ddo.id);
+        DDO resolvedDDO = neverminedAPI.getAssetsAPI().resolve(did);
+        assertEquals(ddo.id, resolvedDDO.id);
+        assertTrue(resolvedDDO.services.size() == 4);
+
+        assertEquals(BigInteger.ZERO, neverminedAPI.getAssetsAPI().balance(clientAddress, did));
+        neverminedAPI.getAssetsAPI().mint(did, BigInteger.TEN);
+        assertEquals(BigInteger.TEN, neverminedAPI.getAssetsAPI().balance(clientAddress, did));
+
+        neverminedAPI.getAssetsAPI().burn(did, BigInteger.TWO);
+        assertEquals(BigInteger.valueOf(8), neverminedAPI.getAssetsAPI().balance(clientAddress, did));
     }
 
     @Test
@@ -212,7 +232,7 @@ public class AssetsApiIT {
 
         log.debug("Account " + neverminedAPIConsumer.getMainAccount().address + " balance is: " + balance.toString());
 
-        Flowable<OrderResult> response = neverminedAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_ACCESS_INDEX);
+        Flowable<OrderResult> response = neverminedAPIConsumer.getAssetsAPI().purchaseOrder(did, Service.DEFAULT_ACCESS_INDEX);
 
         //Balance balanceAfter= neverminedAPIConsumer.getAccountsAPI().balance(neverminedAPIConsumer.getMainAccount());
 
@@ -272,7 +292,7 @@ public class AssetsApiIT {
         log.debug("Account " + neverminedAPIConsumer.getMainAccount().address + " balance is: " + balance.toString());
 
         final long startTime = System.currentTimeMillis();
-        OrderResult orderResult = neverminedAPIConsumer.getAssetsAPI().orderDirect(did, Service.DEFAULT_ACCESS_INDEX);
+        OrderResult orderResult = neverminedAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_ACCESS_INDEX);
         final long orderTime = System.currentTimeMillis();
 
         assertTrue(orderResult.isAccessGranted());
@@ -359,7 +379,7 @@ public class AssetsApiIT {
 
         // 4. Order the compute service
         final long startTime = System.currentTimeMillis();
-        OrderResult orderResult = neverminedAPIConsumer.getAssetsAPI().orderDirect(didComputeService, Service.DEFAULT_COMPUTE_INDEX);
+        OrderResult orderResult = neverminedAPIConsumer.getAssetsAPI().order(didComputeService, Service.DEFAULT_COMPUTE_INDEX);
         final long orderTime = System.currentTimeMillis();
 
         assertTrue(orderResult.isAccessGranted());
@@ -437,7 +457,7 @@ public class AssetsApiIT {
         log.debug("Account " + neverminedAPIConsumer.getMainAccount().address + " balance is: " + balance.toString());
 
         final long startTime = System.currentTimeMillis();
-        Flowable<OrderResult> response = neverminedAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_ACCESS_INDEX);
+        Flowable<OrderResult> response = neverminedAPIConsumer.getAssetsAPI().purchaseOrder(did, Service.DEFAULT_ACCESS_INDEX);
         final long orderTime = System.currentTimeMillis();
 
         OrderResult orderResult = response.blockingFirst();
@@ -465,7 +485,7 @@ public class AssetsApiIT {
         DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
         log.debug("DDO registered!");
 
-        String owner = neverminedAPI.getAssetsAPI().owner(ddo.getDid());
+        String owner = neverminedAPI.getAssetsAPI().owner(ddo.getDID());
         Assert.assertEquals(owner, neverminedAPI.getMainAccount().address);
     }
 
@@ -474,8 +494,8 @@ public class AssetsApiIT {
         metadataBase.attributes.main.dateCreated = new Date();
         DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
         log.debug("DDO registered!");
-        assertTrue(neverminedAPI.getAssetsAPI().retire(ddo.getDid()));
-        neverminedAPI.getAssetsAPI().resolve(ddo.getDid());
+        assertTrue(neverminedAPI.getAssetsAPI().retire(ddo.getDID()));
+        neverminedAPI.getAssetsAPI().resolve(ddo.getDID());
     }
 
     @Test

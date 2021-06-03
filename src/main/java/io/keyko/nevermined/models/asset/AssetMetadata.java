@@ -90,30 +90,4 @@ public class AssetMetadata extends AbstractModel {
         }
     }
 
-
-    // TODO Remove
-    public String generateMetadataChecksum(String did) {
-
-        String concatFields = this.attributes.main.files.stream()
-                .map(file -> file.checksum != null ? file.checksum : "")
-                .collect(Collectors.joining(""))
-                .concat(this.attributes.main.name)
-                .concat(this.attributes.main.author)
-                .concat(this.attributes.main.license)
-                .concat(did);
-        return "0x" + CryptoHelper.sha3256(concatFields);
-
-
-    }
-
-    // TODO Remove
-    public AssetMetadata eraseFileUrls() {
-        this.attributes.main.files.forEach(f -> {
-            f.url = null;
-        });
-
-        return this;
-    }
-
-
 }

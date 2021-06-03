@@ -17,6 +17,8 @@ import org.junit.Test;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -30,13 +32,13 @@ public class ConditionsApiIT {
     private static String METADATA_JSON_CONTENT;
     private static AssetMetadata metadataBase;
     private static ProviderConfig providerConfig;
-
+    private static Config config;
 
     @BeforeClass
     public static void setUp() throws Exception {
 
 
-        Config config = ConfigFactory.load();
+        config = ConfigFactory.load();
         METADATA_JSON_CONTENT = new String(Files.readAllBytes(Paths.get(METADATA_JSON_SAMPLE)));
         metadataBase = DDO.fromJSON(new TypeReference<AssetMetadata>() {
         }, METADATA_JSON_CONTENT);
@@ -64,11 +66,11 @@ public class ConditionsApiIT {
         properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
         properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
         properties.put(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
-        properties.put(NeverminedConfig.LOCKREWARD_CONDITIONS_ADDRESS, config.getString("contract.LockRewardCondition.address"));
-        properties.put(NeverminedConfig.ESCROWREWARD_CONDITIONS_ADDRESS, config.getString("contract.EscrowReward.address"));
-        properties.put(NeverminedConfig.ACCESS_SS_CONDITIONS_ADDRESS, config.getString("contract.AccessSecretStoreCondition.address"));
+        properties.put(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.LockPaymentCondition.address"));
+        properties.put(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.EscrowPaymentCondition.address"));
+        properties.put(NeverminedConfig.ACCESS_CONDITION_ADDRESS, config.getString("contract.AccessCondition.address"));
         properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
-        properties.put(NeverminedConfig.TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
+        properties.put(NeverminedConfig.NEVERMINED_TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
         properties.put(NeverminedConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
         properties.put(NeverminedConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
 
@@ -76,7 +78,6 @@ public class ConditionsApiIT {
         neverminedAPI = NeverminedAPI.getInstance(properties);
         neverminedAPIConsumer.getTokensAPI().request(BigInteger.TEN);
         neverminedAPI.getTokensAPI().request(BigInteger.TEN);
-
 
         assertNotNull(neverminedAPI.getAssetsAPI());
         assertNotNull(neverminedAPI.getMainAccount());
@@ -90,26 +91,31 @@ public class ConditionsApiIT {
     public void executeConditions() throws Exception {
         DDO ddo = neverminedAPI.getAssetsAPI().create(metadataBase, providerConfig);
         String agreementId = ServiceAgreementHandler.generateSlaId();
-        assertTrue(neverminedAPI.getAgreementsAPI().create(ddo.getDid(), agreementId, 1, neverminedAPIConsumer.getMainAccount().address));
+        assertTrue(neverminedAPI.getAgreementsAPI().create(ddo.getDID(), agreementId, 1, neverminedAPIConsumer.getMainAccount().address));
         AgreementStatus initialStatus = neverminedAPI.getAgreementsAPI().status(agreementId);
-        assertEquals(BigInteger.ONE, initialStatus.conditions.get(0).conditions.get("lockReward"));
+        assertEquals(BigInteger.ONE, initialStatus.conditions.get(0).conditions.get("lockPayment"));
         assertEquals(BigInteger.ONE, initialStatus.conditions.get(0).conditions.get("accessSecretStore"));
         assertEquals(BigInteger.ONE, initialStatus.conditions.get(0).conditions.get("escrowReward"));
 
-        neverminedAPI.getConditionsAPI().lockReward(agreementId, BigInteger.TEN);
+        final List<BigInteger> amounts = Arrays.asList(BigInteger.TEN, BigInteger.TWO);
+        final List<String> receivers = Arrays.asList(
+                config.getString("account.parity.address2"),
+                NeverminedConfig.PROVIDER_ADDRESS);
+
+        neverminedAPI.getConditionsAPI().lockPayment(agreementId);
         AgreementStatus statusAfterLockReward = neverminedAPI.getAgreementsAPI().status(agreementId);
         assertEquals(BigInteger.TWO, statusAfterLockReward.conditions.get(0).conditions.get(
-                Condition.ConditionTypes.lockReward.toString()));
+                Condition.ConditionTypes.lockPayment.toString()));
       //  assertEquals(BigInteger.TWO, statusAfterLockReward.conditions.get(0).conditions.get("accessSecretStore"));
         assertEquals(BigInteger.ONE, statusAfterLockReward.conditions.get(0).conditions.get(
-                Condition.ConditionTypes.escrowReward.toString()));
+                Condition.ConditionTypes.escrowPayment.toString()));
 
         int retries= 10;
         long sleepSeconds= 1l;
 
         for (int counter=0; counter< retries; counter++)    {
             try {
-                neverminedAPI.getConditionsAPI().grantAccess(agreementId, ddo.getDid(), neverminedAPIConsumer.getMainAccount().address);
+                neverminedAPI.getConditionsAPI().grantAccess(agreementId, ddo.getDID(), neverminedAPIConsumer.getMainAccount().address);
                 break;
             } catch (Exception e)   {
                 TimeUnit.SECONDS.sleep(sleepSeconds);
@@ -117,16 +123,16 @@ public class ConditionsApiIT {
         }
 
         AgreementStatus statusAfterAccessGranted = neverminedAPI.getAgreementsAPI().status(agreementId);
-        assertEquals(BigInteger.TWO, statusAfterAccessGranted.conditions.get(0).conditions.get(Condition.ConditionTypes.lockReward.toString()));
-        assertEquals(BigInteger.TWO, statusAfterAccessGranted.conditions.get(0).conditions.get(Condition.ConditionTypes.accessSecretStore.toString()));
-        assertEquals(BigInteger.ONE, statusAfterAccessGranted.conditions.get(0).conditions.get(Condition.ConditionTypes.escrowReward.toString()));
+        assertEquals(BigInteger.TWO, statusAfterAccessGranted.conditions.get(0).conditions.get(Condition.ConditionTypes.lockPayment.toString()));
+        assertEquals(BigInteger.TWO, statusAfterAccessGranted.conditions.get(0).conditions.get(Condition.ConditionTypes.access.toString()));
+        assertEquals(BigInteger.ONE, statusAfterAccessGranted.conditions.get(0).conditions.get(Condition.ConditionTypes.escrowPayment.toString()));
 
 
         neverminedAPI.getConditionsAPI().releaseReward(agreementId);
         AgreementStatus statusAfterReleaseReward = neverminedAPI.getAgreementsAPI().status(agreementId);
-        assertEquals(BigInteger.TWO, statusAfterReleaseReward.conditions.get(0).conditions.get(Condition.ConditionTypes.lockReward.toString()));
-        assertEquals(BigInteger.TWO, statusAfterReleaseReward.conditions.get(0).conditions.get(Condition.ConditionTypes.accessSecretStore.toString()));
-        assertEquals(BigInteger.TWO, statusAfterReleaseReward.conditions.get(0).conditions.get(Condition.ConditionTypes.escrowReward.toString()));
+        assertEquals(BigInteger.TWO, statusAfterReleaseReward.conditions.get(0).conditions.get(Condition.ConditionTypes.lockPayment.toString()));
+        assertEquals(BigInteger.TWO, statusAfterReleaseReward.conditions.get(0).conditions.get(Condition.ConditionTypes.access.toString()));
+        assertEquals(BigInteger.TWO, statusAfterReleaseReward.conditions.get(0).conditions.get(Condition.ConditionTypes.escrowPayment.toString()));
 
 
 

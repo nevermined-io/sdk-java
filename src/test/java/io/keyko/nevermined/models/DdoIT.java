@@ -3,6 +3,11 @@ package io.keyko.nevermined.models;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import io.keyko.common.web3.KeeperService;
+import io.keyko.nevermined.contracts.DIDRegistry;
+import io.keyko.nevermined.external.MetadataApiService;
+import io.keyko.nevermined.manager.ManagerHelper;
+import io.keyko.nevermined.manager.NeverminedManager;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,6 +63,24 @@ public class DdoIT {
         credentials = WalletUtils.loadCredentials(
                 config.getString("account.main.password"),
                 config.getString("account.main.credentialsFile"));
+    }
+
+
+    @Test
+    public void testDIDHashing() throws Exception {
+
+        KeeperService keeper = ManagerHelper.getKeeper(config, ManagerHelper.VmClient.parity, "");
+        MetadataApiService metadataApiService = ManagerHelper.getMetadataService(config);
+        DIDRegistry didRegistry = ManagerHelper.loadDIDRegistryContract(keeper, config.getString("contract.DIDRegistry.address"));
+        NeverminedManager manager = NeverminedManager.getInstance(keeper, metadataApiService);
+        manager.setDidRegistryContract(didRegistry);
+
+        final String token = DID.builder().getHash();
+        final String address = keeper.getAddress();
+        final DID didContract = manager.hashDID(token, address);
+        final DID didLocal = DID.getFromSeed(token, address);
+
+        assertEquals(didContract.getHash(), didLocal.getHash());
     }
 
     @Test
