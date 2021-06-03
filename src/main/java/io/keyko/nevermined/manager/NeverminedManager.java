@@ -273,6 +273,21 @@ public class NeverminedManager extends BaseManager {
      */
     public DDO registerAccessServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig, AuthConfig authConfig, AssetRewards assetRewards)
             throws DDOException {
+        return registerAccessServiceAsset(metadata, providerConfig, authConfig, assetRewards, BigInteger.valueOf(-1), BigInteger.ZERO);
+    }
+
+    /**
+     * Creates a new DDO with an AccessService
+     *
+     * @param metadata       the metadata
+     * @param providerConfig the service Endpoints
+     * @param authConfig     auth configuration
+     * @param assetRewards   asset rewards distribution
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
+    public DDO registerAccessServiceAsset(AssetMetadata metadata, ProviderConfig providerConfig, AuthConfig authConfig, AssetRewards assetRewards, BigInteger cap, BigInteger royalties)
+            throws DDOException {
 
         try {
             Map<String, Object> configuration = buildBasicAccessServiceConfiguration(providerConfig,
@@ -280,12 +295,11 @@ public class NeverminedManager extends BaseManager {
             Service accessService = ServiceBuilder.getServiceBuilder(Service.ServiceTypes.ACCESS, assetRewards)
                     .buildService(configuration);
 
-            return registerAsset(metadata, providerConfig, accessService, authConfig, assetRewards);
+            return registerAsset(metadata, providerConfig, accessService, authConfig, assetRewards, cap, royalties);
 
         } catch (ServiceException e) {
             throw new DDOException("Error registering Asset.", e);
         }
-
     }
 
     /**
@@ -332,6 +346,25 @@ public class NeverminedManager extends BaseManager {
      */
     private DDO registerAsset(AssetMetadata metadata, ProviderConfig providerConfig, Service service,
                               AuthConfig authConfig, AssetRewards assetRewards) throws DDOException {
+        return registerAsset(metadata, providerConfig, service, authConfig, assetRewards, BigInteger.valueOf(-1), BigInteger.ZERO);
+    }
+
+
+        /**
+         * Creates a new DDO, registering it on-chain through DidRegistry contract and
+         * off-chain in Metadata Api
+         *
+         * @param metadata       the metadata
+         * @param providerConfig the service Endpoints
+         * @param service        the service
+         * @param authConfig     auth configuration
+         * @param assetRewards   asset rewards distribution
+         * @return an instance of the DDO created
+         * @throws DDOException DDOException
+         */
+    private DDO registerAsset(AssetMetadata metadata, ProviderConfig providerConfig, Service service,
+                              AuthConfig authConfig, AssetRewards assetRewards,
+                              BigInteger cap, BigInteger royalties) throws DDOException {
 
         try {
 
@@ -397,7 +430,12 @@ public class NeverminedManager extends BaseManager {
             metadataEndpoint = UrlHelper.parseDDOUrl(metadataEndpoint, ddo.getDID().toString());
 
             // Registering DID
-            final boolean success = registerDID(ddo.fetchDIDSeed(), metadataEndpoint, ddo.getDID().getHash(), providerConfig.getProviderAddresses());
+            boolean success;
+            if (cap.compareTo(BigInteger.ZERO) >= 0) {
+                success = registerMintableDID(ddo.fetchDIDSeed(), metadataEndpoint, ddo.getDID().getHash(), providerConfig.getProviderAddresses(), cap, royalties);
+            }   else {
+                success = registerDID(ddo.fetchDIDSeed(), metadataEndpoint, ddo.getDID().getHash(), providerConfig.getProviderAddresses());
+            }
 
             if (!success)
                 throw new DIDRegisterException("Error registering DID on-chain");

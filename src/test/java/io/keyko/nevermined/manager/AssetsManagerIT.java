@@ -87,7 +87,8 @@ public class AssetsManagerIT {
         ddoBase.services.get(0).serviceEndpoint = newUrl;
         metadataApiService.createDDO(ddoBase);
 
-        boolean didRegistered= neverminedManager.registerMintableDID(seed, newUrl, checksum, Arrays.asList(), BigInteger.valueOf(100), BigInteger.ZERO);
+        boolean didRegistered= neverminedManager.registerMintableDID(
+                seed, newUrl, checksum, Arrays.asList(), BigInteger.valueOf(100), BigInteger.ZERO);
         assertTrue(didRegistered);
 
         assertEquals(BigInteger.ZERO, manager.balance(myAddress, did));

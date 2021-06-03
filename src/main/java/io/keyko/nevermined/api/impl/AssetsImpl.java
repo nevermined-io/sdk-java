@@ -73,6 +73,11 @@ public class AssetsImpl implements AssetsAPI {
         return this.create(metadata, providerConfig, new AuthConfig(providerConfig.getGatewayUrl()), assetRewards);
     }
 
+    @Override
+    public DDO createMintableDID(AssetMetadata metadata, ProviderConfig providerConfig, AssetRewards assetRewards, BigInteger cap, BigInteger royalties) throws DDOException {
+        return neverminedManager.registerAccessServiceAsset(metadata, providerConfig, new AuthConfig(providerConfig.getGatewayUrl()), assetRewards, cap, royalties);
+    }
+
 
     @Override
     public DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException {

@@ -72,13 +72,27 @@ public interface AssetsAPI {
     DDO create(AssetMetadata metadata, ProviderConfig providerConfig, AssetRewards assetRewards) throws DDOException;
 
     /**
-     * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
+     * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata. This asset will be mintable
      *
      * @param metadata       the metadata of the DDO
      * @param providerConfig the endpoints of the DDO's services
+     * @param assetRewards   the rewards to be distributed
+     * @param cap            max number of NFTs that can be minted
+     * @param royalties      royalties going to the oringinal creator after sales
      * @return an instance of the DDO created
      * @throws DDOException DDOException
      */
+    DDO createMintableDID(AssetMetadata metadata, ProviderConfig providerConfig, AssetRewards assetRewards, BigInteger cap, BigInteger royalties) throws DDOException;
+
+
+        /**
+         * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
+         *
+         * @param metadata       the metadata of the DDO
+         * @param providerConfig the endpoints of the DDO's services
+         * @return an instance of the DDO created
+         * @throws DDOException DDOException
+         */
     DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException;
 
     /**

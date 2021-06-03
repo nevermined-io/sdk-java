@@ -177,7 +177,27 @@ public class AssetsApiIT {
                 .getParameterByName("_amounts").value;
         assertTrue(_amounts.contains("10"));
         assertTrue(_amounts.contains("2"));
+    }
 
+    @Test
+    public void createMintable() throws Exception {
+
+        String clientAddress = neverminedAPI.getMainAccount().getAddress();
+        final AssetRewards assetRewards = getTestAssetRewards();
+        metadataBase.attributes.main.dateCreated = new Date();
+        DDO ddo = neverminedAPI.getAssetsAPI().createMintableDID(metadataBase, providerConfig, assetRewards, BigInteger.TEN, BigInteger.ZERO);
+
+        DID did = new DID(ddo.id);
+        DDO resolvedDDO = neverminedAPI.getAssetsAPI().resolve(did);
+        assertEquals(ddo.id, resolvedDDO.id);
+        assertTrue(resolvedDDO.services.size() == 4);
+
+        assertEquals(BigInteger.ZERO, neverminedAPI.getAssetsAPI().balance(clientAddress, did));
+        neverminedAPI.getAssetsAPI().mint(did, BigInteger.TEN);
+        assertEquals(BigInteger.TEN, neverminedAPI.getAssetsAPI().balance(clientAddress, did));
+
+        neverminedAPI.getAssetsAPI().burn(did, BigInteger.TWO);
+        assertEquals(BigInteger.valueOf(8), neverminedAPI.getAssetsAPI().balance(clientAddress, did));
     }
 
     @Test
