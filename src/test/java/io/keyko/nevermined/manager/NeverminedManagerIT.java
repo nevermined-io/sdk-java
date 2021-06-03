@@ -247,7 +247,7 @@ public class NeverminedManagerIT {
 
     @Test
     public void generateDID() throws Exception {
-        DID did= managerPublisher.generateDID(newRegisteredAsset());
+        DID did= managerPublisher.generateDID();
         assertEquals(64, did.getHash().length());
     }
 

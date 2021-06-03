@@ -5,7 +5,6 @@ import io.keyko.nevermined.exceptions.*;
 import io.keyko.nevermined.external.GatewayService;
 import io.keyko.nevermined.manager.AgreementsManager;
 import io.keyko.nevermined.manager.AssetsManager;
-import io.keyko.nevermined.manager.ConditionsManager;
 import io.keyko.nevermined.manager.NeverminedManager;
 import io.keyko.nevermined.models.AssetRewards;
 import io.keyko.nevermined.models.DDO;
