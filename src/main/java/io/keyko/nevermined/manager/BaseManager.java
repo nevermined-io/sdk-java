@@ -62,12 +62,19 @@ public abstract class BaseManager {
     protected LockPaymentConditionPayable lockCondition;
     protected EscrowPaymentCondition escrowCondition;
     protected AccessCondition accessCondition;
+    protected TransferNFTCondition transferNFTCondition;
+    protected TransferDIDOwnershipCondition transferDIDCondition;
+    protected NFTAccessCondition nftAccessCondition;
+    protected NFTHolderCondition nftHolderCondition;
     protected TemplateStoreManager templateStoreManager;
     protected AccessTemplate accessTemplate;
+    protected EscrowComputeExecutionTemplate escrowComputeExecutionTemplate;
+    protected NFTSalesTemplate nftSalesTemplate;
+    protected NFTAccessTemplate nftAccessTemplate;
+    protected DIDSalesTemplate didSalesTemplate;
     protected AgreementStoreManager agreementStoreManager;
     protected ConditionStoreManager conditionStoreManager;
     protected ComputeExecutionCondition computeExecutionCondition;
-    protected EscrowComputeExecutionTemplate escrowComputeExecutionTemplate;
     protected Condition condition;
     protected ContractAddresses contractAddresses = new ContractAddresses();
     protected Config config = ConfigFactory.load();
@@ -77,26 +84,26 @@ public abstract class BaseManager {
 
     public static class ContractAddresses {
 
-        private String lockRewardConditionAddress;
-        private String accessSecretStoreConditionAddress;
+        private String lockPaymentConditionAddress;
+        private String accessConditionAddress;
 
         public ContractAddresses() {
         }
 
         public String getLockPaymentConditionAddress() {
-            return lockRewardConditionAddress;
+            return lockPaymentConditionAddress;
         }
 
         public void setLockPaymentConditionAddress(String address) {
-            this.lockRewardConditionAddress = address;
+            this.lockPaymentConditionAddress = address;
         }
 
         public String getAccessConditionAddress() {
-            return accessSecretStoreConditionAddress;
+            return accessConditionAddress;
         }
 
         public void setAccessConditionAddress(String address) {
-            this.accessSecretStoreConditionAddress = address;
+            this.accessConditionAddress = address;
         }
     }
 
@@ -408,6 +415,39 @@ public abstract class BaseManager {
     }
 
     /**
+     * It sets the NFTSalesTemplate stub instance
+     *
+     * @param contract NFTSalesTemplate instance
+     * @return BaseManager instance
+     */
+    public BaseManager setNFTSalesTemplate(NFTSalesTemplate contract) {
+        this.nftSalesTemplate = contract;
+        return this;
+    }
+
+    /**
+     * It sets the NFTAccessTemplate stub instance
+     *
+     * @param contract NFTAccessTemplate instance
+     * @return BaseManager instance
+     */
+    public BaseManager setNFTAccessTemplate(NFTAccessTemplate contract) {
+        this.nftAccessTemplate = contract;
+        return this;
+    }
+
+    /**
+     * It sets the DIDSalesTemplate stub instance
+     *
+     * @param contract DIDSalesTemplate instance
+     * @return BaseManager instance
+     */
+    public BaseManager setDIDSalesTemplate(DIDSalesTemplate contract) {
+        this.didSalesTemplate = contract;
+        return this;
+    }
+
+    /**
      * It sets the DIDRegistry stub instance
      *
      * @param contract DIDRegistry instance
@@ -541,6 +581,86 @@ public abstract class BaseManager {
         return this;
     }
 
+    /**
+     * It gets the TransferNFTCondition stub instance
+     *
+     * @return TransferNFTCondition instance
+     */
+    public TransferNFTCondition getTransferNFTCondition() {
+        return transferNFTCondition;
+    }
+
+    /**
+     * It sets the TransferNFTCondition instance
+     *
+     * @param _condition TransferNFTCondition instance
+     * @return BaseManager instance
+     */
+    public BaseManager setTransferNFTCondition(TransferNFTCondition _condition) {
+        this.transferNFTCondition = _condition;
+        return this;
+    }
+
+    /**
+     * It gets the NFTAccessCondition stub instance
+     *
+     * @return NFTAccessCondition instance
+     */
+    public NFTAccessCondition getNFTAccessCondition() {
+        return nftAccessCondition;
+    }
+
+    /**
+     * It sets the NFTAccessCondition instance
+     *
+     * @param _condition NFTAccessCondition instance
+     * @return BaseManager instance
+     */
+    public BaseManager setNFTAccessCondition(NFTAccessCondition _condition) {
+        this.nftAccessCondition = _condition;
+        return this;
+    }
+
+    /**
+     * It gets the NFTHolderCondition stub instance
+     *
+     * @return NFTHolderCondition instance
+     */
+    public NFTHolderCondition getNFTHolderCondition() {
+        return nftHolderCondition;
+    }
+
+    /**
+     * It sets the NFTHolderCondition instance
+     *
+     * @param _condition NFTHolderCondition instance
+     * @return BaseManager instance
+     */
+    public BaseManager setNFTHolderCondition(NFTHolderCondition _condition) {
+        this.nftHolderCondition = _condition;
+        return this;
+    }
+
+    /**
+     * It gets the TransferDIDOwnershipCondition stub instance
+     *
+     * @return TransferDIDOwnershipCondition instance
+     */
+    public TransferDIDOwnershipCondition getTransferDIDCondition() {
+        return transferDIDCondition;
+    }
+
+    /**
+     * It sets the TransferDIDOwnershipCondition instance
+     *
+     * @param _condition TransferDIDOwnershipCondition instance
+     * @return BaseManager instance
+     */
+    public BaseManager setTransferDIDCondition(TransferDIDOwnershipCondition _condition) {
+        this.transferDIDCondition = _condition;
+        return this;
+    }
+
     public Account getMainAccount() {
         return mainAccount;
     }
@@ -582,6 +702,21 @@ public abstract class BaseManager {
     public String generateAccessGrantToken(String serviceAgreementId, DID did)
             throws CryptoException, IOException, CipherException {
         return JwtHelper.generateAccessGrantToken(getKeeperService().getCredentials(), serviceAgreementId, did.getDid());
+    }
+
+    /**
+     * Generate the Grant Token for the NFT Access service.
+     *
+     * @param serviceAgreementId The Service Agreement Id.
+     * @param did The did.
+     * @return String The Grant Token.
+     * @throws CryptoException CryptoException
+     * @throws IOException IOException
+     * @throws CipherException CipherException
+     */
+    public String generateNFTAccessGrantToken(String serviceAgreementId, DID did)
+            throws CryptoException, IOException, CipherException {
+        return JwtHelper.generateNFTAccessGrantToken(getKeeperService().getCredentials(), serviceAgreementId, did.getDid());
     }
 
     /**

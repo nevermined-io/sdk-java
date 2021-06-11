@@ -17,6 +17,7 @@ import io.keyko.nevermined.models.metadata.SearchResult;
 import io.keyko.nevermined.models.service.AuthConfig;
 import io.keyko.nevermined.models.service.ProviderConfig;
 import io.keyko.nevermined.models.service.Service;
+import io.keyko.nevermined.models.service.ServiceDescriptor;
 import io.keyko.nevermined.models.service.types.ComputingService;
 import io.reactivex.Flowable;
 
@@ -70,6 +71,11 @@ public class AssetsImpl implements AssetsAPI {
     @Override
     public DDO create(AssetMetadata metadata, ProviderConfig providerConfig, AssetRewards assetRewards) throws DDOException {
         return this.create(metadata, providerConfig, new AuthConfig(providerConfig.getGatewayUrl()), assetRewards);
+    }
+
+    @Override
+    public DDO create(AssetMetadata metadata, List<ServiceDescriptor> serviceDescriptors, ProviderConfig providerConfig, BigInteger cap, BigInteger royalties) throws DDOException {
+        return neverminedManager.registerAsset(metadata, serviceDescriptors, providerConfig, new AuthConfig(providerConfig.getGatewayUrl()), cap, royalties);
     }
 
     @Override

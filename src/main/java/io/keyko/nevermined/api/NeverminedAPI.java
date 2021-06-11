@@ -51,16 +51,24 @@ public class NeverminedAPI {
     private NeverminedToken tokenContract;
     private Dispenser dispenser;
     private DIDRegistry didRegistryContract;
-    private AccessTemplate accessTemplate;
     private LockPaymentConditionPayable lockPaymentCondition;
     private AccessCondition accessCondition;
     private EscrowPaymentCondition escrowPaymentCondition;
     private TemplateStoreManager templateStoreManagerContract;
     private AgreementStoreManager agreementStoreManagerContract;
     private ConditionStoreManager conditionStoreManager;
-
     private ComputeExecutionCondition computeExecutionCondition;
+    private TransferNFTCondition transferNFTCondition;
+    private TransferDIDOwnershipCondition transferDIDCondition;
+    private NFTAccessCondition nftAccessCondition;
+    private NFTHolderCondition nftHolderCondition;
+
+    private AccessTemplate accessTemplate;
     private EscrowComputeExecutionTemplate escrowComputeExecutionTemplate;
+    private NFTSalesTemplate nftSalesTemplate;
+    private NFTAccessTemplate nftAccessTemplate;
+    private DIDSalesTemplate didSalesTemplate;
+
 
     private AccountsAPI accountsAPI;
     private AgreementsAPI agreementsAPI;
@@ -170,9 +178,13 @@ public class NeverminedAPI {
             neverminedAPI.secretStoreManager = initializationHelper.getSecretStoreManager(neverminedAPI.secretStoreDto, neverminedAPI.evmDto);
 
             neverminedAPI.didRegistryContract = initializationHelper.loadDIDRegistryContract(neverminedAPI.keeperService);
-            neverminedAPI.accessTemplate = initializationHelper.loadAccessTemplate(neverminedAPI.keeperService);
             neverminedAPI.lockPaymentCondition = initializationHelper.loadLockPaymentCondition(neverminedAPI.keeperService);
             neverminedAPI.accessCondition = initializationHelper.loadAccessCondition(neverminedAPI.keeperService);
+            neverminedAPI.transferNFTCondition = initializationHelper.loadTransferNFTCondition(neverminedAPI.keeperService);
+            neverminedAPI.transferDIDCondition = initializationHelper.loadTransferDIDCondition(neverminedAPI.keeperService);
+            neverminedAPI.nftAccessCondition = initializationHelper.loadNFTAccessCondition(neverminedAPI.keeperService);
+            neverminedAPI.nftHolderCondition = initializationHelper.loadNFTHolderCondition(neverminedAPI.keeperService);
+
             neverminedAPI.escrowPaymentCondition = initializationHelper.loadEscrowPaymentCondition(neverminedAPI.keeperService);
             neverminedAPI.dispenser = initializationHelper.loadDispenserContract(neverminedAPI.keeperService);
             neverminedAPI.tokenContract = initializationHelper.loadNeverminedTokenContract(neverminedAPI.keeperService);
@@ -180,15 +192,27 @@ public class NeverminedAPI {
             neverminedAPI.agreementStoreManagerContract = initializationHelper.loadAgreementStoreManager(neverminedAPI.keeperService);
             neverminedAPI.conditionStoreManager = initializationHelper.loadConditionStoreManager(neverminedAPI.keeperService);
             neverminedAPI.computeExecutionCondition = initializationHelper.loadComputeExecutionCondition(neverminedAPI.keeperService);
+
+            neverminedAPI.accessTemplate = initializationHelper.loadAccessTemplate(neverminedAPI.keeperService);
             neverminedAPI.escrowComputeExecutionTemplate = initializationHelper.loadEscrowComputeExecutionTemplate(neverminedAPI.keeperService);
+            neverminedAPI.nftSalesTemplate = initializationHelper.loadNFTSalesTemplate(neverminedAPI.keeperService);
+            neverminedAPI.nftAccessTemplate = initializationHelper.loadNFTAccessTemplate(neverminedAPI.keeperService);
+            neverminedAPI.didSalesTemplate = initializationHelper.loadDIDSalesTemplate(neverminedAPI.keeperService);
 
             neverminedAPI.agreementsManager = initializationHelper.getAgreementsManager(neverminedAPI.keeperService, neverminedAPI.metadataApiService);
             neverminedAPI.agreementsManager
                     .setConditionStoreManagerContract(neverminedAPI.conditionStoreManager)
                     .setAgreementStoreManagerContract(neverminedAPI.agreementStoreManagerContract)
                     .setAccessTemplate(neverminedAPI.accessTemplate)
+                    .setNFTSalesTemplate(neverminedAPI.nftSalesTemplate)
+                    .setNFTAccessTemplate(neverminedAPI.nftAccessTemplate)
+                    .setDIDSalesTemplate(neverminedAPI.didSalesTemplate)
                     .setLockCondition(neverminedAPI.lockPaymentCondition)
                     .setAccessCondition(neverminedAPI.accessCondition)
+                    .setTransferNFTCondition(neverminedAPI.transferNFTCondition)
+                    .setTransferDIDCondition(neverminedAPI.transferDIDCondition)
+                    .setNFTAccessCondition(neverminedAPI.nftAccessCondition)
+                    .setNFTHolderCondition(neverminedAPI.nftHolderCondition)
                     .setEscrowCondition(neverminedAPI.escrowPaymentCondition)
                     .setComputeExecutionCondition(neverminedAPI.computeExecutionCondition)
                     .setEscrowComputeExecutionTemplate(neverminedAPI.escrowComputeExecutionTemplate);
@@ -209,12 +233,20 @@ public class NeverminedAPI {
                     .setDidRegistryContract(neverminedAPI.didRegistryContract)
                     .setConditionStoreManagerContract(neverminedAPI.conditionStoreManager)
                     .setAccessTemplate(neverminedAPI.accessTemplate)
+                    .setEscrowComputeExecutionTemplate(neverminedAPI.escrowComputeExecutionTemplate)
+                    .setDIDSalesTemplate(neverminedAPI.didSalesTemplate)
+                    .setNFTSalesTemplate(neverminedAPI.nftSalesTemplate)
+                    .setNFTAccessTemplate(neverminedAPI.nftAccessTemplate)
                     .setAgreementStoreManagerContract(neverminedAPI.agreementStoreManagerContract)
                     .setLockCondition(neverminedAPI.lockPaymentCondition)
                     .setAccessCondition(neverminedAPI.accessCondition)
                     .setEscrowCondition(neverminedAPI.escrowPaymentCondition)
                     .setComputeExecutionCondition(neverminedAPI.computeExecutionCondition)
-                    .setEscrowComputeExecutionTemplate(neverminedAPI.escrowComputeExecutionTemplate);
+                    .setNFTAccessCondition(neverminedAPI.nftAccessCondition)
+                    .setNFTHolderCondition(neverminedAPI.nftHolderCondition)
+                    .setTransferNFTCondition(neverminedAPI.transferNFTCondition)
+                    .setTransferDIDCondition(neverminedAPI.transferDIDCondition);
+
 
             neverminedAPI.assetsManager = initializationHelper.getAssetsManager(neverminedAPI.keeperService, neverminedAPI.metadataApiService);
             neverminedAPI.assetsManager
@@ -242,6 +274,10 @@ public class NeverminedAPI {
                     .setConditionStoreManagerContract(neverminedAPI.conditionStoreManager)
                     .setComputeExecutionCondition(neverminedAPI.computeExecutionCondition)
                     .setEscrowComputeExecutionTemplate(neverminedAPI.escrowComputeExecutionTemplate)
+                    .setNFTAccessCondition(neverminedAPI.nftAccessCondition)
+                    .setNFTHolderCondition(neverminedAPI.nftHolderCondition)
+                    .setTransferNFTCondition(neverminedAPI.transferNFTCondition)
+                    .setTransferDIDCondition(neverminedAPI.transferDIDCondition)
                     .setMainAccount(neverminedAPI.mainAccount)
                     .setEvmDto(neverminedAPI.evmDto);
 

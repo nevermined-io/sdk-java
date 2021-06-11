@@ -184,6 +184,7 @@ public abstract class ServiceAgreementHandler {
             // Amounts and Receivers parameters
             conditionsTemplate = conditionsTemplate.replaceAll("\\{parameter.receivers\\}", assetRewards.getReceiversArrayString());
             conditionsTemplate = conditionsTemplate.replaceAll("\\{parameter.amounts\\}", assetRewards.getAmountsArrayString());
+            conditionsTemplate = conditionsTemplate.replaceAll("\\{parameter._numberNfts\\}", assetRewards.numberNFTs.toString());
 
             params.forEach((_name, _func) -> {
                 if (_func instanceof byte[])

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.keyko.nevermined.api.config.NeverminedConfig;
+import io.keyko.nevermined.manager.ManagerHelper;
 import io.keyko.nevermined.models.Balance;
 import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.asset.AssetMetadata;
@@ -54,40 +55,8 @@ public class PermissionsIT {
         String providerAddress = config.getString("provider.address");
 
         providerConfig = new ProviderConfig(consumeUrl, metadataUrl, gatewayUrl, provenanceUrl, secretStoreEndpoint, providerAddress);
-
         neverminedAPI = NeverminedAPI.getInstance(config);
-
-        assertNotNull(neverminedAPI.getAssetsAPI());
-        assertNotNull(neverminedAPI.getMainAccount());
-
-        Properties properties = new Properties();
-        properties.put(NeverminedConfig.KEEPER_URL, config.getString("keeper.url"));
-        properties.put(NeverminedConfig.KEEPER_GAS_LIMIT, config.getString("keeper.gasLimit"));
-        properties.put(NeverminedConfig.KEEPER_GAS_PRICE, config.getString("keeper.gasPrice"));
-        properties.put(NeverminedConfig.KEEPER_TX_ATTEMPTS, config.getString("keeper.tx.attempts"));
-        properties.put(NeverminedConfig.KEEPER_TX_SLEEPDURATION, config.getString("keeper.tx.sleepDuration"));
-        properties.put(NeverminedConfig.METADATA_URL, config.getString("metadata.url"));
-        properties.put(NeverminedConfig.SECRETSTORE_URL, config.getString("secretstore.url"));
-        properties.put(NeverminedConfig.CONSUME_BASE_PATH, config.getString("consume.basePath"));
-        properties.put(NeverminedConfig.MAIN_ACCOUNT_ADDRESS, config.getString("account.parity.address2"));
-        properties.put(NeverminedConfig.MAIN_ACCOUNT_PASSWORD, config.getString("account.parity.password2"));
-        properties.put(NeverminedConfig.MAIN_ACCOUNT_CREDENTIALS_FILE, config.getString("account.parity.credentialsFile2"));
-        properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
-        properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
-        properties.put(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
-        properties.put(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.LockPaymentCondition.address"));
-        properties.put(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.EscrowPaymentCondition.address"));
-        properties.put(NeverminedConfig.ACCESS_TEMPLATE_ADDRESS, config.getString("contract.AccessTemplate.address"));
-        properties.put(NeverminedConfig.ACCESS_CONDITION_ADDRESS, config.getString("contract.AccessCondition.address"));
-        properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
-        properties.put(NeverminedConfig.NEVERMINED_TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
-        properties.put(NeverminedConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
-        properties.put(NeverminedConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
-
-        properties.put(NeverminedConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.ComputeExecutionCondition.address"));
-        properties.put(NeverminedConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.EscrowComputeExecutionTemplate.address"));
-
-        neverminedAPIConsumer = NeverminedAPI.getInstance(properties);
+        neverminedAPIConsumer = ManagerHelper.getNeverminedAPI(config, ManagerHelper.VmClient.parity, "2");
 
         neverminedAPIConsumer.getTokensAPI().request(BigInteger.TEN);
         Balance balance = neverminedAPIConsumer.getAccountsAPI().balance(neverminedAPIConsumer.getMainAccount());

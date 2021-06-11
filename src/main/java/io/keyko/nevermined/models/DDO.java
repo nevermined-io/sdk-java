@@ -25,6 +25,7 @@ import org.web3j.crypto.Hash;
 import org.web3j.crypto.Keys;
 import org.web3j.crypto.Sign;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.*;
 
@@ -235,6 +236,11 @@ DDO extends AbstractModel implements FromJsonToModel {
         this.did = new DID(id);
     }
 
+    public DDO setDID(DID _did) {
+        this.did = _did;
+        this.id = _did.getDid();
+        return this;
+    }
 
     public DDO addAuthentication(String id) {
         this.authentication.add(new Authentication(id));
@@ -268,11 +274,16 @@ DDO extends AbstractModel implements FromJsonToModel {
                         this.services.add(getMapperInstance().convertValue(service, ComputingService.class));
                     } else if (service.get("type").equals(Service.ServiceTypes.AUTHORIZATION.toString())) {
                         this.services.add(getMapperInstance().convertValue(service, AuthorizationService.class));
+                    } else if (service.get("type").equals(Service.ServiceTypes.NFT_ACCESS.toString())) {
+                        this.services.add(getMapperInstance().convertValue(service, NFTAccessService.class));
+                    } else if (service.get("type").equals(Service.ServiceTypes.NFT_SALES.toString())) {
+                        this.services.add(getMapperInstance().convertValue(service, NFTSalesService.class));
+                    } else if (service.get("type").equals(Service.ServiceTypes.DID_SALES.toString())) {
+                        this.services.add(getMapperInstance().convertValue(service, DIDSalesService.class));
                     } else {
                         this.services.add(getMapperInstance().convertValue(service, Service.class));
                     }
                 }
-
             }
 
         } catch (Exception ex) {
@@ -303,32 +314,31 @@ DDO extends AbstractModel implements FromJsonToModel {
      * @return DDO
      * @throws DDOException if there is an error calculating anything
      */
-    public DDO integrityBuilder(Credentials credentials) throws DDOException {
+    public static DDO integrityBuilder(DDO ddo, Credentials credentials) throws DDOException {
         try {
             // 1. Sorting services
-            sortServices();
+            Collections.sort(ddo.services, new DDOServiceIndexSorter());
 
             // 2. Setting up the checksums in the DDO.proof.checksum entry
-            proof.checksum= generateChecksums();
+            ddo.proof.checksum= DDO.generateChecksums(ddo);
 
             // 3. Calculating the DID Seed as a Hash of the DDO.services checksums
-            String didSeed = EthereumHelper.remove0x(Hash.sha3(toJson(proof.checksum)));
-            this.did = DID.getFromSeed(didSeed, credentials.getAddress());
-            this.id = this.did.getDid();
+            String _seed = EthereumHelper.remove0x(Hash.sha3(ddo.toJson(ddo.proof.checksum)));
+            DID didFromSeed = DID.getFromSeed(_seed, credentials.getAddress());
+            final String _id = didFromSeed.getDid();
 
             // 4. Completing the DDO.proof signing the DID and adding the rest of the values
-            Sign.SignatureData signatureData= EthereumHelper.signMessage(this.id, credentials);
-            proof.signatureValue= EncodingHelper.signatureToString(signatureData);
-            proof.creator= Keys.toChecksumAddress(credentials.getAddress());
-            proof.created= getDateNowFormatted();
+            Sign.SignatureData signatureData= EthereumHelper.signMessage(_id, credentials);
+            ddo.proof.signatureValue= EncodingHelper.signatureToString(signatureData);
+            ddo.proof.creator= Keys.toChecksumAddress(credentials.getAddress());
+            ddo.proof.created= getDateNowFormatted();
 
             // Replace any {did} entry in the JSON by the real DID generated
-            String ddoJson= this.toJson();
-
-            final DDO ddo = fromJSON(new TypeReference<DDO>() {},
-                    ddoJson.replaceAll("\\{did}", this.id));
-            ddo.did = this.did;
-            return ddo;
+            DDO newDDO = fromJSON(new TypeReference<DDO>() {},
+                    ddo.toJson().replaceAll("\\{did\\}", _id));
+            newDDO.id = _id;
+            newDDO.did = didFromSeed;
+            return newDDO;
 
         } catch (Exception ex)  {
             throw new DDOException("Unable to generate service checksum: " + ex.getMessage());
@@ -342,8 +352,6 @@ DDO extends AbstractModel implements FromJsonToModel {
             Service authService = this.getAuthorizationService();
 
             String filesJson = metadataService.toJson(metadataService.attributes.main.files);
-//            metadataService.attributes.encryptedFiles = secretStoreManager.encryptDocument(
-//                    did.getHash(), filesJson, authConfig.getThreshold());
             EncryptionResponse encryptionResponse = GatewayService.encrypt(
                     authConfig.getServiceEndpoint(), filesJson, authConfig.getService());
 
@@ -382,12 +390,11 @@ DDO extends AbstractModel implements FromJsonToModel {
         return this;
     }
 
-
-    public SortedMap<String, String> generateChecksums() throws DDOException {
+    public static SortedMap<String, String> generateChecksums(DDO ddo) throws DDOException {
 
         SortedMap<String, String> checksums = new TreeMap<>();
         try {
-            for (Service service : services) {
+            for (Service service : ddo.services) {
                 checksums.put(
                         String.valueOf(service.index),
                         service.attributes.main.checksum());
@@ -504,6 +511,35 @@ DDO extends AbstractModel implements FromJsonToModel {
         return null;
     }
 
+    @JsonIgnore
+    public DIDSalesService getDIDSalesService() {
+        for (Service service : services) {
+            if (service.type.equals(Service.ServiceTypes.DID_SALES.toString())) {
+                return (DIDSalesService) service;
+            }
+        }
+        return null;
+    }
+
+    @JsonIgnore
+    public NFTSalesService getNFTSalesService() {
+        for (Service service : services) {
+            if (service.type.equals(Service.ServiceTypes.NFT_SALES.toString())) {
+                return (NFTSalesService) service;
+            }
+        }
+        return null;
+    }
+
+    @JsonIgnore
+    public NFTAccessService getNFTAccessService() {
+        for (Service service : services) {
+            if (service.type.equals(Service.ServiceTypes.NFT_ACCESS.toString())) {
+                return (NFTAccessService) service;
+            }
+        }
+        return null;
+    }
 
     @JsonIgnore
     public static DDO cleanFileUrls(DDO ddo) {
@@ -516,6 +552,20 @@ DDO extends AbstractModel implements FromJsonToModel {
             }
         });
 
+        return ddo;
+    }
+
+    @JsonIgnore
+    public static DDO replaceConditionVariables(DDO ddo, String name, String value) {
+        try {
+            return DDO.fromJSON(new TypeReference<DDO>() {},
+                    ddo.toJson().replaceAll("\\{parameter." + name + "\\}", value)
+            );
+        } catch (JsonProcessingException e) {
+            log.error("Unable to parse DDO");
+        } catch (IOException e) {
+            log.error("Unable to generate DDO");
+        }
         return ddo;
     }
 

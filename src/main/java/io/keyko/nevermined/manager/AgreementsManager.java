@@ -27,6 +27,7 @@ import org.web3j.utils.Numeric;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -52,7 +53,7 @@ public class AgreementsManager extends BaseManager {
     }
 
     /**
-     * Create an agreement using the escrowAccessSecretStoreTemplate. This method should be more specific in the future when we have more than one template.
+     * Create an agreement using the AccessTemplate. This method should be more specific in the future when we have more than one template.
      *
      * @param agreementId    the agreement id
      * @param ddo the ddo
@@ -93,6 +94,84 @@ public class AgreementsManager extends BaseManager {
 
         log.debug("Creating agreement with id: " + agreementId);
         TransactionReceipt txReceipt = escrowComputeExecutionTemplate.createAgreement(
+                EncodingHelper.hexStringToBytes("0x" + agreementId),
+                EncodingHelper.hexStringToBytes("0x" + ddo.getDID().getHash()),
+                conditionIds,
+                service.retrieveTimeOuts(),
+                service.retrieveTimeLocks(),
+                Keys.toChecksumAddress(accessConsumer)
+        ).send();
+        return txReceipt.isStatusOK();
+    }
+
+    /**
+     * Create an agreement using the NFTSalesTemplate. This method should be more specific in the future when we have more than one template.
+     *
+     * @param agreementId    the agreement id
+     * @param ddo the ddo
+     * @param conditionIds   list with the conditions ids
+     * @param accessConsumer eth address of the consumer of the agreement.
+     * @param service an instance of Service
+     * @return a flag that is true if the agreement was successfully created.
+     * @throws Exception exception
+     */
+    public Boolean createNFTSalesAgreement(String agreementId, DDO ddo, List<byte[]> conditionIds,
+                                         String accessConsumer, Service service) throws Exception {
+
+        log.debug("Creating agreement with id: " + agreementId);
+        TransactionReceipt txReceipt = nftSalesTemplate.createAgreement(
+                EncodingHelper.hexStringToBytes("0x" + agreementId),
+                EncodingHelper.hexStringToBytes("0x" + ddo.getDID().getHash()),
+                Arrays.asList(conditionIds.get(1), conditionIds.get(0), conditionIds.get(2)),
+                service.retrieveTimeOuts(),
+                service.retrieveTimeLocks(),
+                Keys.toChecksumAddress(accessConsumer)
+        ).send();
+        return txReceipt.isStatusOK();
+    }
+
+    /**
+     * Create an agreement using the NFTAccessTemplate. This method should be more specific in the future when we have more than one template.
+     *
+     * @param agreementId    the agreement id
+     * @param ddo the ddo
+     * @param conditionIds   list with the conditions ids
+     * @param accessConsumer eth address of the consumer of the agreement.
+     * @param service an instance of Service
+     * @return a flag that is true if the agreement was successfully created.
+     * @throws Exception exception
+     */
+    public Boolean createNFTAccessAgreement(String agreementId, DDO ddo, List<byte[]> conditionIds,
+                                            String accessConsumer, Service service) throws Exception {
+
+        log.debug("Creating agreement with id: " + agreementId);
+        TransactionReceipt txReceipt = nftAccessTemplate.createAgreement(
+                EncodingHelper.hexStringToBytes("0x" + agreementId),
+                EncodingHelper.hexStringToBytes("0x" + ddo.getDID().getHash()),
+                Arrays.asList(conditionIds.get(1), conditionIds.get(0)),
+                service.retrieveTimeOuts(),
+                service.retrieveTimeLocks(),
+                Keys.toChecksumAddress(accessConsumer)
+        ).send();
+        return txReceipt.isStatusOK();
+    }
+
+    /**
+     * Create an agreement using the DIDSalesTemplate. This method should be more specific in the future when we have more than one template.
+     *
+     * @param agreementId    the agreement id
+     * @param ddo the ddo
+     * @param conditionIds   list with the conditions ids
+     * @param accessConsumer eth address of the consumer of the agreement.
+     * @param service an instance of Service
+     * @return a flag that is true if the agreement was successfully created.
+     * @throws Exception exception
+     */
+    public Boolean createDIDSalesAgreement(String agreementId, DDO ddo, List<byte[]> conditionIds,
+                                            String accessConsumer, Service service) throws Exception {
+
+        log.debug("Creating agreement with id: " + agreementId);
+        TransactionReceipt txReceipt = didSalesTemplate.createAgreement(
                 EncodingHelper.hexStringToBytes("0x" + agreementId),
                 EncodingHelper.hexStringToBytes("0x" + ddo.getDID().getHash()),
                 conditionIds,
@@ -148,7 +227,7 @@ public class AgreementsManager extends BaseManager {
 
 
     /**
-     * Auxiliar method to get the name of the different conditions address.
+     * Support method to get the name of the different conditions address.
      *
      * @param address contract address
      * @return string
@@ -159,6 +238,10 @@ public class AgreementsManager extends BaseManager {
         else if (this.accessCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.access.toString();
         else if (this.escrowCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.escrowPayment.toString();
         else if (this.computeExecutionCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.execCompute.toString();
+        else if (this.transferNFTCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.transferNFT.toString();
+        else if (this.transferDIDCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.transferDID.toString();
+        else if (this.nftAccessCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.nftAccess.toString();
+        else if (this.nftHolderCondition.getContractAddress().equals(address)) return Condition.ConditionTypes.nftHolder.toString();
         else log.error("The current address" + address + "is not a condition address.");
         throw new ConditionNotFoundException("The current address" + address + "is not a condition address.");
     }

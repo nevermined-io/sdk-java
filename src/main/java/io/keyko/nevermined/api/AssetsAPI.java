@@ -13,6 +13,7 @@ import io.keyko.nevermined.models.metadata.SearchResult;
 import io.keyko.nevermined.models.service.AuthConfig;
 import io.keyko.nevermined.models.service.ProviderConfig;
 import io.keyko.nevermined.models.service.Service;
+import io.keyko.nevermined.models.service.ServiceDescriptor;
 import io.keyko.nevermined.models.service.types.ComputingService;
 import io.reactivex.Flowable;
 
@@ -84,15 +85,28 @@ public interface AssetsAPI {
      */
     DDO createMintableDID(AssetMetadata metadata, ProviderConfig providerConfig, AssetRewards assetRewards, BigInteger cap, BigInteger royalties) throws DDOException;
 
+    /**
+     * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata. This asset will be mintable
+     *
+     * @param metadata       the metadata of the DDO
+     * @param serviceDescriptors the list of service descriptors attached to the asset
+     * @param providerConfig the endpoints of the DDO's services
+     * @param cap            max number of NFTs that can be minted
+     * @param royalties      royalties going to the oringinal creator after sales
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
+    DDO create(AssetMetadata metadata, List<ServiceDescriptor> serviceDescriptors, ProviderConfig providerConfig, BigInteger cap, BigInteger royalties) throws DDOException;
 
-        /**
-         * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
-         *
-         * @param metadata       the metadata of the DDO
-         * @param providerConfig the endpoints of the DDO's services
-         * @return an instance of the DDO created
-         * @throws DDOException DDOException
-         */
+
+    /**
+     * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
+     *
+     * @param metadata       the metadata of the DDO
+     * @param providerConfig the endpoints of the DDO's services
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
     DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException;
 
     /**

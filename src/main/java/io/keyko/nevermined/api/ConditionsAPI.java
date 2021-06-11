@@ -59,4 +59,17 @@ public interface ConditionsAPI {
      */
     boolean refundReward(String agreementId) throws Exception;
 
+    /**
+     * Transfer a NFT to a receiver using the NFT_SALES flow of the Service Agreements
+     *
+     * @param agreementId    the agreement id.
+     * @param did            the DID of the asset
+     * @param granteeAddress the public address to receive the nfts
+     * @param numberNFTs     the number of NFTs to transfer
+     * @param lockConditionId the identifier of the condition locking the funds
+     * @return a flag true if was executed successfully.
+     * @throws Exception exception
+     */
+    boolean transferNFT(String agreementId, DID did, String granteeAddress, BigInteger numberNFTs, String lockConditionId) throws Exception;
+
 }

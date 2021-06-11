@@ -94,8 +94,8 @@ public class ConditionsApiIT {
         assertTrue(neverminedAPI.getAgreementsAPI().create(ddo.getDID(), agreementId, 1, neverminedAPIConsumer.getMainAccount().address));
         AgreementStatus initialStatus = neverminedAPI.getAgreementsAPI().status(agreementId);
         assertEquals(BigInteger.ONE, initialStatus.conditions.get(0).conditions.get("lockPayment"));
-        assertEquals(BigInteger.ONE, initialStatus.conditions.get(0).conditions.get("accessSecretStore"));
-        assertEquals(BigInteger.ONE, initialStatus.conditions.get(0).conditions.get("escrowReward"));
+        assertEquals(BigInteger.ONE, initialStatus.conditions.get(0).conditions.get("access"));
+        assertEquals(BigInteger.ONE, initialStatus.conditions.get(0).conditions.get("escrowPayment"));
 
         final List<BigInteger> amounts = Arrays.asList(BigInteger.TEN, BigInteger.TWO);
         final List<String> receivers = Arrays.asList(
@@ -106,7 +106,6 @@ public class ConditionsApiIT {
         AgreementStatus statusAfterLockReward = neverminedAPI.getAgreementsAPI().status(agreementId);
         assertEquals(BigInteger.TWO, statusAfterLockReward.conditions.get(0).conditions.get(
                 Condition.ConditionTypes.lockPayment.toString()));
-      //  assertEquals(BigInteger.TWO, statusAfterLockReward.conditions.get(0).conditions.get("accessSecretStore"));
         assertEquals(BigInteger.ONE, statusAfterLockReward.conditions.get(0).conditions.get(
                 Condition.ConditionTypes.escrowPayment.toString()));
 

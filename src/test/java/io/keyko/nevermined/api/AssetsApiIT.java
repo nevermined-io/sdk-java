@@ -102,34 +102,7 @@ public class AssetsApiIT {
         assertNotNull(neverminedAPI.getAssetsAPI());
         assertNotNull(neverminedAPI.getMainAccount());
 
-        Properties properties = new Properties();
-        properties.put(NeverminedConfig.KEEPER_URL, config.getString("keeper.url"));
-        properties.put(NeverminedConfig.KEEPER_GAS_LIMIT, config.getString("keeper.gasLimit"));
-        properties.put(NeverminedConfig.KEEPER_GAS_PRICE, config.getString("keeper.gasPrice"));
-        properties.put(NeverminedConfig.KEEPER_TX_ATTEMPTS, config.getString("keeper.tx.attempts"));
-        properties.put(NeverminedConfig.KEEPER_TX_SLEEPDURATION, config.getString("keeper.tx.sleepDuration"));
-        properties.put(NeverminedConfig.METADATA_URL, config.getString("metadata.url"));
-        properties.put(NeverminedConfig.SECRETSTORE_URL, config.getString("secretstore.url"));
-        properties.put(NeverminedConfig.CONSUME_BASE_PATH, config.getString("consume.basePath"));
-        properties.put(NeverminedConfig.MAIN_ACCOUNT_ADDRESS, config.getString("account.parity.address2"));
-        properties.put(NeverminedConfig.MAIN_ACCOUNT_PASSWORD, config.getString("account.parity.password2"));
-        properties.put(NeverminedConfig.MAIN_ACCOUNT_CREDENTIALS_FILE, config.getString("account.parity.credentialsFile2"));
-        properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
-        properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
-        properties.put(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
-        properties.put(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.LockPaymentCondition.address"));
-        properties.put(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.EscrowPaymentCondition.address"));
-        properties.put(NeverminedConfig.ACCESS_TEMPLATE_ADDRESS, config.getString("contract.AccessTemplate.address"));
-        properties.put(NeverminedConfig.ACCESS_CONDITION_ADDRESS, config.getString("contract.AccessCondition.address"));
-        properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
-        properties.put(NeverminedConfig.NEVERMINED_TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
-        properties.put(NeverminedConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
-        properties.put(NeverminedConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
-
-        properties.put(NeverminedConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.ComputeExecutionCondition.address"));
-        properties.put(NeverminedConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.EscrowComputeExecutionTemplate.address"));
-
-        neverminedAPIConsumer = NeverminedAPI.getInstance(properties);
+        neverminedAPIConsumer = ManagerHelper.getNeverminedAPI(config, ManagerHelper.VmClient.parity, "2");
 
         keeper = ManagerHelper.getKeeper(config, ManagerHelper.VmClient.parity, "");
         AccessTemplate escrowAccessSecretStoreTemplate = ManagerHelper.loadAccessTemplate(keeper, config.getString("contract.AccessTemplate.address"));
@@ -177,27 +150,6 @@ public class AssetsApiIT {
                 .getParameterByName("_amounts").value;
         assertTrue(_amounts.contains("10"));
         assertTrue(_amounts.contains("2"));
-    }
-
-    @Test
-    public void createMintable() throws Exception {
-
-        String clientAddress = neverminedAPI.getMainAccount().getAddress();
-        final AssetRewards assetRewards = getTestAssetRewards();
-        metadataBase.attributes.main.dateCreated = new Date();
-        DDO ddo = neverminedAPI.getAssetsAPI().createMintableDID(metadataBase, providerConfig, assetRewards, BigInteger.TEN, BigInteger.ZERO);
-
-        DID did = new DID(ddo.id);
-        DDO resolvedDDO = neverminedAPI.getAssetsAPI().resolve(did);
-        assertEquals(ddo.id, resolvedDDO.id);
-        assertTrue(resolvedDDO.services.size() == 4);
-
-        assertEquals(BigInteger.ZERO, neverminedAPI.getNFTsAPI().balance(clientAddress, did));
-        neverminedAPI.getNFTsAPI().mint(did, BigInteger.TEN);
-        assertEquals(BigInteger.TEN, neverminedAPI.getNFTsAPI().balance(clientAddress, did));
-
-        neverminedAPI.getNFTsAPI().burn(did, BigInteger.TWO);
-        assertEquals(BigInteger.valueOf(8), neverminedAPI.getNFTsAPI().balance(clientAddress, did));
     }
 
     @Test

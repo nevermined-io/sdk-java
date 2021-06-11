@@ -33,7 +33,7 @@ public class Condition extends AbstractModel implements FromJsonToModel {
     }
 
 
-    public enum ConditionTypes {lockPayment, access, escrowPayment, hashLock, whitelisting, threshold, sign, execCompute}
+    public enum ConditionTypes {lockPayment, access, escrowPayment, hashLock, whitelisting, threshold, sign, execCompute, transferNFT, transferDID, nftAccess, nftHolder}
 
     @JsonProperty
     public String name;
