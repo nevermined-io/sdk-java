@@ -174,7 +174,7 @@ public class AgreementsManager extends BaseManager {
         TransactionReceipt txReceipt = didSalesTemplate.createAgreement(
                 EncodingHelper.hexStringToBytes("0x" + agreementId),
                 EncodingHelper.hexStringToBytes("0x" + ddo.getDID().getHash()),
-                conditionIds,
+                Arrays.asList(conditionIds.get(1), conditionIds.get(0), conditionIds.get(2)),
                 service.retrieveTimeOuts(),
                 service.retrieveTimeLocks(),
                 Keys.toChecksumAddress(accessConsumer)

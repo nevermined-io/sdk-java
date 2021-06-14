@@ -199,6 +199,43 @@ public interface ServiceBuilder {
         return _service;
     }
 
+
+    static DIDSalesService buildDIDSalesService(ProviderConfig providerConfig, String templateId, AssetRewards assetRewards, String creator) {
+
+        // Definition of a DEFAULT ServiceAgreement Contract
+        DIDSalesService.ServiceAgreementTemplate serviceAgreementTemplate = new DIDSalesService.ServiceAgreementTemplate();
+        serviceAgreementTemplate.contractName = "DIDSalesTemplate";
+        serviceAgreementTemplate.fulfillmentOrder = Arrays.asList(
+                "lockPayment.fulfill",
+                "transferDID.fulfill",
+                "escrowPayment.fulfill");
+
+        // AgreementCreated Event
+        Condition.Event executeAgreementEvent = new Condition.Event();
+        executeAgreementEvent.name = "AgreementCreated";
+        executeAgreementEvent.actorType = "consumer";
+        // Handler
+        Condition.Handler handler = new Condition.Handler();
+        handler.moduleName = "didSalesTemplate";
+        handler.functionName = "fulfillLockPaymentCondition";
+        handler.version = "0.1";
+        executeAgreementEvent.handler = handler;
+
+        serviceAgreementTemplate.events = Arrays.asList(executeAgreementEvent);
+
+        // The templateId of the service is the address of the Template contract
+        DIDSalesService _service = new DIDSalesService(providerConfig.getAccessEndpoint(),
+                Service.DEFAULT_DID_SALES_INDEX,
+                serviceAgreementTemplate,
+                templateId);
+        _service.attributes.main.name = "didSalesAgreement";
+        _service.attributes.main.price = assetRewards.totalPrice;
+        _service.attributes.main.creator = creator;
+        _service.attributes.main.datePublished = new Date();
+
+        return _service;
+    }
+
     /**
      * Gets the ConditionStatusMap Params of a DDO
      *

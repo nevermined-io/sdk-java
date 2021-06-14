@@ -331,7 +331,32 @@ public class ConditionsManager extends BaseManager {
                     ).send();
             return txReceipt.isStatusOK();
         } catch (TransactionException e) {
-            log.error("Error granting access to address " + granteeAddress + "to " + did + e.getMessage());
+            log.error("Error transferring NFT to address " + granteeAddress + "to " + did + e.getMessage());
+            return false;
+        }
+    }
+
+
+    /**
+     * Transfer the DID Ownership to a receiver using the DID_SALES flow of the Service Agreements
+     *
+     * @param agreementId    the agreement id.
+     * @param did            the DID of the asset
+     * @param granteeAddress the public address to receive the DID ownership
+     * @return a flag true if was executed successfully.
+     * @throws Exception exception
+     */
+    public Boolean transferDID(String agreementId, DID did, String granteeAddress) throws Exception {
+
+        try {
+            TransactionReceipt txReceipt = transferDIDCondition.fulfill(
+                    EncodingHelper.hexStringToBytes(agreementId),
+                    EncodingHelper.hexStringToBytes("0x" + did.getHash()),
+                    Keys.toChecksumAddress(granteeAddress)
+            ).send();
+            return txReceipt.isStatusOK();
+        } catch (TransactionException e) {
+            log.error("Error transferring DID to address " + granteeAddress + "to " + did + e.getMessage());
             return false;
         }
     }

@@ -79,6 +79,11 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
+    public DDO create(AssetMetadata metadata, List<ServiceDescriptor> serviceDescriptors, ProviderConfig providerConfig) throws DDOException {
+        return neverminedManager.registerAsset(metadata, serviceDescriptors, providerConfig, new AuthConfig(providerConfig.getGatewayUrl()), BigInteger.ZERO, BigInteger.ZERO);
+    }
+
+    @Override
     public DDO createMintableDID(AssetMetadata metadata, ProviderConfig providerConfig, AssetRewards assetRewards, BigInteger cap, BigInteger royalties) throws DDOException {
         return neverminedManager.registerAccessServiceAsset(metadata, providerConfig, new AuthConfig(providerConfig.getGatewayUrl()), assetRewards, cap, royalties);
     }
@@ -183,20 +188,20 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     public OrderResult order(DID did) throws OrderException, ServiceException, EscrowPaymentException {
-        return neverminedManager.purchaseAssetDirect(did);
+        return neverminedManager.orderDirect(did);
     }
 
     public OrderResult order(DID did, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowPaymentException {
-        return neverminedManager.purchaseAssetDirect(did, serviceTypes);
+        return neverminedManager.orderDirect(did, serviceTypes);
     }
 
     public OrderResult order(DID did, int serviceIndex, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowPaymentException {
-        return neverminedManager.purchaseAssetDirect(did, serviceIndex, serviceTypes);
+        return neverminedManager.orderDirect(did, serviceIndex, serviceTypes);
     }
 
 
     public OrderResult order(DID did, int serviceIndex) throws OrderException, ServiceException, EscrowPaymentException {
-        return neverminedManager.purchaseAssetDirect(did, serviceIndex);
+        return neverminedManager.orderDirect(did, serviceIndex);
     }
 
     @Override

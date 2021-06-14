@@ -3,6 +3,7 @@ package io.keyko.nevermined.api;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.config.NeverminedConfig;
@@ -19,10 +20,10 @@ import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.asset.OrderResult;
-import io.keyko.nevermined.models.service.Condition;
-import io.keyko.nevermined.models.service.ProviderConfig;
-import io.keyko.nevermined.models.service.Service;
+import io.keyko.nevermined.models.service.*;
 import io.keyko.nevermined.models.service.types.ComputingService;
+import io.keyko.nevermined.models.service.types.DIDSalesService;
+import io.keyko.nevermined.models.service.types.NFTAccessService;
 import io.reactivex.Flowable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -486,6 +487,57 @@ public class AssetsApiIT {
         assertEquals(initialProviders.size() +1, providersAfterRemoving.size());
         assertFalse(providersAfterRemoving.contains(someoneAddress.toLowerCase()));
         assertTrue(providersAfterRemoving.contains(someoneElseAddress.toLowerCase()));
+
+    }
+
+
+    @Test
+    public void transferDIDService() throws Exception {
+
+        final String DID_SALES_ENDPOINT = "http://localhost:8030/api/v1/gateway/services/access";
+        final String TEMPLATE_ID_DID_SALES = config.getString("contract.DIDSalesTemplate.address");
+
+        String consumerAddress = neverminedAPIConsumer.getMainAccount().getAddress();
+        final AssetRewards assetRewards = getTestAssetRewards();
+        metadataBase.attributes.main.dateCreated = new Date();
+
+        final DIDSalesService didSalesService = ServiceBuilder.buildDIDSalesService(
+                providerConfig.setAccessEndpoint(DID_SALES_ENDPOINT), TEMPLATE_ID_DID_SALES, assetRewards, consumerAddress);
+        final ServiceDescriptor didSalesDesc = new ServiceDescriptor(didSalesService, assetRewards);
+
+        DDO ddo = neverminedAPI.getAssetsAPI().create(
+                metadataBase, Arrays.asList(didSalesDesc), providerConfig, BigInteger.ZERO, BigInteger.ZERO);
+        DID did = new DID(ddo.id);
+
+        neverminedAPIConsumer.getAccountsAPI().requestTokens(new BigInteger(assetRewards.totalPrice));
+        Balance balance = neverminedAPIConsumer.getAccountsAPI().balance(neverminedAPIConsumer.getMainAccount());
+        log.debug("Account " + neverminedAPIConsumer.getMainAccount().address + " balance is: " + balance.toString());
+
+        OrderResult orderResult = neverminedAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_DID_SALES_INDEX);
+
+        assertTrue(orderResult.isAccessGranted());
+
+        final boolean transferOk = neverminedAPI.getConditionsAPI().transferDIDOwnership(
+                orderResult.getServiceAgreementId(),
+                did,
+                consumerAddress
+        );
+        assertTrue(transferOk);
+
+        final AgreementStatus status = neverminedAPIConsumer.getAgreementsAPI().status(orderResult.getServiceAgreementId());
+
+        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(),
+                status.conditions.get(0).conditions.get(Condition.ConditionTypes.lockPayment.toString()));
+
+        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(),
+                status.conditions.get(0).conditions.get(Condition.ConditionTypes.transferDID.toString()));
+
+        final Boolean downloaded = neverminedAPIConsumer.getAssetsAPI().ownerDownload(
+                did,
+                Service.DEFAULT_DID_SALES_INDEX,
+                tempFolder.getRoot().getAbsolutePath());
+
+        assertTrue(downloaded);
 
     }
 

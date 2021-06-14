@@ -5,7 +5,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.web3.KeeperService;
-import io.keyko.nevermined.api.config.NeverminedConfig;
 import io.keyko.nevermined.contracts.AccessTemplate;
 import io.keyko.nevermined.contracts.TemplateStoreManager;
 import io.keyko.nevermined.manager.ManagerHelper;
@@ -29,7 +28,10 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 

@@ -76,7 +76,7 @@ public class AgreementsManagerIT {
         neverminedAPIConsumer = ManagerHelper.getNeverminedAPI(config, ManagerHelper.VmClient.parity, "2");
 
         neverminedAPIConsumer.getTokensAPI().request(BigInteger.TEN);
-        
+
         agreementsManager = AgreementsManager.getInstance(keeperConsumer, metadataApiService);
         conditionsManager = ConditionsManager.getInstance(keeperConsumer, metadataApiService);
         accessCondition = ManagerHelper.loadAccessConditionContract(keeperConsumer, config.getString("contract.AccessCondition.address"));

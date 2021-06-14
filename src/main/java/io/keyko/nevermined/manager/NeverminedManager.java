@@ -444,6 +444,7 @@ public class NeverminedManager extends BaseManager {
 
             if (null != ServiceDescriptor.fetchServiceByType(serviceDescriptors, Service.ServiceTypes.ACCESS) ||
                     null != ServiceDescriptor.fetchServiceByType(serviceDescriptors, Service.ServiceTypes.NFT_ACCESS) ||
+                    null != ServiceDescriptor.fetchServiceByType(serviceDescriptors, Service.ServiceTypes.DID_SALES) ||
                     null != ServiceDescriptor.fetchServiceByType(serviceDescriptors, Service.ServiceTypes.COMPUTE))  {
 
                 if (authConfig.getService().equals(AuthorizationService.AuthTypes.SECRET_STORE))
@@ -510,8 +511,8 @@ public class NeverminedManager extends BaseManager {
      * @throws OrderException        OrderException
      * @throws ServiceException      ServiceException
      */
-    public OrderResult purchaseAssetDirect(DID did) throws OrderException, ServiceException {
-        return purchaseAssetDirect(did, -1, Service.ServiceTypes.ACCESS);
+    public OrderResult orderDirect(DID did) throws OrderException, ServiceException {
+        return orderDirect(did, -1, Service.ServiceTypes.ACCESS);
     }
 
     /**
@@ -524,9 +525,9 @@ public class NeverminedManager extends BaseManager {
      * @throws OrderException        OrderException
      * @throws ServiceException      ServiceException
      */
-    public OrderResult purchaseAssetDirect(DID did, int serviceIndex)
+    public OrderResult orderDirect(DID did, int serviceIndex)
             throws OrderException, ServiceException {
-        return purchaseAssetDirect(did, serviceIndex, null);
+        return orderDirect(did, serviceIndex, null);
     }
 
     /**
@@ -539,9 +540,9 @@ public class NeverminedManager extends BaseManager {
      * @throws OrderException        OrderException
      * @throws ServiceException      ServiceException
      */
-    public OrderResult purchaseAssetDirect(DID did, Service.ServiceTypes serviceType)
+    public OrderResult orderDirect(DID did, Service.ServiceTypes serviceType)
             throws OrderException, ServiceException {
-        return purchaseAssetDirect(did, -1, serviceType);
+        return orderDirect(did, -1, serviceType);
     }
 
     /**
@@ -555,7 +556,7 @@ public class NeverminedManager extends BaseManager {
      * @throws OrderException        OrderException
      * @throws ServiceException      ServiceException
      */
-    public OrderResult purchaseAssetDirect(DID did, int serviceIndex, Service.ServiceTypes serviceType)
+    public OrderResult orderDirect(DID did, int serviceIndex, Service.ServiceTypes serviceType)
             throws OrderException, ServiceException {
 
         String serviceAgreementId = ServiceAgreementHandler.generateSlaId();

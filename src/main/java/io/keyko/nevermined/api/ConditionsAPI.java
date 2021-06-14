@@ -72,4 +72,15 @@ public interface ConditionsAPI {
      */
     boolean transferNFT(String agreementId, DID did, String granteeAddress, BigInteger numberNFTs, String lockConditionId) throws Exception;
 
+    /**
+     * Transfer the DID Ownership to a receiver using the DID_SALES flow of the Service Agreements
+     *
+     * @param agreementId    the agreement id.
+     * @param did            the DID of the asset
+     * @param granteeAddress the public address to receive the DID Ownership
+     * @return a flag true if was executed successfully.
+     * @throws Exception exception
+     */
+    boolean transferDIDOwnership(String agreementId, DID did, String granteeAddress) throws Exception;
+
 }

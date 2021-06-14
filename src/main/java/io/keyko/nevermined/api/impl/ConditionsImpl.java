@@ -49,4 +49,9 @@ public class ConditionsImpl implements ConditionsAPI {
     public boolean transferNFT(String agreementId, DID did, String grantee, BigInteger numberNFTs, String lockConditionId) throws Exception {
         return conditionsManager.transferNFT(agreementId, did, grantee, numberNFTs, lockConditionId);
     }
+
+    @Override
+    public boolean transferDIDOwnership(String agreementId, DID did, String granteeAddress) throws Exception {
+        return conditionsManager.transferDID(agreementId, did, granteeAddress);
+    }
 }
