@@ -244,30 +244,29 @@ public interface ServiceBuilder {
      * @param assetRewards the asset rewards configuration
      * @return a list of Conditions
      */
-    static List<Condition> getGenericConditionParams(Service service, Config config, AssetRewards assetRewards) throws DDOException {
-        return getGenericConditionParams(service, config, assetRewards, new HashMap<>());
+    static List<Condition> getGenericConditionParams(Service service, AssetRewards assetRewards) throws DDOException {
+        return getGenericConditionParams(service, assetRewards, new HashMap<>());
     }
 
     /**
      * Gets the ConditionStatusMap Params of a DDO
      *
      * @param service   the service
-     * @param config    the config object including the contract addresses
      * @param assetRewards the asset rewards configuration
      * @param additionalOptions the config object including the contract addresses
      * @return a list of Conditions
      */
-    static List<Condition> getGenericConditionParams(Service service, Config config, AssetRewards assetRewards, Map<String, String> additionalOptions) throws DDOException {
+    static List<Condition> getGenericConditionParams(Service service, AssetRewards assetRewards, Map<String, String> additionalOptions) throws DDOException {
         Map<String, Object> params = new HashMap<>();
         additionalOptions.entrySet().forEach(
                 e -> params.put(e.getKey(), e.getValue())
         );
 
-        final HashMap<String, HashMap<String, String>> contractNames = (HashMap<String, HashMap<String, String>>) config.getAnyRef("contract");
-        for (String name: contractNames.keySet())    {
-            String configToken = "contract." + name + ".address";
-            params.put(configToken, config.getString(configToken));
-        }
+//        final HashMap<String, HashMap<String, String>> contractNames = (HashMap<String, HashMap<String, String>>) config.getAnyRef("contract");
+//        for (String name: contractNames.keySet())    {
+//            String configToken = "contract." + name + ".address";
+//            params.put(configToken, config.getString(configToken));
+//        }
 
         params.put("parameter.price", assetRewards.totalPrice);
         params.put("parameter.tokenAddress", assetRewards.tokenAddress);

@@ -23,7 +23,7 @@ public interface AgreementsAPI {
     boolean create(DID did, String agreementId, int serviceIndex, String consumerAddress) throws ServiceAgreementException;
 
     /**
-     * Get the status of a service agreement.
+     * Get the status of a service agreement and the status of all the conditions part of that agreement
      *
      * @param agreementId id of the agreement
      * @return AgreementStatus with condition status of each of the agreement's conditions.

@@ -2,8 +2,6 @@ package io.keyko.nevermined.manager;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
-
 import io.keyko.common.exceptions.CryptoException;
 import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.helpers.EthereumHelper;
@@ -49,7 +47,7 @@ public abstract class BaseManager {
 
     protected static final Logger log = LogManager.getLogger(BaseManager.class);
     private static final int MAX_SS_RETRIES = 10;
-    private static final long SS_DECRYPTION_SLEEP = 1000l;
+    private static final long SS_DECRYPTION_SLEEP = 1000L;
 
     private KeeperService keeperService;
     private MetadataApiService metadataApiService;
@@ -77,7 +75,6 @@ public abstract class BaseManager {
     protected ComputeExecutionCondition computeExecutionCondition;
     protected Condition condition;
     protected ContractAddresses contractAddresses = new ContractAddresses();
-    protected Config config = ConfigFactory.load();
 
     protected Account mainAccount;
     protected String providerAddress;

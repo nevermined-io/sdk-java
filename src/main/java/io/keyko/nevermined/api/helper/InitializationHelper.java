@@ -328,7 +328,7 @@ public class InitializationHelper {
      */
     public EscrowPaymentCondition loadEscrowPaymentCondition(KeeperService keeper) {
         return EscrowPaymentCondition.load(
-                neverminedConfig.getEscrowPaymentConditionConditionsAddress(),
+                neverminedConfig.getEscrowPaymentConditionAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()

@@ -51,7 +51,7 @@ public class NeverminedConfigFactory {
         neverminedConfig.setFaucetUrl((String) properties.getOrDefault(NeverminedConfig.FAUCET_URL, DEFAULT_FAUCET_URL));
         neverminedConfig.setProviderAddress((String) properties.getOrDefault(NeverminedConfig.PROVIDER_ADDRESS, ""));
         neverminedConfig.setDidRegistryAddress((String) properties.getOrDefault(NeverminedConfig.DID_REGISTRY_ADDRESS, ""));
-        neverminedConfig.setEscrowPaymentConditionConditionsAddress((String) properties.getOrDefault(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, ""));
+        neverminedConfig.setEscrowPaymentConditionAddress((String) properties.getOrDefault(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, ""));
         neverminedConfig.setAccessTemplateAddress((String) properties.getOrDefault(NeverminedConfig.ACCESS_TEMPLATE_ADDRESS, ""));
         neverminedConfig.setNFTSalesTemplateAddress((String) properties.getOrDefault(NeverminedConfig.NFT_SALES_TEMPLATE_ADDRESS, ""));
         neverminedConfig.setNFTAccessTemplateAddress((String) properties.getOrDefault(NeverminedConfig.NFT_ACCESS_TEMPLATE_ADDRESS, ""));

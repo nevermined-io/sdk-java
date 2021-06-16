@@ -419,10 +419,13 @@ public class NeverminedManager extends BaseManager {
             // Initializing DDO
             DDO ddo = this.buildDDO(metadataService, getMainAccount().address);
 
+            Map<String, String> additionalOptions = Map.of(
+                    "contract.EscrowPaymentCondition.address", escrowCondition.getContractAddress()
+            );
             // Adding services to DDO
             for (ServiceDescriptor _serviceDescriptor : serviceDescriptors) {
                 List<Condition> conditions= ServiceBuilder.getGenericConditionParams(
-                        _serviceDescriptor.service, config, _serviceDescriptor.assetRewards);
+                        _serviceDescriptor.service, _serviceDescriptor.assetRewards, additionalOptions);
                 _serviceDescriptor.service.attributes.serviceAgreementTemplate.conditions = conditions;
                 ddo.addService(_serviceDescriptor.service);
             }

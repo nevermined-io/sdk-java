@@ -140,7 +140,7 @@ public class NeverminedConfig {
                     + NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS);
         }
 
-        if (neverminedConfig.getEscrowPaymentConditionConditionsAddress() == null || neverminedConfig.getEscrowPaymentConditionConditionsAddress().isEmpty()) {
+        if (neverminedConfig.getEscrowPaymentConditionAddress() == null || neverminedConfig.getEscrowPaymentConditionAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of EscrowPaymentCondition Contract must be set with the property "
                     + NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS);
@@ -314,11 +314,11 @@ public class NeverminedConfig {
         return this;
     }
 
-    public String getEscrowPaymentConditionConditionsAddress() {
+    public String getEscrowPaymentConditionAddress() {
         return escrowPaymentAddress;
     }
 
-    public NeverminedConfig setEscrowPaymentConditionConditionsAddress(String address) {
+    public NeverminedConfig setEscrowPaymentConditionAddress(String address) {
         this.escrowPaymentAddress = address;
         return this;
     }
