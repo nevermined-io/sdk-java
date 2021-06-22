@@ -25,15 +25,25 @@ public class NeverminedConfig {
     public static final String DID_REGISTRY_ADDRESS = "contract.DIDRegistry.address";
     public static final String AGREEMENT_STORE_MANAGER_ADDRESS = "contract.AgreementStoreManager.address";
     public static final String CONDITION_STORE_MANAGER_ADDRESS = "contract.ConditionStoreManager.address";
-    public static final String LOCKPAYMENT_CONDITIONS_ADDRESS = "contract.LockPaymentCondition.address";
-    public static final String ESCROWPAYMENT_CONDITIONS_ADDRESS = "contract.EscrowPaymentCondition.address";
-    public static final String ACCESS_TEMPLATE_ADDRESS = "contract.AccessTemplate.address";
     public static final String TEMPLATE_STORE_MANAGER_ADDRESS = "contract.TemplateStoreManager.address";
-    public static final String ACCESS_CONDITION_ADDRESS = "contract.AccessCondition.address";
     public static final String NEVERMINED_TOKEN_ADDRESS = "contract.NeverminedToken.address";
     public static final String DISPENSER_ADDRESS = "contract.Dispenser.address";
+
+    public static final String LOCKPAYMENT_CONDITIONS_ADDRESS = "contract.LockPaymentCondition.address";
+    public static final String ACCESS_CONDITION_ADDRESS = "contract.AccessCondition.address";
+    public static final String ESCROWPAYMENT_CONDITIONS_ADDRESS = "contract.EscrowPaymentCondition.address";
     public static final String COMPUTE_EXECUTION_CONDITION_ADDRESS = "contract.ComputeExecutionCondition.address";
-    public static final String ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS = "contract.EscrowComputeExecutionTemplate.address";
+    public static final String TRANSFER_NFT_CONDITION_ADDRESS = "contract.TransferNFTCondition.address";
+    public static final String TRANSFER_DID_CONDITION_ADDRESS = "contract.TransferDIDOwnershipCondition.address";
+    public static final String NFT_ACCESS_CONDITION_ADDRESS = "contract.NFTAccessCondition.address";
+    public static final String NFT_HOLDER_CONDITION_ADDRESS = "contract.NFTHolderCondition.address";
+
+    public static final String ACCESS_TEMPLATE_ADDRESS = "contract.AccessTemplate.address";
+    public static final String ESCROW_COMPUTE_EXECUTION_TEMPLATE_ADDRESS = "contract.EscrowComputeExecutionTemplate.address";
+    public static final String NFT_SALES_TEMPLATE_ADDRESS = "contract.NFTSalesTemplate.address";
+    public static final String NFT_ACCESS_TEMPLATE_ADDRESS = "contract.NFTAccessTemplate.address";
+    public static final String DID_SALES_TEMPLATE_ADDRESS = "contract.DIDSalesTemplate.address";
+
     public static final String CONSUME_BASE_PATH = "consume.basePath";
 
     private String keeperUrl;
@@ -51,15 +61,25 @@ public class NeverminedConfig {
     private String didRegistryAddress;
     private String agreementStoreManagerAddress;
     private String conditionStoreManagerAddress;
-    private String escrowRewardAddress;
-    private String escrowAccessSecretStoreTemplateAddress;
-    private String lockRewardAddress;
-    private String accessSsConditionsAddress;
+    private String escrowPaymentAddress;;
+    private String lockPaymentAddress;
+    private String accessConditionsAddress;
+    private String transferNFTConditionAddress;
+    private String transferDIDConditionAddress;
+    private String nftAccessConditionAddress;
+    private String nftHolderConditionAddress;
+
     private String tokenAddress;
     private String templateStoreManagerAddress;
     private String dispenserAddress;
     private String computeExecutionConditionAddress;
+
+    private String accessTemplateAddress;
     private String escrowComputeExecutionTemplateAddress;
+    private String nftSalesTemplateAddress;
+    private String nftAccessTemplateAddress;
+    private String didSalesTemplateAddress;
+
     private String consumeBasePath;
 
     /**
@@ -109,7 +129,6 @@ public class NeverminedConfig {
                     + NeverminedConfig.DID_REGISTRY_ADDRESS);
         }
 
-
         if (neverminedConfig.getAgreementStoreManagerAddress() == null || neverminedConfig.getAgreementStoreManagerAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of agreementStoreManager Contract must be set with the property "
@@ -121,7 +140,7 @@ public class NeverminedConfig {
                     + NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS);
         }
 
-        if (neverminedConfig.getEscrowPaymentConditionConditionsAddress() == null || neverminedConfig.getEscrowPaymentConditionConditionsAddress().isEmpty()) {
+        if (neverminedConfig.getEscrowPaymentConditionAddress() == null || neverminedConfig.getEscrowPaymentConditionAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of EscrowPaymentCondition Contract must be set with the property "
                     + NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS);
@@ -133,16 +152,40 @@ public class NeverminedConfig {
                     + NeverminedConfig.ACCESS_TEMPLATE_ADDRESS);
         }
 
-        if (neverminedConfig.getLockrewardConditionsAddress() == null || neverminedConfig.getLockrewardConditionsAddress().isEmpty()) {
+        if (neverminedConfig.getNFTSalesTemplateAddress() == null || neverminedConfig.getNFTSalesTemplateAddress().isEmpty()) {
+            validation.setValid(false);
+            validation.addErrorMessage("The Address of NFTSalesTemplate Contract must be set with the property "
+                    + NeverminedConfig.NFT_SALES_TEMPLATE_ADDRESS);
+        }
+
+        if (neverminedConfig.getNFTAccessTemplateAddress() == null || neverminedConfig.getNFTAccessTemplateAddress().isEmpty()) {
+            validation.setValid(false);
+            validation.addErrorMessage("The Address of NFTAccessTemplate Contract must be set with the property "
+                    + NeverminedConfig.NFT_ACCESS_TEMPLATE_ADDRESS);
+        }
+
+        if (neverminedConfig.getDIDSalesTemplateAddress() == null || neverminedConfig.getDIDSalesTemplateAddress().isEmpty()) {
+            validation.setValid(false);
+            validation.addErrorMessage("The Address of DIDSalesTemplate Contract must be set with the property "
+                    + NeverminedConfig.DID_SALES_TEMPLATE_ADDRESS);
+        }
+
+        if (neverminedConfig.getLockPaymentConditionsAddress() == null || neverminedConfig.getLockPaymentConditionsAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of LockReward Contract must be set with the property "
                     + NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS);
         }
 
-        if (neverminedConfig.getAccessSsConditionsAddress() == null || neverminedConfig.getAccessSsConditionsAddress().isEmpty()) {
+        if (neverminedConfig.getAccessConditionsAddress() == null || neverminedConfig.getAccessConditionsAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of AccessSecretsToreConditions Contract must be set with the property "
                     + NeverminedConfig.ACCESS_CONDITION_ADDRESS);
+        }
+
+        if (neverminedConfig.getTransferNFTConditionAddress() == null || neverminedConfig.getTransferNFTConditionAddress().isEmpty()) {
+            validation.setValid(false);
+            validation.addErrorMessage("The Address of TransferNFTCondition Contract must be set with the property "
+                    + NeverminedConfig.TRANSFER_NFT_CONDITION_ADDRESS);
         }
 
         if (neverminedConfig.getTemplateStoreManagerAddress() == null || neverminedConfig.getTemplateStoreManagerAddress().isEmpty()) {
@@ -160,7 +203,7 @@ public class NeverminedConfig {
         if (neverminedConfig.getEscrowComputeExecutionTemplateAddress()== null || neverminedConfig.getEscrowComputeExecutionTemplateAddress().isEmpty()) {
             validation.setValid(false);
             validation.addErrorMessage("The Address of EscrowComputeExecutionTemplate Contract must be set with the property "
-                    + NeverminedConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS);
+                    + NeverminedConfig.ESCROW_COMPUTE_EXECUTION_TEMPLATE_ADDRESS);
         }
 
         if (neverminedConfig.getMainAccountAddress() == null || neverminedConfig.getMainAccountAddress().isEmpty()) {
@@ -271,12 +314,12 @@ public class NeverminedConfig {
         return this;
     }
 
-    public String getEscrowPaymentConditionConditionsAddress() {
-        return escrowRewardAddress;
+    public String getEscrowPaymentConditionAddress() {
+        return escrowPaymentAddress;
     }
 
-    public NeverminedConfig setEscrowPaymentConditionConditionsAddress(String address) {
-        this.escrowRewardAddress = address;
+    public NeverminedConfig setEscrowPaymentConditionAddress(String address) {
+        this.escrowPaymentAddress = address;
         return this;
     }
 
@@ -298,21 +341,47 @@ public class NeverminedConfig {
         return this;
     }
 
-    public String getLockrewardConditionsAddress() {
-        return lockRewardAddress;
+    public String getLockPaymentConditionsAddress() {
+        return lockPaymentAddress;
     }
 
-    public NeverminedConfig setLockrewardConditionsAddress(String address) {
-        this.lockRewardAddress = address;
+    public NeverminedConfig setLockPaymentConditionsAddress(String address) {
+        this.lockPaymentAddress = address;
         return this;
     }
 
-    public String getAccessSsConditionsAddress() {
-        return accessSsConditionsAddress;
+    public String getAccessConditionsAddress() {
+        return accessConditionsAddress;
     }
 
-    public NeverminedConfig setAccessSsConditionsAddress(String address) {
-        this.accessSsConditionsAddress = address;
+    public NeverminedConfig setAccessConditionsAddress(String address) { this.accessConditionsAddress = address; return this; }
+
+    public String getTransferNFTConditionAddress() { return transferNFTConditionAddress; }
+
+    public String getNFTAccessConditionAddress() {
+        return nftAccessConditionAddress;
+    }
+
+    public NeverminedConfig setNFTAccessConditionAddress(String address) { this.nftAccessConditionAddress = address; return this; }
+
+    public String getNFTHolderConditionAddress() {
+        return nftHolderConditionAddress;
+    }
+
+    public NeverminedConfig setNFTHolderConditionAddress(String address) { this.nftHolderConditionAddress = address; return this; }
+
+
+    public NeverminedConfig setTransferNFTConditionAddress(String address) {
+        this.transferNFTConditionAddress = address;
+        return this;
+    }
+
+    public String getTransferDIDConditionAddress() {
+        return transferDIDConditionAddress;
+    }
+
+    public NeverminedConfig setTransferDIDConditionAddress(String address) {
+        this.transferDIDConditionAddress = address;
         return this;
     }
 
@@ -381,11 +450,35 @@ public class NeverminedConfig {
     }
 
     public String getAccessTemplateAddress() {
-        return escrowAccessSecretStoreTemplateAddress;
+        return accessTemplateAddress;
     }
 
     public void setAccessTemplateAddress(String escrowAccessSecretStoreTemplateAddress) {
-        this.escrowAccessSecretStoreTemplateAddress = escrowAccessSecretStoreTemplateAddress;
+        this.accessTemplateAddress = escrowAccessSecretStoreTemplateAddress;
+    }
+
+    public String getNFTSalesTemplateAddress() {
+        return nftSalesTemplateAddress;
+    }
+
+    public void setNFTSalesTemplateAddress(String address) {
+        this.nftSalesTemplateAddress = address;
+    }
+
+    public String getNFTAccessTemplateAddress() {
+        return nftAccessTemplateAddress;
+    }
+
+    public void setNFTAccessTemplateAddress(String address) {
+        this.nftAccessTemplateAddress = address;
+    }
+
+    public String getDIDSalesTemplateAddress() {
+        return didSalesTemplateAddress;
+    }
+
+    public void setDIDSalesTemplateAddress(String address) {
+        this.didSalesTemplateAddress = address;
     }
 
     public String getProviderAddress() {

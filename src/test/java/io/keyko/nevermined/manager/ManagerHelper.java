@@ -86,20 +86,29 @@ public abstract class ManagerHelper {
         properties.put(NeverminedConfig.METADATA_URL, config.getString("metadata.url"));
         properties.put(NeverminedConfig.SECRETSTORE_URL, config.getString("secretstore.url"));
         properties.put(NeverminedConfig.CONSUME_BASE_PATH, config.getString("consume.basePath"));
+        properties.put(NeverminedConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
 
         properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
         properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
         properties.put(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
-        properties.put(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.LockPaymentCondition.address"));
-        properties.put(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.EscrowPaymentCondition.address"));
-        properties.put(NeverminedConfig.ACCESS_TEMPLATE_ADDRESS, config.getString("contract.AccessTemplate.address"));
-        properties.put(NeverminedConfig.ACCESS_CONDITION_ADDRESS, config.getString("contract.AccessCondition.address"));
         properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
         properties.put(NeverminedConfig.NEVERMINED_TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
         properties.put(NeverminedConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
+
+        properties.put(NeverminedConfig.ACCESS_TEMPLATE_ADDRESS, config.getString("contract.AccessTemplate.address"));
+        properties.put(NeverminedConfig.ESCROW_COMPUTE_EXECUTION_TEMPLATE_ADDRESS, config.getString("contract.EscrowComputeExecutionTemplate.address"));
+        properties.put(NeverminedConfig.DID_SALES_TEMPLATE_ADDRESS, config.getString("contract.DIDSalesTemplate.address"));
+        properties.put(NeverminedConfig.NFT_SALES_TEMPLATE_ADDRESS, config.getString("contract.NFTSalesTemplate.address"));
+        properties.put(NeverminedConfig.NFT_ACCESS_TEMPLATE_ADDRESS, config.getString("contract.NFTAccessTemplate.address"));
+
+        properties.put(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.LockPaymentCondition.address"));
+        properties.put(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.EscrowPaymentCondition.address"));
+        properties.put(NeverminedConfig.ACCESS_CONDITION_ADDRESS, config.getString("contract.AccessCondition.address"));
         properties.put(NeverminedConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.ComputeExecutionCondition.address"));
-        properties.put(NeverminedConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.EscrowComputeExecutionTemplate.address"));
-        properties.put(NeverminedConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
+        properties.put(NeverminedConfig.TRANSFER_NFT_CONDITION_ADDRESS, config.getString("contract.TransferNFTCondition.address"));
+        properties.put(NeverminedConfig.TRANSFER_DID_CONDITION_ADDRESS, config.getString("contract.TransferDIDOwnershipCondition.address"));
+        properties.put(NeverminedConfig.NFT_ACCESS_CONDITION_ADDRESS, config.getString("contract.NFTAccessCondition.address"));
+        properties.put(NeverminedConfig.NFT_HOLDER_CONDITION_ADDRESS, config.getString("contract.NFTHolderCondition.address"));
 
         return NeverminedAPI.getInstance(properties);
 
@@ -128,56 +137,6 @@ public abstract class ManagerHelper {
     public static SecretStoreManager getSecretStoreController(Config config, EvmDto evmDto) {
         return SecretStoreManager.getInstance(getSecretStoreDto(config), evmDto);
     }
-/*
-    public static boolean prepareEscrowTemplate(NeverminedAPI neverminedAPI, String accessSecretStoreConditionAddress, String lockRewardConditionAddress, String escrowRewardConditionAddress, String owner, String templateName) throws EthereumException, InterruptedException {
-
-        BigInteger numberTemplates= neverminedAPI.getTemplatesAPI().getListSize();
-        log.debug("Number of existing templates: " + numberTemplates.toString());
-
-        try {
-            log.debug("Registering actor type");
-            neverminedAPI.getTemplatesAPI().registerActorType("consumer");
-            neverminedAPI.getTemplatesAPI().registerActorType("provider");
-        } catch (EthereumException ex)  {}
-
-        byte[] _id = CryptoHelper.keccak256(templateName);
-        String templateId = EthereumHelper.remove0x(EncodingHelper.toHexString(_id));
-
-        TemplateSEA template= neverminedAPI.getTemplatesAPI().getTemplate(templateId);
-
-        if (template.state.compareTo(TemplateSEA.TemplateState.Uninitialized.getStatus()) == 0) {
-            log.debug("Proposing template: " + templateId);
-
-            byte[] consumerTypeId = neverminedAPI.getTemplatesAPI().getActorTypeId("consumer");
-            byte[] providerTypeId = neverminedAPI.getTemplatesAPI().getActorTypeId("provider");
-
-            neverminedAPI.getTemplatesAPI().propose(
-                    _id,
-                    Arrays.asList(accessSecretStoreConditionAddress, lockRewardConditionAddress, escrowRewardConditionAddress),
-                    Arrays.asList(providerTypeId, consumerTypeId),
-                    templateName);
-
-        }
-
-        for (int counter= 0; counter<10; counter++) {
-            log.debug("Waiting for the template proposal ...");
-            template= neverminedAPI.getTemplatesAPI().getTemplate(templateName);
-            if (template.state.compareTo(TemplateSEA.TemplateState.Proposed.getStatus()) == 0) {
-                log.debug("Template " + templateId + " in Proposed state");
-                break;
-            }
-            ManagerHelper.class.wait(1000L);
-        }
-
-        final boolean isApproved = neverminedAPI.getTemplatesAPI().isApproved(templateName);
-
-        if (!isApproved) {
-            log.debug("Approving template: " + templateId);
-            neverminedAPI.getTemplatesAPI().approve(templateName);
-        }
-
-        return true;
-    }*/
 
     /**
      * Returns a Properties object with the entries necessary to run the integration tests

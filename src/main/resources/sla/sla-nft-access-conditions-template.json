@@ -17,9 +17,9 @@
         "value": "{parameter.holderAddress}"
       },
       {
-        "name": "_amount",
+        "name": "_numberNfts",
         "type": "uint256",
-        "value": "{parameter.amount}"
+        "value": "{parameter._numberNfts}"
       }
     ],
     "events": [
@@ -35,10 +35,10 @@
     ]
   },
   {
-    "name": "accessSecretStore",
+    "name": "nftAccess",
     "timelock": 0,
     "timeout": 0,
-    "contractName": "AccessCondition",
+    "contractName": "NFTAccessCondition",
     "functionName": "fulfill",
     "parameters": [
       {
@@ -57,8 +57,8 @@
         "name": "Fulfilled",
         "actorType": "publisher",
         "handler": {
-          "moduleName": "accessSecretStore",
-          "functionName": "fulfillEscrowPaymentConditionCondition",
+          "moduleName": "nftAccess",
+          "functionName": "fulfillNFTAccessCondition",
           "version": "0.1"
         }
       },
@@ -66,8 +66,8 @@
         "name": "TimedOut",
         "actorType": "consumer",
         "handler": {
-          "moduleName": "accessSecretStore",
-          "functionName": "fulfillEscrowPaymentConditionCondition",
+          "moduleName": "access",
+          "functionName": "fulfillNFTAccessCondition",
           "version": "0.1"
         }
       }

@@ -3,6 +3,7 @@ package io.keyko.nevermined.api;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.helpers.EthereumHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.config.NeverminedConfig;
@@ -19,10 +20,10 @@ import io.keyko.nevermined.models.DDO;
 import io.keyko.nevermined.models.DID;
 import io.keyko.nevermined.models.asset.AssetMetadata;
 import io.keyko.nevermined.models.asset.OrderResult;
-import io.keyko.nevermined.models.service.Condition;
-import io.keyko.nevermined.models.service.ProviderConfig;
-import io.keyko.nevermined.models.service.Service;
+import io.keyko.nevermined.models.service.*;
 import io.keyko.nevermined.models.service.types.ComputingService;
+import io.keyko.nevermined.models.service.types.DIDSalesService;
+import io.keyko.nevermined.models.service.types.NFTAccessService;
 import io.reactivex.Flowable;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -102,34 +103,7 @@ public class AssetsApiIT {
         assertNotNull(neverminedAPI.getAssetsAPI());
         assertNotNull(neverminedAPI.getMainAccount());
 
-        Properties properties = new Properties();
-        properties.put(NeverminedConfig.KEEPER_URL, config.getString("keeper.url"));
-        properties.put(NeverminedConfig.KEEPER_GAS_LIMIT, config.getString("keeper.gasLimit"));
-        properties.put(NeverminedConfig.KEEPER_GAS_PRICE, config.getString("keeper.gasPrice"));
-        properties.put(NeverminedConfig.KEEPER_TX_ATTEMPTS, config.getString("keeper.tx.attempts"));
-        properties.put(NeverminedConfig.KEEPER_TX_SLEEPDURATION, config.getString("keeper.tx.sleepDuration"));
-        properties.put(NeverminedConfig.METADATA_URL, config.getString("metadata.url"));
-        properties.put(NeverminedConfig.SECRETSTORE_URL, config.getString("secretstore.url"));
-        properties.put(NeverminedConfig.CONSUME_BASE_PATH, config.getString("consume.basePath"));
-        properties.put(NeverminedConfig.MAIN_ACCOUNT_ADDRESS, config.getString("account.parity.address2"));
-        properties.put(NeverminedConfig.MAIN_ACCOUNT_PASSWORD, config.getString("account.parity.password2"));
-        properties.put(NeverminedConfig.MAIN_ACCOUNT_CREDENTIALS_FILE, config.getString("account.parity.credentialsFile2"));
-        properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
-        properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
-        properties.put(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
-        properties.put(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.LockPaymentCondition.address"));
-        properties.put(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.EscrowPaymentCondition.address"));
-        properties.put(NeverminedConfig.ACCESS_TEMPLATE_ADDRESS, config.getString("contract.AccessTemplate.address"));
-        properties.put(NeverminedConfig.ACCESS_CONDITION_ADDRESS, config.getString("contract.AccessCondition.address"));
-        properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
-        properties.put(NeverminedConfig.NEVERMINED_TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
-        properties.put(NeverminedConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
-        properties.put(NeverminedConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
-
-        properties.put(NeverminedConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.ComputeExecutionCondition.address"));
-        properties.put(NeverminedConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.EscrowComputeExecutionTemplate.address"));
-
-        neverminedAPIConsumer = NeverminedAPI.getInstance(properties);
+        neverminedAPIConsumer = ManagerHelper.getNeverminedAPI(config, ManagerHelper.VmClient.parity, "2");
 
         keeper = ManagerHelper.getKeeper(config, ManagerHelper.VmClient.parity, "");
         AccessTemplate escrowAccessSecretStoreTemplate = ManagerHelper.loadAccessTemplate(keeper, config.getString("contract.AccessTemplate.address"));
@@ -177,27 +151,6 @@ public class AssetsApiIT {
                 .getParameterByName("_amounts").value;
         assertTrue(_amounts.contains("10"));
         assertTrue(_amounts.contains("2"));
-    }
-
-    @Test
-    public void createMintable() throws Exception {
-
-        String clientAddress = neverminedAPI.getMainAccount().getAddress();
-        final AssetRewards assetRewards = getTestAssetRewards();
-        metadataBase.attributes.main.dateCreated = new Date();
-        DDO ddo = neverminedAPI.getAssetsAPI().createMintableDID(metadataBase, providerConfig, assetRewards, BigInteger.TEN, BigInteger.ZERO);
-
-        DID did = new DID(ddo.id);
-        DDO resolvedDDO = neverminedAPI.getAssetsAPI().resolve(did);
-        assertEquals(ddo.id, resolvedDDO.id);
-        assertTrue(resolvedDDO.services.size() == 4);
-
-        assertEquals(BigInteger.ZERO, neverminedAPI.getAssetsAPI().balance(clientAddress, did));
-        neverminedAPI.getAssetsAPI().mint(did, BigInteger.TEN);
-        assertEquals(BigInteger.TEN, neverminedAPI.getAssetsAPI().balance(clientAddress, did));
-
-        neverminedAPI.getAssetsAPI().burn(did, BigInteger.TWO);
-        assertEquals(BigInteger.valueOf(8), neverminedAPI.getAssetsAPI().balance(clientAddress, did));
     }
 
     @Test
@@ -534,6 +487,57 @@ public class AssetsApiIT {
         assertEquals(initialProviders.size() +1, providersAfterRemoving.size());
         assertFalse(providersAfterRemoving.contains(someoneAddress.toLowerCase()));
         assertTrue(providersAfterRemoving.contains(someoneElseAddress.toLowerCase()));
+
+    }
+
+
+    @Test
+    public void transferDIDService() throws Exception {
+
+        final String DID_SALES_ENDPOINT = "http://localhost:8030/api/v1/gateway/services/access";
+        final String TEMPLATE_ID_DID_SALES = config.getString("contract.DIDSalesTemplate.address");
+
+        String consumerAddress = neverminedAPIConsumer.getMainAccount().getAddress();
+        final AssetRewards assetRewards = getTestAssetRewards();
+        metadataBase.attributes.main.dateCreated = new Date();
+
+        final DIDSalesService didSalesService = ServiceBuilder.buildDIDSalesService(
+                providerConfig.setAccessEndpoint(DID_SALES_ENDPOINT), TEMPLATE_ID_DID_SALES, assetRewards, consumerAddress);
+        final ServiceDescriptor didSalesDesc = new ServiceDescriptor(didSalesService, assetRewards);
+
+        DDO ddo = neverminedAPI.getAssetsAPI().create(
+                metadataBase, Arrays.asList(didSalesDesc), providerConfig, BigInteger.ZERO, BigInteger.ZERO);
+        DID did = new DID(ddo.id);
+
+        neverminedAPIConsumer.getAccountsAPI().requestTokens(new BigInteger(assetRewards.totalPrice));
+        Balance balance = neverminedAPIConsumer.getAccountsAPI().balance(neverminedAPIConsumer.getMainAccount());
+        log.debug("Account " + neverminedAPIConsumer.getMainAccount().address + " balance is: " + balance.toString());
+
+        OrderResult orderResult = neverminedAPIConsumer.getAssetsAPI().order(did, Service.DEFAULT_DID_SALES_INDEX);
+
+        assertTrue(orderResult.isAccessGranted());
+
+        final boolean transferOk = neverminedAPI.getConditionsAPI().transferDIDOwnership(
+                orderResult.getServiceAgreementId(),
+                did,
+                consumerAddress
+        );
+        assertTrue(transferOk);
+
+        final AgreementStatus status = neverminedAPIConsumer.getAgreementsAPI().status(orderResult.getServiceAgreementId());
+
+        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(),
+                status.conditions.get(0).conditions.get(Condition.ConditionTypes.lockPayment.toString()));
+
+        assertEquals(Condition.ConditionStatus.Fulfilled.getStatus(),
+                status.conditions.get(0).conditions.get(Condition.ConditionTypes.transferDID.toString()));
+
+        final Boolean downloaded = neverminedAPIConsumer.getAssetsAPI().ownerDownload(
+                did,
+                Service.DEFAULT_DID_SALES_INDEX,
+                tempFolder.getRoot().getAbsolutePath());
+
+        assertTrue(downloaded);
 
     }
 

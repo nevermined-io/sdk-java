@@ -5,6 +5,7 @@ import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.api.helper.AccountsHelper;
 import io.keyko.nevermined.api.helper.InitializationHelper;
 import io.keyko.nevermined.contracts.ERC20Upgradeable;
+import io.keyko.nevermined.exceptions.NFTException;
 import io.keyko.nevermined.exceptions.ServiceAgreementException;
 import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.models.DDO;
@@ -18,7 +19,6 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.exceptions.TransactionException;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -140,7 +140,7 @@ public class ConditionsManager extends BaseManager {
                     granteeAddress).send();
             return txReceipt.isStatusOK();
         } catch (TransactionException e) {
-            log.error("Error granting access to address" + granteeAddress + "to did" + did + e.getMessage());
+            log.error("Error granting access to address " + granteeAddress + "to " + did + e.getMessage());
             return false;
         }
     }
@@ -210,13 +210,89 @@ public class ConditionsManager extends BaseManager {
                     _receivers,
                     escrowCondition.getContractAddress(),
                     getTokenAddress(_DDOtokenAddress),
-                    agreement.conditions.get(1),
-                    agreement.conditions.get(0)
+                    agreement.conditions.get(0),
+                    agreement.conditions.get(1)
             ).send();
 
             return txReceipt.isStatusOK();
         } catch (TransactionException e) {
-            log.error("Error releasing reward for the agreement" + agreementId + e.getMessage());
+            log.error("Error releasing reward for the agreement " + agreementId + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Fullfill the NFT Holder condition demonstrating a user holds some amount of NFTs of a specific asset
+     *
+     * @param agreementId the agreement id.
+     * @param serviceIndex index of the service in the DDO
+     * @param grantee the address to get access
+     * @return true if was executed successfully.
+     * @throws Exception exception
+     */
+    public Boolean fulfillNFTHolder(String agreementId, int serviceIndex, String grantee) throws Exception {
+
+        Agreement agreement = new Agreement(agreementStoreManager.getAgreement(EncodingHelper.hexStringToBytes(agreementId)).send());
+        DDO ddo = resolveDID(agreement.did);
+        Service service;
+        if (serviceIndex >= 0)
+            service = ddo.getService(serviceIndex);
+        else
+            service = ddo.getServiceByTemplate(agreement.templateId);
+
+        TransactionReceipt txReceipt;
+
+        try {
+            final BigInteger numberNFTs = service.fetchNumberNFTs();
+
+            final BigInteger nftBalance = didRegistry.balanceOf(
+                    grantee,
+                    EncodingHelper.hexStringToBytes(agreement.did.getHash())
+            ).send();
+
+            if (nftBalance.compareTo(numberNFTs) < 0) {
+                log.warn("Consumer account does not have enough NFTs attached to this DID to fulfill the NFTHolderCondition.");
+                log.warn("NFTs balance is: " + nftBalance + " , and the NFTs required are: " + numberNFTs);
+                throw new NFTException("Unable to fulfill NFTHolder condition due to insufficient NFTs balance in the consumer account.");
+            }
+
+            txReceipt = nftHolderCondition.fulfill(
+                    EncodingHelper.hexStringToBytes(agreementId),
+                    EncodingHelper.hexStringToBytes(agreement.did.getHash()),
+                    Keys.toChecksumAddress(grantee),
+                    numberNFTs
+            ).send();
+
+            return txReceipt.isStatusOK();
+        } catch (TransactionException e) {
+            log.error("Error releasing reward for the agreement " + agreementId + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Fullfill the NFT Access allowing to access to the associated contents of an asset
+     *
+     * @param agreementId the agreement id.
+     * @param grantee the address to get access
+     * @return true if was executed successfully.
+     * @throws Exception exception
+     */
+    public Boolean fulfillNFTAccess(String agreementId, String grantee) throws Exception {
+
+        Agreement agreement = new Agreement(agreementStoreManager.getAgreement(EncodingHelper.hexStringToBytes(agreementId)).send());
+        TransactionReceipt txReceipt;
+
+        try {
+            txReceipt = nftAccessCondition.fulfill(
+                    EncodingHelper.hexStringToBytes(agreementId),
+                    EncodingHelper.hexStringToBytes(agreement.did.getHash()),
+                    Keys.toChecksumAddress(grantee)
+            ).send();
+
+            return txReceipt.isStatusOK();
+        } catch (TransactionException e) {
+            log.error("Error releasing reward for the agreement " + agreementId + e.getMessage());
             return false;
         }
     }
@@ -232,11 +308,63 @@ public class ConditionsManager extends BaseManager {
         return releaseReward(agreementId);
     }
 
+    /**
+     * Transfer a NFT to a receiver using the NFT_SALES flow of the Service Agreements
+     *
+     * @param agreementId    the agreement id.
+     * @param did            the DID of the asset
+     * @param granteeAddress the public address to receive the nfts
+     * @param numberNFTs     the number of NFTs to transfer
+     * @param lockConditionId the identifier of the condition locking the funds
+     * @return a flag true if was executed successfully.
+     * @throws Exception exception
+     */
+    public Boolean transferNFT(String agreementId, DID did, String granteeAddress, BigInteger numberNFTs, String lockConditionId) throws Exception {
+
+        try {
+            TransactionReceipt txReceipt = transferNFTCondition.fulfill(
+                    EncodingHelper.hexStringToBytes(agreementId),
+                    EncodingHelper.hexStringToBytes("0x" + did.getHash()),
+                    Keys.toChecksumAddress(granteeAddress),
+                    numberNFTs,
+                    EncodingHelper.hexStringToBytes(lockConditionId)
+                    ).send();
+            return txReceipt.isStatusOK();
+        } catch (TransactionException e) {
+            log.error("Error transferring NFT to address " + granteeAddress + "to " + did + e.getMessage());
+            return false;
+        }
+    }
+
+
+    /**
+     * Transfer the DID Ownership to a receiver using the DID_SALES flow of the Service Agreements
+     *
+     * @param agreementId    the agreement id.
+     * @param did            the DID of the asset
+     * @param granteeAddress the public address to receive the DID ownership
+     * @return a flag true if was executed successfully.
+     * @throws Exception exception
+     */
+    public Boolean transferDID(String agreementId, DID did, String granteeAddress) throws Exception {
+
+        try {
+            TransactionReceipt txReceipt = transferDIDCondition.fulfill(
+                    EncodingHelper.hexStringToBytes(agreementId),
+                    EncodingHelper.hexStringToBytes("0x" + did.getHash()),
+                    Keys.toChecksumAddress(granteeAddress)
+            ).send();
+            return txReceipt.isStatusOK();
+        } catch (TransactionException e) {
+            log.error("Error transferring DID to address " + granteeAddress + "to " + did + e.getMessage());
+            return false;
+        }
+    }
+
     public List<String> generateAgreementConditionIds(Service.ServiceTypes serviceType, String agreementId, String consumerAddress, DDO ddo, int serviceIndex) throws ServiceAgreementException {
 
         try {
 
-            List<String> conditionIds = new ArrayList<>();
             Service service;
             if (serviceIndex >= 0)  {
                 service = ddo.getService(serviceIndex);
@@ -246,10 +374,12 @@ public class ConditionsManager extends BaseManager {
 
             if (serviceType.equals(Service.ServiceTypes.NFT_ACCESS))    {
                 final BigInteger numberNfts = service.fetchNumberNFTs();
-                // TODO: Generate NFT Holder Condition ID
+                // Generate NFT Holder Condition ID
+                String nftHolderCondId = generateNFTHolderConditionId(agreementId, ddo.getDID(), consumerAddress, numberNfts);
+                // Generate NFT Access Condition ID
+                String nftAccessCondId = generateNFTAccessConditionId(agreementId, ddo.getDID(), consumerAddress);
 
-                // TODO: Generate NFT Access Condition ID
-                return conditionIds;
+                return Arrays.asList(nftAccessCondId, nftHolderCondId);
             }
 
             final List<BigInteger> amounts = service.fetchAmounts();
@@ -264,10 +394,10 @@ public class ConditionsManager extends BaseManager {
             } else if (serviceType.equals(Service.ServiceTypes.COMPUTE))    {
                 accessConditionId = generateExecComputeConditionId(agreementId, ddo.getDID(), consumerAddress);
             } else if (serviceType.equals(Service.ServiceTypes.DID_SALES))    {
-                accessConditionId = null;
+                accessConditionId = generateTransferDIDConditionId(agreementId, ddo.getDID(), consumerAddress);
             } else if (serviceType.equals(Service.ServiceTypes.NFT_SALES))    {
                 final BigInteger numberNfts = service.fetchNumberNFTs();
-                accessConditionId = null;
+                accessConditionId = generateTransferNFTConditionId(agreementId, ddo.getDID(), consumerAddress, numberNfts, lockConditionId);
             }   else {
                 throw new ServiceAgreementException(agreementId, "Error generating the condition ids, the service type is not valid");
             }
@@ -372,6 +502,94 @@ public class ConditionsManager extends BaseManager {
         ).send();
         return EncodingHelper.toHexString(
                 escrowCondition.generateId(
+                        EncodingHelper.hexStringToBytes(serviceAgreementId),
+                        paramsHash
+                ).send()
+        );
+    }
+
+    /**
+     * Generates the NFT Holder condition identifier using the condition contract to be used in the service agreements
+     * @param serviceAgreementId the service agreement id
+     * @param did the asset decentralized identifier
+     * @param grantee the address to get access to the asset
+     * @param numberNFTs the number of NFTs to hold
+     * @return String with the condition Id
+     */
+    public String generateNFTHolderConditionId(String serviceAgreementId, DID did, String grantee, BigInteger numberNFTs) throws Exception {
+        final byte[] paramsHash = nftHolderCondition.hashValues(
+                EncodingHelper.hexStringToBytes(did.getHash()),
+                Keys.toChecksumAddress(grantee),
+                numberNFTs
+        ).send();
+        return EncodingHelper.toHexString(
+                nftHolderCondition.generateId(
+                        EncodingHelper.hexStringToBytes(serviceAgreementId),
+                        paramsHash
+                ).send()
+        );
+    }
+
+    /**
+     * Generates the NFT Access condition identifier using the condition contract to be used in the service agreements
+     * @param serviceAgreementId the service agreement id
+     * @param did the asset decentralized identifier
+     * @param grantee the address to get access to the NFT
+     * @return String with the condition Id
+     */
+    public String generateNFTAccessConditionId(String serviceAgreementId, DID did, String grantee) throws Exception {
+        final byte[] paramsHash = nftAccessCondition.hashValues(
+                EncodingHelper.hexStringToBytes(did.getHash()),
+                Keys.toChecksumAddress(grantee)
+        ).send();
+        return EncodingHelper.toHexString(
+                nftAccessCondition.generateId(
+                        EncodingHelper.hexStringToBytes(serviceAgreementId),
+                        paramsHash
+                ).send()
+        );
+    }
+
+
+    /**
+     * Generates the Transfer DID Ownership condition identifier using the condition contract to be used in the service agreements
+     * @param serviceAgreementId the service agreement id
+     * @param did the asset decentralized identifier
+     * @param grantee the address to get access to the asset
+     * @return String with the condition Id
+     */
+    public String generateTransferDIDConditionId(String serviceAgreementId, DID did, String grantee) throws Exception {
+        final byte[] paramsHash = transferDIDCondition.hashValues(
+                EncodingHelper.hexStringToBytes(did.getHash()),
+                Keys.toChecksumAddress(grantee)
+        ).send();
+        return EncodingHelper.toHexString(
+                transferDIDCondition.generateId(
+                        EncodingHelper.hexStringToBytes(serviceAgreementId),
+                        paramsHash
+                ).send()
+        );
+    }
+
+
+    /**
+     * Generates the Transfer NFT condition identifier using the condition contract to be used in the service agreements
+     * @param serviceAgreementId the service agreement id
+     * @param did the asset decentralized identifier
+     * @param grantee the address to get access to the asset
+     * @param numberNFTs the number of NFTs to hold
+     * @param lockCondId id of the lock payment condition
+     * @return String with the condition Id
+     */
+    public String generateTransferNFTConditionId(String serviceAgreementId, DID did, String grantee, BigInteger numberNFTs, String lockCondId) throws Exception {
+        final byte[] paramsHash = transferNFTCondition.hashValues(
+                EncodingHelper.hexStringToBytes(did.getHash()),
+                Keys.toChecksumAddress(grantee),
+                numberNFTs,
+                EncodingHelper.hexStringToBytes(lockCondId)
+        ).send();
+        return EncodingHelper.toHexString(
+                transferNFTCondition.generateId(
                         EncodingHelper.hexStringToBytes(serviceAgreementId),
                         paramsHash
                 ).send()

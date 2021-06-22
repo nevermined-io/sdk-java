@@ -46,12 +46,12 @@ public class Agreement extends AbstractModel implements FromJsonToModel {
     }
 
     public Agreement(Tuple6 tuple6) throws DIDFormatException {
-        this.did = (DID) DID.getFromHash(EthereumHelper.remove0x(EncodingHelper.toHexString((byte[]) tuple6.getValue1())));
-        this.didOwner = (String) tuple6.getValue2();
-        this.templateId = (String) tuple6.getValue3();
-        this.conditions = (ArrayList) tuple6.getValue4();
-        this.lastUpdateBy = (String) tuple6.getValue5();
-        this.blockNumberUpdated = (BigInteger) tuple6.getValue6();
+        this.did = DID.getFromHash(EthereumHelper.remove0x(EncodingHelper.toHexString((byte[]) tuple6.component1())));
+        this.didOwner = (String) tuple6.component2();
+        this.templateId = (String) tuple6.component3();
+        this.conditions = (ArrayList) tuple6.component4();
+        this.lastUpdateBy = (String) tuple6.component5();
+        this.blockNumberUpdated = (BigInteger) tuple6.component6();
     }
 
 }

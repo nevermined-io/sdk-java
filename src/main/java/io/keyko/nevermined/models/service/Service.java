@@ -35,6 +35,10 @@ public class Service extends AbstractModel implements FromJsonToModel {
         public String toString() {
             return super.toString().toLowerCase().replace("_", "-");
         }
+
+        public static ServiceTypes getFromName(String name)    {
+            return ServiceTypes.valueOf(name.toUpperCase().replace("-", "_"));
+        }
     }
 
     /**
@@ -75,6 +79,12 @@ public class Service extends AbstractModel implements FromJsonToModel {
     public static final int DEFAULT_ACCESS_INDEX = 3;
     @JsonIgnore
     public static final int DEFAULT_COMPUTE_INDEX = 4;
+    @JsonIgnore
+    public static final int DEFAULT_DID_SALES_INDEX = 5;
+    @JsonIgnore
+    public static final int DEFAULT_NFT_SALES_INDEX = 6;
+    @JsonIgnore
+    public static final int DEFAULT_NFT_ACCESS_INDEX = 7;
 
     @JsonProperty
     public int index;
@@ -145,16 +155,16 @@ public class Service extends AbstractModel implements FromJsonToModel {
     public static class ConditionDependency {
 
         @JsonProperty
-        public List<String> lockReward = Arrays.asList();
+        public List<String> lockPayment = Arrays.asList();
 
         @JsonProperty
-        public List<String> accessSecretStore = Arrays.asList();
+        public List<String> access = Arrays.asList();
 
         @JsonProperty
         public List<String> execCompute = Arrays.asList();
 
         @JsonProperty
-        public List<String> escrowReward = Arrays.asList(
+        public List<String> escrowPayment = Arrays.asList(
                 Condition.ConditionTypes.lockPayment.toString(),
                 Condition.ConditionTypes.access.toString());
 
@@ -265,5 +275,7 @@ public class Service extends AbstractModel implements FromJsonToModel {
     public static List<byte[]> transformConditionIdsToByte(List<String> conditions) {
         return conditions.stream().map(Service::wrappedEncoder).collect(Collectors.toList());
     }
+
+
 
 }

@@ -13,6 +13,7 @@ import io.keyko.nevermined.models.metadata.SearchResult;
 import io.keyko.nevermined.models.service.AuthConfig;
 import io.keyko.nevermined.models.service.ProviderConfig;
 import io.keyko.nevermined.models.service.Service;
+import io.keyko.nevermined.models.service.ServiceDescriptor;
 import io.keyko.nevermined.models.service.types.ComputingService;
 import io.reactivex.Flowable;
 
@@ -84,15 +85,39 @@ public interface AssetsAPI {
      */
     DDO createMintableDID(AssetMetadata metadata, ProviderConfig providerConfig, AssetRewards assetRewards, BigInteger cap, BigInteger royalties) throws DDOException;
 
+    /**
+     * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata. This asset will be mintable
+     *
+     * @param metadata       the metadata of the DDO
+     * @param serviceDescriptors the list of service descriptors attached to the asset
+     * @param providerConfig the endpoints of the DDO's services
+     * @param cap            max number of NFTs that can be minted
+     * @param royalties      royalties going to the original creator after sales
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
+    DDO create(AssetMetadata metadata, List<ServiceDescriptor> serviceDescriptors, ProviderConfig providerConfig, BigInteger cap, BigInteger royalties) throws DDOException;
 
-        /**
-         * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
-         *
-         * @param metadata       the metadata of the DDO
-         * @param providerConfig the endpoints of the DDO's services
-         * @return an instance of the DDO created
-         * @throws DDOException DDOException
-         */
+    /**
+     * Creates a new DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata. This asset will be mintable
+     *
+     * @param metadata       the metadata of the DDO
+     * @param serviceDescriptors the list of service descriptors attached to the asset
+     * @param providerConfig the endpoints of the DDO's services
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
+    DDO create(AssetMetadata metadata, List<ServiceDescriptor> serviceDescriptors, ProviderConfig providerConfig) throws DDOException;
+
+
+    /**
+     * Creates a new ComputingService DDO, registering it on-chain through DidRegistry contract and off-chain in Metadata
+     *
+     * @param metadata       the metadata of the DDO
+     * @param providerConfig the endpoints of the DDO's services
+     * @return an instance of the DDO created
+     * @throws DDOException DDOException
+     */
     DDO createComputeService(AssetMetadata metadata, ProviderConfig providerConfig) throws DDOException;
 
     /**
@@ -117,48 +142,6 @@ public interface AssetsAPI {
      * @throws DDOException      DDOException
      */
     DDO resolve(DID did) throws EthereumException, DDOException;
-
-    /**
-     * Allows a DID owner to mint a NFT associated with the DID
-     *
-     * @param did the DID where the NFT is minted
-     * @param amount the amount to mint to the NFT DID
-     * @return true if everything worked
-     * @throws NftException Unable to mint
-     */
-    boolean mint(DID did, BigInteger amount) throws NftException;
-
-    /**
-     * Allows a DID owner to burn NFT associated with the DID
-     *
-     * @param did the DID where the NFT is burned
-     * @param amount the amount to burn to the NFT DID
-     * @return true if everything worked
-     * @throws NftException Unable to burn
-     */
-    boolean burn(DID did, BigInteger amount) throws NftException;
-
-    /**
-     * Allows a DID owner to transfer a specific amount of NFT associated with the DID
-     *
-     * @param did the DID associated to the NFT
-     * @param address the receiver
-     * @param amount the amount to transfer to the NFT DID
-     * @return true if everything worked
-     * @throws NftException Unable to transfer
-     */
-    boolean transfer(DID did, String address, BigInteger amount) throws NftException;
-
-    /**
-     * Gets the balance of the NFT associated to a DID
-     *
-     * @param address the account holding the NFT
-     * @param did the DID associated to the NFT
-     * @return BigInteger the address and DID/NFT balance
-     * @throws NftException unable to get the balance
-     */
-    BigInteger balance(String address, DID did) throws NftException;
-
 
     /**
      * Gets the list of the files that belongs to a DDO

@@ -99,7 +99,7 @@ public class DDOTest {
     public void generateChecksums() throws Exception {
 
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {}, DDO_JSON_CONTENT);
-        SortedMap<String, String> checksums = ddo.generateChecksums();
+        SortedMap<String, String> checksums = DDO.generateChecksums(ddo);
 
         assertEquals(2, checksums.size());
 
@@ -209,7 +209,7 @@ public class DDOTest {
         DDO ddo = DDO.fromJSON(new TypeReference<DDO>() {
         }, DDO_JSON_CONTENT);
 
-        DDO newDDO= ddo.integrityBuilder(credentials);
+        DDO newDDO= DDO.integrityBuilder(ddo, credentials);
         log.debug("DDO generated with DID: " + newDDO.getDID().did);
 
         log.debug(ddo.toJson(newDDO.proof));

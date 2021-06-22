@@ -17,6 +17,7 @@ import io.keyko.nevermined.models.metadata.SearchResult;
 import io.keyko.nevermined.models.service.AuthConfig;
 import io.keyko.nevermined.models.service.ProviderConfig;
 import io.keyko.nevermined.models.service.Service;
+import io.keyko.nevermined.models.service.ServiceDescriptor;
 import io.keyko.nevermined.models.service.types.ComputingService;
 import io.reactivex.Flowable;
 
@@ -73,6 +74,16 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
+    public DDO create(AssetMetadata metadata, List<ServiceDescriptor> serviceDescriptors, ProviderConfig providerConfig, BigInteger cap, BigInteger royalties) throws DDOException {
+        return neverminedManager.registerAsset(metadata, serviceDescriptors, providerConfig, new AuthConfig(providerConfig.getGatewayUrl()), cap, royalties);
+    }
+
+    @Override
+    public DDO create(AssetMetadata metadata, List<ServiceDescriptor> serviceDescriptors, ProviderConfig providerConfig) throws DDOException {
+        return neverminedManager.registerAsset(metadata, serviceDescriptors, providerConfig, new AuthConfig(providerConfig.getGatewayUrl()), BigInteger.ZERO, BigInteger.ZERO);
+    }
+
+    @Override
     public DDO createMintableDID(AssetMetadata metadata, ProviderConfig providerConfig, AssetRewards assetRewards, BigInteger cap, BigInteger royalties) throws DDOException {
         return neverminedManager.registerAccessServiceAsset(metadata, providerConfig, new AuthConfig(providerConfig.getGatewayUrl()), assetRewards, cap, royalties);
     }
@@ -107,37 +118,13 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     @Override
-    public boolean mint(DID did, BigInteger amount) throws NftException {
-        return assetsManager.mint(did, amount);
-    }
-
-    @Override
-    public boolean burn(DID did, BigInteger amount) throws NftException {
-        return assetsManager.burn(did, amount);
-    }
-
-    @Override
-    public boolean transfer(DID did, String address, BigInteger amount) throws NftException {
-        return assetsManager.transfer(did, address, amount);
-    }
-
-    @Override
-    public BigInteger balance(String address, DID did) throws NftException {
-        return assetsManager.balance(address, did);
-    }
-
-    @Override
     public List<AssetMetadata.File> getMetadataFiles(DID did) throws DDOException {
-
         try {
-
             DDO ddo = this.resolve(did);
             return neverminedManager.getDecriptedSecretStoreMetadataFiles(ddo);
-
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new DDOException("Error trying to get the files of the DDO", e);
         }
-
     }
 
     @Override
@@ -201,20 +188,20 @@ public class AssetsImpl implements AssetsAPI {
     }
 
     public OrderResult order(DID did) throws OrderException, ServiceException, EscrowPaymentException {
-        return neverminedManager.purchaseAssetDirect(did);
+        return neverminedManager.orderDirect(did);
     }
 
     public OrderResult order(DID did, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowPaymentException {
-        return neverminedManager.purchaseAssetDirect(did, serviceTypes);
+        return neverminedManager.orderDirect(did, serviceTypes);
     }
 
     public OrderResult order(DID did, int serviceIndex, Service.ServiceTypes serviceTypes) throws OrderException, ServiceException, EscrowPaymentException {
-        return neverminedManager.purchaseAssetDirect(did, serviceIndex, serviceTypes);
+        return neverminedManager.orderDirect(did, serviceIndex, serviceTypes);
     }
 
 
     public OrderResult order(DID did, int serviceIndex) throws OrderException, ServiceException, EscrowPaymentException {
-        return neverminedManager.purchaseAssetDirect(did, serviceIndex);
+        return neverminedManager.orderDirect(did, serviceIndex);
     }
 
     @Override
