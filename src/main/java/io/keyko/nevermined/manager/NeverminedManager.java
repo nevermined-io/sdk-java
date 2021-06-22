@@ -132,6 +132,8 @@ public class NeverminedManager extends BaseManager {
      * @param url       metadata url
      * @param checksum  calculated hash of the metadata
      * @param providers list of providers addresses to give access
+     * @param cap       the capped amount of NFTs that can be minted for the new registered asset
+     * @param royalties the amount of royalties (between 0 and 100%) that will be transferred to the original creator in further secondary market sales
      * @return boolean success
      * @throws DIDRegisterException DIDRegisterException
      */
@@ -1116,9 +1118,8 @@ public class NeverminedManager extends BaseManager {
      *
      * @param serviceAgreementId service agreement id
      * @param serviceIndex       the index of the service
+     * @param grantee           the NFT holder public address
      * @return indicates if the function was executed correctly
-     * @throws ServiceException           ServiceException
-     * @throws LockPaymentFulfillException LockPaymentFulfillException
      */
     private boolean fulfillNFTHolderConditionCondition(String serviceAgreementId, int serviceIndex, String grantee) {
         try {
@@ -1443,6 +1444,7 @@ public class NeverminedManager extends BaseManager {
      * @param serviceEndpoint The service endpoint.
      * @param serviceAgreementId The Service Agreement Id.
      * @param did The did.
+     * @param serviceType the type of the service
      * @return String The Access Token.
      * @throws DownloadServiceException DownloadServiceException
      */

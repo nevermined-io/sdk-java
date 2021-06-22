@@ -190,6 +190,7 @@ public class InitializationHelper {
      * Loads the ERC20Upgradeable contract given a token address
      *
      * @param keeper the keeper Service
+     * @param tokenAddress the ERC20 contract address
      * @return an instance of ERC20Upgradeable contract
      */
     public static ERC20Upgradeable loadERC20Contract(KeeperService keeper, String tokenAddress) {

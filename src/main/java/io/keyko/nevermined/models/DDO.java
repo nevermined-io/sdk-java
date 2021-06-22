@@ -310,6 +310,8 @@ DDO extends AbstractModel implements FromJsonToModel {
      * - Calculate the individual DDO.services checksums
      * - Calculate the DID using the hash of the DDO.services checksums
      * - Generate the DDO.proof entry signing the DID generated and adding the credentials information
+     *
+     * @param ddo the DDO used as starting point to calculate the checksums
      * @param credentials account credentials
      * @return DDO
      * @throws DDOException if there is an error calculating anything

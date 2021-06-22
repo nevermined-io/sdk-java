@@ -421,6 +421,7 @@ public class ConditionsManager extends BaseManager {
      * @param amounts payment amounts
      * @param receivers of the payment
      * @return String with the condition Id
+     * @throws Exception problem generating the condition id
      */
     public String generateLockPaymentConditionId(String serviceAgreementId, DID did, String rewardAddress, String tokenAddress, List<BigInteger> amounts, List<String> receivers) throws Exception {
         final byte[] paramsHash = lockCondition.hashValues(
@@ -444,6 +445,7 @@ public class ConditionsManager extends BaseManager {
      * @param did the asset decentralized identifier
      * @param grantee the address to get access to the asset
      * @return String with the condition Id
+     * @throws Exception problem generating the condition id
      */
     public String generateExecComputeConditionId(String serviceAgreementId, DID did, String grantee) throws Exception {
         final byte[] paramsHash = computeExecutionCondition.hashValues(
@@ -464,6 +466,7 @@ public class ConditionsManager extends BaseManager {
      * @param did the asset decentralized identifier
      * @param grantee the address to get access to the asset
      * @return String with the condition Id
+     * @throws Exception problem generating the condition id
      */
     public String generateAccessConditionId(String serviceAgreementId, DID did, String grantee) throws Exception {
         final byte[] paramsHash = accessCondition.hashValues(
@@ -489,6 +492,7 @@ public class ConditionsManager extends BaseManager {
      * @param lockConditionId condition id used for locking the payment
      * @param releaseConditionId condition id used for releasing the access
      * @return String with the condition Id
+     * @throws Exception problem generating the condition id
      */
     public String generateEscrowPaymentConditionId(String serviceAgreementId, DID did, List<BigInteger> amounts, List<String> receivers, String escrowConditionAddress, String tokenAddress, String lockConditionId, String releaseConditionId) throws Exception {
         final byte[] paramsHash = escrowCondition.hashValues(
@@ -515,6 +519,7 @@ public class ConditionsManager extends BaseManager {
      * @param grantee the address to get access to the asset
      * @param numberNFTs the number of NFTs to hold
      * @return String with the condition Id
+     * @throws Exception problem generating the condition id
      */
     public String generateNFTHolderConditionId(String serviceAgreementId, DID did, String grantee, BigInteger numberNFTs) throws Exception {
         final byte[] paramsHash = nftHolderCondition.hashValues(
@@ -536,6 +541,7 @@ public class ConditionsManager extends BaseManager {
      * @param did the asset decentralized identifier
      * @param grantee the address to get access to the NFT
      * @return String with the condition Id
+     * @throws Exception problem generating the condition id
      */
     public String generateNFTAccessConditionId(String serviceAgreementId, DID did, String grantee) throws Exception {
         final byte[] paramsHash = nftAccessCondition.hashValues(
@@ -557,6 +563,7 @@ public class ConditionsManager extends BaseManager {
      * @param did the asset decentralized identifier
      * @param grantee the address to get access to the asset
      * @return String with the condition Id
+     * @throws Exception problem generating the condition id
      */
     public String generateTransferDIDConditionId(String serviceAgreementId, DID did, String grantee) throws Exception {
         final byte[] paramsHash = transferDIDCondition.hashValues(
@@ -580,6 +587,7 @@ public class ConditionsManager extends BaseManager {
      * @param numberNFTs the number of NFTs to hold
      * @param lockCondId id of the lock payment condition
      * @return String with the condition Id
+     * @throws Exception problem generating the condition id
      */
     public String generateTransferNFTConditionId(String serviceAgreementId, DID did, String grantee, BigInteger numberNFTs, String lockCondId) throws Exception {
         final byte[] paramsHash = transferNFTCondition.hashValues(

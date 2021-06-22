@@ -12,6 +12,7 @@ public interface FilesAPI {
      * Upload a file to Filecoin
      *
      * @param filePath the path of the file to upload
+     * @param config the provider configuration
      * @return the url of the uploaded file
      * @throws UploadServiceException UploadServiceException
      */

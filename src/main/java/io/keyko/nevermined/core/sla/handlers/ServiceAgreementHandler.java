@@ -163,6 +163,7 @@ public abstract class ServiceAgreementHandler {
      * Gets and Initializes all the conditions associated with a template
      *
      * @param params params to fill the conditions
+     * @param assetRewards the asset rewards configuration
      * @return a List with all the conditions of the template
      * @throws InitializeConditionsException InitializeConditionsException
      */
