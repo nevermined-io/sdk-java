@@ -39,21 +39,16 @@ public class AgreementsImpl implements AgreementsAPI {
             List<byte[]> conditionsId = neverminedManager.generateServiceConditionsId(
                     agreementId, consumerAddress, ddo, serviceIndex);
 
-            // TODO: Add NFT use cases: NFT_ACCESS, NFT_SALES, DID_SALES
             if (service.type.equals(Service.ServiceTypes.ACCESS.toString()))
-                return agreementsManager.createAccessAgreement(agreementId,
-                        ddo,
-                        conditionsId,
-                        consumerAddress,
-                        service
-                );
+                return agreementsManager.createAccessAgreement(agreementId, ddo, conditionsId, consumerAddress, service);
             else if (service.type.equals(Service.ServiceTypes.COMPUTE.toString()))
-                return agreementsManager.createComputeAgreement(agreementId,
-                        ddo,
-                        conditionsId,
-                        consumerAddress,
-                        service
-                );
+                return agreementsManager.createComputeAgreement(agreementId, ddo, conditionsId, consumerAddress, service);
+            else if (service.type.equals(Service.ServiceTypes.NFT_SALES.toString()))
+                return agreementsManager.createNFTSalesAgreement(agreementId, ddo, conditionsId, consumerAddress, service);
+            else if (service.type.equals(Service.ServiceTypes.NFT_ACCESS.toString()))
+                return agreementsManager.createNFTAccessAgreement(agreementId, ddo, conditionsId, consumerAddress, service);
+            else if (service.type.equals(Service.ServiceTypes.DID_SALES.toString()))
+                return agreementsManager.createDIDSalesAgreement(agreementId, ddo, conditionsId, consumerAddress, service);
             else
                 throw new ServiceAgreementException(agreementId, "There was a problem creating the agreement. Service Type not supported");
         } catch (Exception e){
@@ -68,6 +63,15 @@ public class AgreementsImpl implements AgreementsAPI {
             return agreementsManager.getStatus(agreementId);
         }catch (Exception e) {
             throw new ServiceAgreementException(agreementId, "There was a problem getting the status of the agreement", e);
+        }
+    }
+
+    @Override
+    public Agreement getAgreement(String agreementId) throws ServiceAgreementException {
+        try {
+            return agreementsManager.getAgreement(agreementId);
+        }catch (Exception e) {
+            throw new ServiceAgreementException(agreementId, "There was a problem getting the agreement", e);
         }
     }
 

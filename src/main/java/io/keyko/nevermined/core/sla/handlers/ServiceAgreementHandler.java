@@ -163,6 +163,7 @@ public abstract class ServiceAgreementHandler {
      * Gets and Initializes all the conditions associated with a template
      *
      * @param params params to fill the conditions
+     * @param assetRewards the asset rewards configuration
      * @return a List with all the conditions of the template
      * @throws InitializeConditionsException InitializeConditionsException
      */
@@ -184,6 +185,7 @@ public abstract class ServiceAgreementHandler {
             // Amounts and Receivers parameters
             conditionsTemplate = conditionsTemplate.replaceAll("\\{parameter.receivers\\}", assetRewards.getReceiversArrayString());
             conditionsTemplate = conditionsTemplate.replaceAll("\\{parameter.amounts\\}", assetRewards.getAmountsArrayString());
+            conditionsTemplate = conditionsTemplate.replaceAll("\\{parameter._numberNfts\\}", assetRewards.numberNFTs.toString());
 
             params.forEach((_name, _func) -> {
                 if (_func instanceof byte[])

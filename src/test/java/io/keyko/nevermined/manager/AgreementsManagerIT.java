@@ -40,10 +40,10 @@ public class AgreementsManagerIT {
     private static MetadataApiService metadataApiService;
     private static final Config config = ConfigFactory.load();
     private static DIDRegistry didRegistry;
-    private static AccessCondition accessSecretStoreCondition;
-    private static AccessTemplate escrowAccessSecretStoreTemplate;
-    private static EscrowPaymentCondition escrowReward;
-    private static LockPaymentConditionPayable lockRewardCondition;
+    private static AccessCondition accessCondition;
+    private static AccessTemplate accessTemplate;
+    private static EscrowPaymentCondition escrowPaymentCondition;
+    private static LockPaymentConditionPayable lockPaymentCondition;
     private static AgreementStoreManager agreementsStoreManager;
     private static ConditionStoreManager conditionStoreManager;
     private static String METADATA_JSON_SAMPLE = "src/test/resources/examples/metadata.json";
@@ -69,59 +69,33 @@ public class AgreementsManagerIT {
 
         providerConfig = new ProviderConfig(consumeUrl, metadataUrl, gatewayUrl, provenanceUrl, secretStoreEndpoint, providerAddress);
 
-        // Consumer config
-        Properties properties = new Properties();
-        properties.put(NeverminedConfig.KEEPER_URL, config.getString("keeper.url"));
-        properties.put(NeverminedConfig.KEEPER_GAS_LIMIT, config.getString("keeper.gasLimit"));
-        properties.put(NeverminedConfig.KEEPER_GAS_PRICE, config.getString("keeper.gasPrice"));
-        properties.put(NeverminedConfig.KEEPER_TX_ATTEMPTS, config.getString("keeper.tx.attempts"));
-        properties.put(NeverminedConfig.KEEPER_TX_SLEEPDURATION, config.getString("keeper.tx.sleepDuration"));
-        properties.put(NeverminedConfig.METADATA_URL, config.getString("metadata.url"));
-        properties.put(NeverminedConfig.SECRETSTORE_URL, config.getString("secretstore.url"));
-        properties.put(NeverminedConfig.CONSUME_BASE_PATH, config.getString("consume.basePath"));
-        properties.put(NeverminedConfig.MAIN_ACCOUNT_ADDRESS, config.getString("account.parity.address2"));
-        properties.put(NeverminedConfig.MAIN_ACCOUNT_PASSWORD, config.getString("account.parity.password2"));
-        properties.put(NeverminedConfig.MAIN_ACCOUNT_CREDENTIALS_FILE, config.getString("account.parity.credentialsFile2"));
-        properties.put(NeverminedConfig.DID_REGISTRY_ADDRESS, config.getString("contract.DIDRegistry.address"));
-        properties.put(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, config.getString("contract.AgreementStoreManager.address"));
-        properties.put(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, config.getString("contract.ConditionStoreManager.address"));
-        properties.put(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.LockPaymentCondition.address"));
-        properties.put(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, config.getString("contract.EscrowPaymentCondition.address"));
-        properties.put(NeverminedConfig.ACCESS_TEMPLATE_ADDRESS, config.getString("contract.AccessTemplate.address"));
-        properties.put(NeverminedConfig.ACCESS_CONDITION_ADDRESS, config.getString("contract.AccessCondition.address"));
-        properties.put(NeverminedConfig.TEMPLATE_STORE_MANAGER_ADDRESS, config.getString("contract.TemplateStoreManager.address"));
-        properties.put(NeverminedConfig.NEVERMINED_TOKEN_ADDRESS, config.getString("contract.NeverminedToken.address"));
-        properties.put(NeverminedConfig.DISPENSER_ADDRESS, config.getString("contract.Dispenser.address"));
-        properties.put(NeverminedConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.ComputeExecutionCondition.address"));
-        properties.put(NeverminedConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, config.getString("contract.EscrowComputeExecutionTemplate.address"));
-        properties.put(NeverminedConfig.PROVIDER_ADDRESS, config.getString("provider.address"));
-
         neverminedAPIPublisher = NeverminedAPI.getInstance(config);
         keeperPublisher = ManagerHelper.getKeeper(config, ManagerHelper.VmClient.main);
         keeperConsumer = ManagerHelper.getKeeper(config, ManagerHelper.VmClient.parity, "2");
 
-        neverminedAPIConsumer = NeverminedAPI.getInstance(properties);
+        neverminedAPIConsumer = ManagerHelper.getNeverminedAPI(config, ManagerHelper.VmClient.parity, "2");
 
         neverminedAPIConsumer.getTokensAPI().request(BigInteger.TEN);
+
         agreementsManager = AgreementsManager.getInstance(keeperConsumer, metadataApiService);
         conditionsManager = ConditionsManager.getInstance(keeperConsumer, metadataApiService);
-        accessSecretStoreCondition = ManagerHelper.loadAccessConditionContract(keeperConsumer, config.getString("contract.AccessCondition.address"));
+        accessCondition = ManagerHelper.loadAccessConditionContract(keeperConsumer, config.getString("contract.AccessCondition.address"));
         didRegistry = ManagerHelper.loadDIDRegistryContract(keeperConsumer, config.getString("contract.DIDRegistry.address"));
-        escrowAccessSecretStoreTemplate = ManagerHelper.loadAccessTemplate(keeperConsumer, config.getString("contract.AccessTemplate.address"));
-        escrowReward = ManagerHelper.loadEscrowPaymentConditionContract(keeperConsumer, config.getString("contract.EscrowPaymentCondition.address"));
-        lockRewardCondition = ManagerHelper.loadLockPaymentCondition(keeperConsumer, config.getString("contract.LockPaymentCondition.address"));
+        accessTemplate = ManagerHelper.loadAccessTemplate(keeperConsumer, config.getString("contract.AccessTemplate.address"));
+        escrowPaymentCondition = ManagerHelper.loadEscrowPaymentConditionContract(keeperConsumer, config.getString("contract.EscrowPaymentCondition.address"));
+        lockPaymentCondition = ManagerHelper.loadLockPaymentCondition(keeperConsumer, config.getString("contract.LockPaymentCondition.address"));
         agreementsStoreManager = ManagerHelper.loadAgreementStoreManager(keeperConsumer, config.getString("contract.AgreementStoreManager.address"));
         conditionStoreManager = ManagerHelper.loadConditionStoreManager(keeperConsumer, config.getString("contract.ConditionStoreManager.address"));
         agreementsManager.setAgreementStoreManagerContract(agreementsStoreManager);
-        agreementsManager.setLockCondition(lockRewardCondition);
-        agreementsManager.setAccessCondition(accessSecretStoreCondition);
-        agreementsManager.setAccessTemplate(escrowAccessSecretStoreTemplate);
-        agreementsManager.setEscrowCondition(escrowReward);
+        agreementsManager.setLockCondition(lockPaymentCondition);
+        agreementsManager.setAccessCondition(accessCondition);
+        agreementsManager.setAccessTemplate(accessTemplate);
+        agreementsManager.setEscrowCondition(escrowPaymentCondition);
         agreementsManager.setConditionStoreManagerContract(conditionStoreManager);
         conditionsManager.setAgreementStoreManagerContract(agreementsStoreManager);
         conditionsManager.setDidRegistryContract(didRegistry);
-        conditionsManager.setEscrowCondition(escrowReward);
-        conditionsManager.setAccessTemplate(escrowAccessSecretStoreTemplate);
+        conditionsManager.setEscrowCondition(escrowPaymentCondition);
+        conditionsManager.setAccessTemplate(accessTemplate);
 
     }
 

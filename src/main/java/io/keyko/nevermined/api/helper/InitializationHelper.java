@@ -190,6 +190,7 @@ public class InitializationHelper {
      * Loads the ERC20Upgradeable contract given a token address
      *
      * @param keeper the keeper Service
+     * @param tokenAddress the ERC20 contract address
      * @return an instance of ERC20Upgradeable contract
      */
     public static ERC20Upgradeable loadERC20Contract(KeeperService keeper, String tokenAddress) {
@@ -264,6 +265,48 @@ public class InitializationHelper {
     }
 
     /**
+     * Loads the NFTSalesTemplate contract from Keeper
+     *
+     * @param keeper the keeper Service
+     * @return an instance of NFTSalesTemplate contract deployed in keeper
+     */
+    public NFTSalesTemplate loadNFTSalesTemplate(KeeperService keeper) {
+        return NFTSalesTemplate.load(
+                neverminedConfig.getNFTSalesTemplateAddress(),
+                keeper.getWeb3(),
+                keeper.getTxManager(),
+                keeper.getContractGasProvider());
+    }
+
+    /**
+     * Loads the NFTAccessTemplate contract from Keeper
+     *
+     * @param keeper the keeper Service
+     * @return an instance of NFTAccessTemplate contract deployed in keeper
+     */
+    public NFTAccessTemplate loadNFTAccessTemplate(KeeperService keeper) {
+        return NFTAccessTemplate.load(
+                neverminedConfig.getNFTAccessTemplateAddress(),
+                keeper.getWeb3(),
+                keeper.getTxManager(),
+                keeper.getContractGasProvider());
+    }
+
+    /**
+     * Loads the DIDSalesTemplate contract from Keeper
+     *
+     * @param keeper the keeper Service
+     * @return an instance of DIDSalesTemplate contract deployed in keeper
+     */
+    public DIDSalesTemplate loadDIDSalesTemplate(KeeperService keeper) {
+        return DIDSalesTemplate.load(
+                neverminedConfig.getDIDSalesTemplateAddress(),
+                keeper.getWeb3(),
+                keeper.getTxManager(),
+                keeper.getContractGasProvider());
+    }
+
+    /**
      * Loads the LockPaymentCondition contract from Keeper
      *
      * @param keeper the keeper Service
@@ -271,7 +314,7 @@ public class InitializationHelper {
      */
     public LockPaymentConditionPayable loadLockPaymentCondition(KeeperService keeper) {
         return LockPaymentConditionPayable.load(
-                neverminedConfig.getLockrewardConditionsAddress(),
+                neverminedConfig.getLockPaymentConditionsAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
@@ -286,7 +329,7 @@ public class InitializationHelper {
      */
     public EscrowPaymentCondition loadEscrowPaymentCondition(KeeperService keeper) {
         return EscrowPaymentCondition.load(
-                neverminedConfig.getEscrowPaymentConditionConditionsAddress(),
+                neverminedConfig.getEscrowPaymentConditionAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()
@@ -332,7 +375,67 @@ public class InitializationHelper {
      */
     public AccessCondition loadAccessCondition(KeeperService keeper) {
         return AccessCondition.load(
-                neverminedConfig.getAccessSsConditionsAddress(),
+                neverminedConfig.getAccessConditionsAddress(),
+                keeper.getWeb3(),
+                keeper.getTxManager(),
+                keeper.getContractGasProvider()
+        );
+    }
+
+    /**
+     * Loads the TransferNFTCondition contract from Keeper
+     *
+     * @param keeper the keeper Service
+     * @return an instance of TransferNFTCondition contract deployed in keeper
+     */
+    public TransferNFTCondition loadTransferNFTCondition(KeeperService keeper) {
+        return TransferNFTCondition.load(
+                neverminedConfig.getTransferNFTConditionAddress(),
+                keeper.getWeb3(),
+                keeper.getTxManager(),
+                keeper.getContractGasProvider()
+        );
+    }
+
+    /**
+     * Loads the TransferDIDOwnershipCondition contract from Keeper
+     *
+     * @param keeper the keeper Service
+     * @return an instance of TransferDIDOwnershipCondition contract deployed in keeper
+     */
+    public TransferDIDOwnershipCondition loadTransferDIDCondition(KeeperService keeper) {
+        return TransferDIDOwnershipCondition.load(
+                neverminedConfig.getTransferDIDConditionAddress(),
+                keeper.getWeb3(),
+                keeper.getTxManager(),
+                keeper.getContractGasProvider()
+        );
+    }
+
+    /**
+     * Loads the NFTAccessCondition contract from Keeper
+     *
+     * @param keeper the keeper Service
+     * @return an instance of NFTAccessCondition contract deployed in keeper
+     */
+    public NFTAccessCondition loadNFTAccessCondition(KeeperService keeper) {
+        return NFTAccessCondition.load(
+                neverminedConfig.getNFTAccessConditionAddress(),
+                keeper.getWeb3(),
+                keeper.getTxManager(),
+                keeper.getContractGasProvider()
+        );
+    }
+
+    /**
+     * Loads the NFTHolderCondition contract from Keeper
+     *
+     * @param keeper the keeper Service
+     * @return an instance of NFTHolderCondition contract deployed in keeper
+     */
+    public NFTHolderCondition loadNFTHolderCondition(KeeperService keeper) {
+        return NFTHolderCondition.load(
+                neverminedConfig.getNFTHolderConditionAddress(),
                 keeper.getWeb3(),
                 keeper.getTxManager(),
                 keeper.getContractGasProvider()

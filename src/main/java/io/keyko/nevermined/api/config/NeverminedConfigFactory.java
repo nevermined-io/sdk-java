@@ -51,10 +51,17 @@ public class NeverminedConfigFactory {
         neverminedConfig.setFaucetUrl((String) properties.getOrDefault(NeverminedConfig.FAUCET_URL, DEFAULT_FAUCET_URL));
         neverminedConfig.setProviderAddress((String) properties.getOrDefault(NeverminedConfig.PROVIDER_ADDRESS, ""));
         neverminedConfig.setDidRegistryAddress((String) properties.getOrDefault(NeverminedConfig.DID_REGISTRY_ADDRESS, ""));
-        neverminedConfig.setEscrowPaymentConditionConditionsAddress((String) properties.getOrDefault(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, ""));
+        neverminedConfig.setEscrowPaymentConditionAddress((String) properties.getOrDefault(NeverminedConfig.ESCROWPAYMENT_CONDITIONS_ADDRESS, ""));
         neverminedConfig.setAccessTemplateAddress((String) properties.getOrDefault(NeverminedConfig.ACCESS_TEMPLATE_ADDRESS, ""));
-        neverminedConfig.setLockrewardConditionsAddress((String) properties.getOrDefault(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, ""));
-        neverminedConfig.setAccessSsConditionsAddress((String) properties.getOrDefault(NeverminedConfig.ACCESS_CONDITION_ADDRESS, ""));
+        neverminedConfig.setNFTSalesTemplateAddress((String) properties.getOrDefault(NeverminedConfig.NFT_SALES_TEMPLATE_ADDRESS, ""));
+        neverminedConfig.setNFTAccessTemplateAddress((String) properties.getOrDefault(NeverminedConfig.NFT_ACCESS_TEMPLATE_ADDRESS, ""));
+        neverminedConfig.setDIDSalesTemplateAddress((String) properties.getOrDefault(NeverminedConfig.DID_SALES_TEMPLATE_ADDRESS, ""));
+        neverminedConfig.setLockPaymentConditionsAddress((String) properties.getOrDefault(NeverminedConfig.LOCKPAYMENT_CONDITIONS_ADDRESS, ""));
+        neverminedConfig.setAccessConditionsAddress((String) properties.getOrDefault(NeverminedConfig.ACCESS_CONDITION_ADDRESS, ""));
+        neverminedConfig.setNFTAccessConditionAddress((String) properties.getOrDefault(NeverminedConfig.NFT_ACCESS_CONDITION_ADDRESS, ""));
+        neverminedConfig.setNFTHolderConditionAddress((String) properties.getOrDefault(NeverminedConfig.NFT_HOLDER_CONDITION_ADDRESS, ""));
+        neverminedConfig.setTransferNFTConditionAddress((String) properties.getOrDefault(NeverminedConfig.TRANSFER_NFT_CONDITION_ADDRESS, ""));
+        neverminedConfig.setTransferDIDConditionAddress((String) properties.getOrDefault(NeverminedConfig.TRANSFER_DID_CONDITION_ADDRESS, ""));
         neverminedConfig.setAgreementStoreManagerAddress((String) properties.getOrDefault(NeverminedConfig.AGREEMENT_STORE_MANAGER_ADDRESS, ""));
         neverminedConfig.setConditionStoreManagerAddress((String) properties.getOrDefault(NeverminedConfig.CONDITION_STORE_MANAGER_ADDRESS, ""));
         neverminedConfig.setTokenAddress((String) properties.getOrDefault(NeverminedConfig.NEVERMINED_TOKEN_ADDRESS, ""));
@@ -65,7 +72,7 @@ public class NeverminedConfigFactory {
         neverminedConfig.setMainAccountPassword((String) properties.getOrDefault(NeverminedConfig.MAIN_ACCOUNT_PASSWORD, ""));
         neverminedConfig.setMainAccountCredentialsFile((String) properties.getOrDefault(NeverminedConfig.MAIN_ACCOUNT_CREDENTIALS_FILE, ""));
 
-        neverminedConfig.setEscrowComputeExecutionTemplateAddress((String) properties.getOrDefault(NeverminedConfig.ESCROW_COMPUTE_EXECUTION_CONDITION_ADDRESS, ""));
+        neverminedConfig.setEscrowComputeExecutionTemplateAddress((String) properties.getOrDefault(NeverminedConfig.ESCROW_COMPUTE_EXECUTION_TEMPLATE_ADDRESS, ""));
         neverminedConfig.setComputeExecutionConditionAddress((String) properties.getOrDefault(NeverminedConfig.COMPUTE_EXECUTION_CONDITION_ADDRESS, ""));
 
         return neverminedConfig;

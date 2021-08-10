@@ -23,10 +23,13 @@ public class AssetRewards extends AbstractModel implements FromJsonToModel {
 
     public String tokenAddress = AccountsHelper.ZERO_ADDRESS;
 
+    public BigInteger numberNFTs = BigInteger.ZERO;
+
     public AssetRewards()  {
         this.totalPrice = "0";
         this.rewards = new HashMap<>();
         this.tokenAddress = AccountsHelper.ZERO_ADDRESS;
+        this.numberNFTs = BigInteger.ZERO;
     }
 
     public AssetRewards(Map<String, String> _rewards)  {

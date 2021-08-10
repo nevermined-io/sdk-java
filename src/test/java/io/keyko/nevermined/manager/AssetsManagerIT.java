@@ -5,7 +5,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.contracts.DIDRegistry;
-import io.keyko.nevermined.exceptions.NftException;
+import io.keyko.nevermined.exceptions.NFTException;
 import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.models.Account;
 import io.keyko.nevermined.models.DDO;
@@ -72,7 +72,7 @@ public class AssetsManagerIT {
 
 
     @Test
-    public void mintAndBurn() throws NftException, Exception {
+    public void mintAndBurn() throws NFTException, Exception {
         String myAddress = keeper.getAddress();
         String someoneAddress = "0x00a329c0648769A73afAc7F9381E08FB43dBEA72";
 
@@ -88,7 +88,7 @@ public class AssetsManagerIT {
         metadataApiService.createDDO(ddoBase);
 
         boolean didRegistered= neverminedManager.registerMintableDID(
-                seed, newUrl, checksum, Arrays.asList(), BigInteger.valueOf(100), BigInteger.ZERO);
+                seed.getHash(), newUrl, checksum, Arrays.asList(), BigInteger.valueOf(100), BigInteger.ZERO);
         assertTrue(didRegistered);
 
         assertEquals(BigInteger.ZERO, manager.balance(myAddress, did));

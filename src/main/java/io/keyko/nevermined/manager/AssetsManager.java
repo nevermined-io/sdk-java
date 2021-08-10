@@ -4,7 +4,7 @@ import io.keyko.common.helpers.EncodingHelper;
 import io.keyko.common.web3.KeeperService;
 import io.keyko.nevermined.exceptions.DDOException;
 import io.keyko.nevermined.exceptions.EthereumException;
-import io.keyko.nevermined.exceptions.NftException;
+import io.keyko.nevermined.exceptions.NFTException;
 import io.keyko.nevermined.exceptions.ServiceException;
 import io.keyko.nevermined.external.MetadataApiService;
 import io.keyko.nevermined.models.DDO;
@@ -19,7 +19,6 @@ import org.web3j.protocol.core.DefaultBlockParameterName;
 import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-import org.web3j.tuples.generated.Tuple6;
 import org.web3j.tuples.generated.Tuple9;
 import org.web3j.utils.Numeric;
 
@@ -376,9 +375,9 @@ public class AssetsManager extends BaseManager {
      * @param did DID with the nft associated
      * @param amount amount to mint
      * @return true if worked
-     * @throws NftException Unable to mint
+     * @throws NFTException Unable to mint
      */
-    public boolean mint(DID did, BigInteger amount) throws NftException {
+    public boolean mint(DID did, BigInteger amount) throws NFTException {
         try {
             didRegistry.mint(
                     EncodingHelper.hexStringToBytes(did.getHash()),
@@ -387,7 +386,7 @@ public class AssetsManager extends BaseManager {
         } catch (Exception e) {
             String msg = "Error minting token ";
             log.error(msg + ": " + e.getMessage());
-            throw new NftException(msg, e);
+            throw new NFTException(msg, e);
         }
         return true;
     }
@@ -397,9 +396,9 @@ public class AssetsManager extends BaseManager {
      * @param did DID with the nft associated
      * @param amount amount to burn
      * @return true if worked
-     * @throws NftException Unable to burn
+     * @throws NFTException Unable to burn
      */
-    public boolean burn(DID did, BigInteger amount) throws NftException {
+    public boolean burn(DID did, BigInteger amount) throws NFTException {
         try {
             didRegistry.burn(
                     EncodingHelper.hexStringToBytes(did.getHash()),
@@ -408,7 +407,7 @@ public class AssetsManager extends BaseManager {
         } catch (Exception e) {
             String msg = "Error burning token ";
             log.error(msg + ": " + e.getMessage());
-            throw new NftException(msg, e);
+            throw new NFTException(msg, e);
         }
         return true;
     }
@@ -420,9 +419,9 @@ public class AssetsManager extends BaseManager {
      * @param address the receiver
      * @param amount the amount to transfer to the NFT DID
      * @return true if everything worked
-     * @throws NftException Unable to transfer
+     * @throws NFTException Unable to transfer
      */
-    public boolean transfer(DID did, String address, BigInteger amount) throws NftException {
+    public boolean transfer(DID did, String address, BigInteger amount) throws NFTException {
         try {
             didRegistry.safeTransferFrom(
                     getKeeperService().getAddress(),
@@ -434,7 +433,7 @@ public class AssetsManager extends BaseManager {
         } catch (Exception e) {
             String msg = "Error transferring token ";
             log.error(msg + ": " + e.getMessage());
-            throw new NftException(msg, e);
+            throw new NFTException(msg, e);
         }
         return true;
     }
@@ -445,9 +444,9 @@ public class AssetsManager extends BaseManager {
      * @param address the address holding the NFT
      * @param did the DID associated to the NFT
      * @return BigInteger the address and DID/NFT balance
-     * @throws NftException unable to get the balance
+     * @throws NFTException unable to get the balance
      */
-    public BigInteger balance(String address, DID did) throws NftException {
+    public BigInteger balance(String address, DID did) throws NFTException {
         try {
             return didRegistry.balanceOf(
                     address,
@@ -456,7 +455,7 @@ public class AssetsManager extends BaseManager {
         } catch (Exception e) {
             String msg = "Error getting balance ";
             log.error(msg + ": " + e.getMessage());
-            throw new NftException(msg, e);
+            throw new NFTException(msg, e);
         }
     }
 

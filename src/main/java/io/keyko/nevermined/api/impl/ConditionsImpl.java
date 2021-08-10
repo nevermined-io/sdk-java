@@ -5,7 +5,6 @@ import io.keyko.nevermined.manager.ConditionsManager;
 import io.keyko.nevermined.models.DID;
 
 import java.math.BigInteger;
-import java.util.List;
 
 public class ConditionsImpl implements ConditionsAPI {
 
@@ -44,5 +43,15 @@ public class ConditionsImpl implements ConditionsAPI {
     @Override
     public boolean refundReward(String agreementId) throws Exception {
         return conditionsManager.refundReward(agreementId);
+    }
+
+    @Override
+    public boolean transferNFT(String agreementId, DID did, String grantee, BigInteger numberNFTs, String lockConditionId) throws Exception {
+        return conditionsManager.transferNFT(agreementId, did, grantee, numberNFTs, lockConditionId);
+    }
+
+    @Override
+    public boolean transferDIDOwnership(String agreementId, DID did, String granteeAddress) throws Exception {
+        return conditionsManager.transferDID(agreementId, did, granteeAddress);
     }
 }

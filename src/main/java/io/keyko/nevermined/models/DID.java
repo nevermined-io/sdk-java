@@ -48,6 +48,10 @@ public class DID {
         return new DID(PREFIX + EthereumHelper.remove0x(hash));
     }
 
+    public static String getAssetId(String _did)    {
+        return _did.replace(PREFIX, "");
+    }
+
     public static DID getFromSeed(String seed, String address) throws UnsupportedEncodingException, DIDFormatException {
         String params = EthereumHelper.add0x(
                 EthereumHelper.encodeParameterValue("bytes32", seed)
